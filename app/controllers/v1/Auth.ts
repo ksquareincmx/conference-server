@@ -6,13 +6,14 @@ import { Request, Response, Router } from "express";
 import { log } from "./../../libraries/Log";
 import { config } from "./../../config/config";
 import { validateJWT } from "./../../policies/General";
+import { OAuth2Client } from "google-auth-library";
 import mailer from "./../../services/EmailService";
-import i18n from "./../../libraries/i18n";
 import * as _ from "lodash";
 import * as moment from "moment";
-import * as path from "path";
 import * as jwt from "jsonwebtoken";
 import * as uuid from "uuid";
+
+const gAuthClient = new OAuth2Client(config.auth.google.clientId);
 
 export class AuthController extends Controller {
   constructor() {
@@ -28,6 +29,7 @@ export class AuthController extends Controller {
     this.router.post("/reset", (req, res) => this.resetPost(req, res));
     this.router.post("/change", validateJWT("access"), (req, res) => this.changePassword(req, res));
     this.router.post("/refresh", validateJWT("refresh"), (req, res) => this.refreshToken(req, res));
+    this.router.post("/googlelogin", (req, res) => this.googleLogin(req, res));
 
     return this.router;
   }
@@ -222,7 +224,11 @@ export class AuthController extends Controller {
       user: null
     };
 
-    User.findOne({ where: { email: email }, include: [{ model: Profile, as: "profile" }] })
+    // Only accept logging by password for users without googleId
+    User.findOne({
+      where: { email: email, googleId: null },
+      include: [{ model: Profile, as: "profile" }]
+    })
       .then(user => {
         if (!user) {
           return false;
@@ -435,6 +441,60 @@ export class AuthController extends Controller {
         log.error(err);
         return Controller.badRequest(res);
       });
+  }
+
+  async googleLogin(req: Request, res: Response) {
+    const idToken = req.body.idToken;
+    if (idToken == null) return Controller.badRequest(res);
+    try {
+      const ticket = await gAuthClient.verifyIdToken({
+        idToken,
+        audience: config.auth.google.clientId
+      });
+      const payload = ticket.getPayload();
+      const userId = payload["sub"];
+      const domain = payload["hd"];
+      const email = payload["email"];
+      const name = payload["name"];
+      const picture = payload["picture"];
+
+      if (domain == null || config.auth.google.allowedDomains.indexOf(domain) < 0) {
+        return Controller.unauthorized(res, "Unauthorized domain");
+      }
+
+      // Check if user exists
+      let user: User = await User.findOne({
+        where: { googleId: userId, email },
+        include: [{ model: Profile, as: "profile" }]
+      });
+      if (user == null) {
+        // Create new user
+        user = await User.create({
+          email,
+          name,
+          picture,
+          googleId: userId,
+          password: "DUMMYPASS" // Won't be used, validated in login method
+        });
+        // We need to do another query because before the profile wasn't ready
+        user = await User.findOne({
+          where: { id: user.id },
+          include: [{ model: Profile, as: "profile" }]
+        });
+      }
+      const credentials: any = this.getCredentials(user);
+      return Controller.ok(res, credentials);
+    } catch (err) {
+      log.error("Error on Google Login", err);
+      if (
+        err.errors != null &&
+        err.errors.length &&
+        err.errors[0].type === "unique violation" &&
+        err.errors[0].path === "email"
+      ) {
+        return Controller.forbidden(res, "email in use");
+      } else if (err) return Controller.serverError(res, err);
+    }
   }
 }
 

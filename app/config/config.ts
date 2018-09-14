@@ -77,6 +77,15 @@ export const config: any = {
     logging: false,
     //storage: 'db.sqlite',
     timezone: "utc" // IMPORTANT For correct timezone management with DB, Tasks etc.
+  },
+
+  auth: {
+    google: {
+      clientId:
+        process.env.GOOGLE_CLIENT_ID ||
+        "129092023456-82964pfqurangtddv4q9g4q62cbq6abm.apps.googleusercontent.com",
+      allowedDomains: ["prompto.io", "ksquareinc.com", "infolob.com", "scouting.org"]
+    }
   }
 };
 

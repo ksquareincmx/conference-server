@@ -23,6 +23,21 @@ export class User extends BaseModel<User> {
     allowNull: true,
     defaultValue: null
   })
+  googleId: string;
+
+  // The URL of the user profile picture (provided by google)
+  @Column({
+    type: DataType.STRING,
+    allowNull: true,
+    defaultValue: null
+  })
+  picture: string;
+
+  @Column({
+    type: DataType.STRING,
+    allowNull: true,
+    defaultValue: null
+  })
   name: string;
 
   @Column({
