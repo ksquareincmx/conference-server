@@ -2,6 +2,33 @@
 
 conference-booking Server, based on Flugzeug.
 
+## Install mysql
+
+```
+$ sudo apt update
+$ sudo apt install mysql-server mysql-client
+```
+
+## Configure mysql
+
+Create database and fix timezone utc error
+```
+$ mysql -u root -p
+$ mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root -p mysql
+
+mysql> CREATE DATABASE `conference-booking`;
+```
+
+## Install dependencies
+```
+$ npm install
+```
+
+On Mac OS also
+```
+$ npm install gulp@3.9.0
+```
+
 ## Development
 
 Read the documentation at ``docs/Framework.md``
@@ -16,7 +43,7 @@ gulp watch
 gulp production
 ```
 
-## Run in production 
+## Run in production
 
 ```
 npm start
