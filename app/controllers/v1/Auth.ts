@@ -22,13 +22,204 @@ export class AuthController extends Controller {
   }
 
   routes(): Router {
+
+    /*
+      @api {post} /api/v1/auth/login/ Login
+      @apiPermission none
+      @apiName postLoginAuth
+      @apiGroup Auth
+
+      @apiHeader { String }   Content-Type Application/Json
+      @apiHeader { String }   Authorization Bearer [jwt token]
+
+      @apiParam {Object}  body                Login credentials
+      @apiParam {String}  body.email          User email
+      @apiParam {String}  body.password       User password
+
+      @apiSuccess {Object}    body                       Success credentials
+      @apiSuccess {String}    body.token                 JWT token
+      @apiSuccess {Number}    body.expires               Token expiration time
+      @apiSuccess {Object}    body.refresh_token         JWT refresh token data
+      @apiSuccess {String}    body.refresh_token.token   JWT Refresh Token
+      @apiSuccess {Number}    body.refresh_token.expires       Refresh token expiration time
+      @apiSuccess {Number}    body.refresh_token.expires_in    Refresh token expiration time
+      @apiSuccess {Object}    body.user                        User details
+      @apiSuccess {Number}    body.user.id                     User id
+      @apiSuccess {String}    body.user.name                   User name
+      @apiSuccess {String}    body.user.email                  User email
+      @apiSuccess {String}    body.user.role                   User role ("user", "admin")
+      @apiSuccess {Object}    body.profile                     User profile
+
+    */
+
     this.router.post("/login", (req, res) => this.login(req, res));
-    this.router.post("/logout", validateJWT("access"), (req, res) => this.logout(req, res));
-    this.router.post("/register", (req, res) => this.register(req, res));
+
+    /**
+      @api {post} /api/v1/auth/logout/ Logout
+      @apiPermission access
+      @apiName postLogoutAuth
+      @apiGroup Auth
+
+      @apiHeader { String }   Content-Type Application/Json
+      @apiHeader { String }   Authorization Bearer [jwt token]
+
+    */
+
+    this.router.post(
+      "/logout",
+      validateJWT("access"),
+      (req, res) => this.logout(req, res)
+    );
+
+    /**
+      @api {post} /api/v1/auth/register/ Register
+      @apiPermission none
+      @apiName postRegisterAuth
+      @apiGroup Auth
+
+      @apiParam {Object}  body                Login credentials
+      @apiParam {String}  body.email          User email
+      @apiParam {String}  body.password       User password
+
+      @apiSuccess {Object}    body                       Success credentials
+      @apiSuccess {String}    body.token                 JWT token
+      @apiSuccess {Number}    body.expires               Token expiration time
+      @apiSuccess {Object}    body.refresh_token         JWT refresh token data
+      @apiSuccess {String}    body.refresh_token.token   JWT Refresh Token
+      @apiSuccess {Number}    body.refresh_token.expires       Refresh token expiration time
+      @apiSuccess {Number}    body.refresh_token.expires_in    Refresh token expiration time
+      @apiSuccess {Object}    body.user                        User details
+      @apiSuccess {Number}    body.user.id                     User id
+      @apiSuccess {String}    body.user.name                   User name
+      @apiSuccess {String}    body.user.email                  User email
+      @apiSuccess {String}    body.user.role                   User role ("user", "admin")
+      @apiSuccess {Object}    body.profile                     User profile
+
+    */
+
+    this.router.post(
+      "/register",
+      (req, res) => this.register(req, res)
+    );
+
+    /*
+      @apiDescription Validates the reset token passed as a query param and redirects to a reset token UI
+      @api {get} /api/v1/auth/reset?token=[token] Start the Reset Password flow
+      @apiPermission none (requires a valid reset token as a query param)
+      @apiName getResetAuth
+      @apiGroup Auth
+
+    */
+
     this.router.get("/reset", (req, res) => this.resetGet(req, res));
+
+    /*
+      @api {post} /api/v1/auth/reset/ Reset
+      @apiPermission none
+      @apiName postResetAuth
+      @apiGroup Auth
+
+      @apiHeader { String }   Content-Type Application/Json
+      @apiHeader { String }   Authorization Bearer [jwt token]
+
+    */
+
     this.router.post("/reset", (req, res) => this.resetPost(req, res));
-    this.router.post("/change", validateJWT("access"), (req, res) => this.changePassword(req, res));
-    this.router.post("/refresh", validateJWT("refresh"), (req, res) => this.refreshToken(req, res));
+
+    /**
+      @api {post} /api/v1/auth/change/ Change password
+      @apiPermission access
+      @apiName postChangeAuth
+      @apiGroup Auth
+
+      @apiHeader { String }   Content-Type Application/Json
+      @apiHeader { String }   Authorization Bearer [jwt token]
+
+      @apiParam {Object}     body              Change password data
+      @apiParam {String}     body.email        User email
+      @apiParam {String}     body.oldPass      User old password
+      @apiParam {String}     body.newPass      User new password
+
+      @apiSuccess {Object}    body                       Success credentials
+      @apiSuccess {String}    body.token                 JWT token
+      @apiSuccess {Number}    body.expires               Token expiration time
+      @apiSuccess {Object}    body.refresh_token         JWT refresh token data
+      @apiSuccess {String}    body.refresh_token.token   JWT Refresh Token
+      @apiSuccess {Number}    body.refresh_token.expires       Refresh token expiration time
+      @apiSuccess {Number}    body.refresh_token.expires_in    Refresh token expiration time
+      @apiSuccess {Object}    body.user                        User details
+      @apiSuccess {Number}    body.user.id                     User id
+      @apiSuccess {String}    body.user.name                   User name
+      @apiSuccess {String}    body.user.email                  User email
+      @apiSuccess {String}    body.user.role                   User role ("user", "admin")
+      @apiSuccess {Object}    body.profile                     User profile
+
+    */
+
+    this.router.post(
+      "/change",
+      validateJWT("access"),
+      (req, res) => this.changePassword(req, res)
+    );
+
+    /**
+      @api {post} /api/v1/auth/refresh/ Refresh token
+      @apiPermission refresh (valid refresh token present in Authorization header)
+      @apiName postRefreshAuth
+      @apiGroup Auth
+
+      @apiHeader { String }   Content-Type Application/Json
+      @apiHeader { String }   Authorization Bearer [jwt token]
+
+      @apiSuccess {Object}    body                       Success credentials
+      @apiSuccess {String}    body.token                 JWT token
+      @apiSuccess {Number}    body.expires               Token expiration time
+      @apiSuccess {Object}    body.refresh_token         JWT refresh token data
+      @apiSuccess {String}    body.refresh_token.token   JWT Refresh Token
+      @apiSuccess {Number}    body.refresh_token.expires       Refresh token expiration time
+      @apiSuccess {Number}    body.refresh_token.expires_in    Refresh token expiration time
+      @apiSuccess {Object}    body.user                        User details
+      @apiSuccess {Number}    body.user.id                     User id
+      @apiSuccess {String}    body.user.name                   User name
+      @apiSuccess {String}    body.user.email                  User email
+      @apiSuccess {String}    body.user.role                   User role ("user", "admin")
+      @apiSuccess {Object}    body.profile                     User profile
+
+    */
+
+    this.router.post(
+      "/refresh",
+      validateJWT("refresh"),
+      (req, res) => this.refreshToken(req, res)
+    );
+
+    /**
+      @api {post} /api/v1/auth/googleLogin/ Google login
+      @apiPermission none
+      @apiName postGoogleLoginAuth
+      @apiGroup Auth
+
+      @apiHeader { String }   Content-Type Application/Json
+      @apiHeader { String }   Authorization Bearer [jwt token]
+
+      @apiParam {Number}  idToken          token id
+
+      @apiSuccess {Object}    body                       Success credentials
+      @apiSuccess {String}    body.token                 JWT token
+      @apiSuccess {Number}    body.expires               Token expiration time
+      @apiSuccess {Object}    body.refresh_token         JWT refresh token data
+      @apiSuccess {String}    body.refresh_token.token   JWT Refresh Token
+      @apiSuccess {Number}    body.refresh_token.expires       Refresh token expiration time
+      @apiSuccess {Number}    body.refresh_token.expires_in    Refresh token expiration time
+      @apiSuccess {Object}    body.user                        User details
+      @apiSuccess {Number}    body.user.id                     User id
+      @apiSuccess {String}    body.user.name                   User name
+      @apiSuccess {String}    body.user.email                  User email
+      @apiSuccess {String}    body.user.role                   User role ("user", "admin")
+      @apiSuccess {Object}    body.profile                     User profile
+
+    */
+
     this.router.post("/googlelogin", (req, res) => this.googleLogin(req, res));
 
     return this.router;

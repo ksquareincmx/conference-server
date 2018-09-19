@@ -14,11 +14,118 @@ export class RoomController extends Controller {
 
   routes(): Router {
 
-    this.router.get("/", validateJWT("access"), (req, res) => this.find(req, res));
-    this.router.get("/:id", validateJWT("access"), (req, res) => this.findOne(req, res));
-    this.router.post("/", validateJWT("access"), stripNestedObjects(), (req, res) => this.create(req, res));
-    this.router.put("/:id", validateJWT("access"), stripNestedObjects(), (req, res) => this.update(req, res));
-    this.router.delete("/:id", validateJWT("access"), (req, res) => this.destroy(req, res));
+    /**
+        @api {get} /api/v1/Room/:id Get a list of Rooms
+        @apiPermission access
+        @apiName getAllRooms
+        @apiGroup Room
+
+        @apiHeader { String }   Content-Type Application/Json
+        @apiHeader { String }   Authorization Bearer [jwt token]
+
+        @apiSuccess  {Object[]}   body                    Room details
+        @apiSuccess  {String}     body.name               Room name
+        @apiSuccess  {String}     body.color              The color to show in the UI for this room
+        @apiSuccess  {Boolean}     body.presence          If there is someone in the room
+    */
+
+    this.router.get(
+      "/",
+      validateJWT("access"),
+      (req, res) => this.find(req, res)
+    );
+
+    /**
+        @api {get} /api/v1/Room/ Get a Room
+        @apiPermission access
+        @apiName getRoom
+        @apiGroup Room
+
+        @apiHeader { String }   Content-Type Application/Json
+        @apiHeader { String }   Authorization Bearer [jwt token]
+
+        @apiSuccess  {Object}   body                Room details
+        @apiSuccess  {String}   body.name           Room name
+        @apiSuccess  {String}   body.color          The color to show in the UI for this room
+        @apiSuccess  {Boolean}  body.presence       If there is someone in the room
+    */
+
+    this.router.get(
+      "/:id",
+      validateJWT("access"),
+      (req, res) => this.findOne(req, res)
+    );
+
+    /**
+        @api {post} /api/v1/Room/:id Create a Room
+        @apiPermission access
+        @apiName postRoom
+        @apiGroup Room
+
+        @apiHeader { String }   Content-Type Application/Json
+        @apiHeader { String }   Authorization Bearer [jwt token]
+
+        @apiParam    {Object}   body                Room details
+        @apiParam    {String}   body.name           Room name
+        @apiParam    {String}   body.color          The color to show in the UI for this room
+        @apiParam    {Boolean}  body.presence       If there is someone in the room
+
+        @apiSuccess  {Object}   body                Room details
+        @apiSuccess  {String}   body.name           Room name
+        @apiSuccess  {String}   body.color          The color to show in the UI for this room
+        @apiSuccess  {Boolean}  body.presence       If there is someone in the room
+    */
+
+    this.router.post(
+      "/",
+      validateJWT("access"),
+      stripNestedObjects(),
+      (req, res) => this.create(req, res)
+    );
+
+    /**
+        @api {put} /api/v1/Room/:id Modify a room
+        @apiPermission access
+        @apiName putRoom
+        @apiGroup Room
+
+        @apiHeader { String }   Content-Type Application/Json
+        @apiHeader { String }   Authorization Bearer [jwt token]
+
+        @apiParam    {Object}   body                Room details
+        @apiParam    {String}   body.name           Room name
+        @apiParam    {String}   body.color          The color to show in the UI for this room
+        @apiParam    {Boolean}  body.presence       If there is someone in the room
+
+        @apiSuccess  {Object}   body                Room details
+        @apiSuccess  {String}   body.name           Room name
+        @apiSuccess  {String}   body.color          The color to show in the UI for this room
+        @apiSuccess  {Boolean}  body.presence       If there is someone in the room
+    */
+
+    this.router.put(
+      "/:id",
+      validateJWT("access"),
+      stripNestedObjects(),
+      (req, res) => this.update(req, res)
+    );
+
+    /**
+        @api {delete} /api/v1/Room/:id Delete a Room
+        @apiPermission access
+        @apiName deleteRoom
+        @apiGroup Room
+
+        @apiHeader { String }   Content-Type Application/Json
+        @apiHeader { String }   Authorization Bearer [jwt token]
+
+    */
+
+    this.router.delete(
+      "/:id",
+      validateJWT("access"),
+      (req, res) => this.destroy(req, res)
+    );
 
     return this.router;
   }
