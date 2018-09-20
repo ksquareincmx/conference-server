@@ -5,9 +5,15 @@
   "private": true,
   "main": "dist/main.js",
   "scripts": {
+    "apidoc": "apidoc -i app/controllers/ -o public/apidoc/",
     "build": "gulp",
     "start": "node --require source-map-support/register dist/main.js",
     "test": "mocha"
+  },
+  "apidoc":{
+    "title": "conference booking",
+    "version": "1.0.0",
+    "description": "conference booking app"
   },
   "author": "Rodrigo Mendez <rodrigo.mendez@prompto.io>",
   "license": "UNLICENSED",
@@ -43,6 +49,7 @@
     "typescript": "2.9.2"
   },
   "dependencies": {
+    "apidoc": "^0.17.6",
     "base64-url": "2.2.0",
     "bcrypt": "3.0.0",
     "body-parser": "1.18.3",
