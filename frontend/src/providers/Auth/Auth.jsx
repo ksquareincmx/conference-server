@@ -63,8 +63,8 @@ export class AuthProvider extends React.Component {
 
   refreshLocalStorage() {
     const { user, jwt } = this.state;
-    localStorage.setItem(("cb_user": user));
-    localStorage.setItem(("cb_jwt": jwt));
+    localStorage.setItem(("cb_user", user));
+    localStorage.setItem(("cb_jwt", jwt));
   }
 
   render() {
