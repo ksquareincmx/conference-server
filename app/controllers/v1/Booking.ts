@@ -1,4 +1,5 @@
 
+import { Op } from 'sequelize'
 import { Controller } from "./../../libraries/Controller";
 import { Booking } from "./../../models/Booking";
 import { Request, Response, Router } from "express";
@@ -147,7 +148,32 @@ export class BookingController extends Controller {
       stripNestedObjects(),
       filterOwner(),
       appendUser(),
-      (req, res) => this.create(req, res)
+      (req, res) => {
+        let startTime: Date = new Date(req.body.start);
+        let endTime: Date = new Date (req.body.end);
+
+        this.model.findAndCountAll({
+          where :
+          {
+            [Op.not] :
+            {
+              [Op.or] :
+              {
+                end : { [Op.lte] : startTime},
+                start : { [Op.gte] : endTime}
+              }
+            }
+          }
+        })
+        .then(result => {
+          if (result.count === 0){
+            this.create(req, res);
+          }
+        })
+        .catch(err => {
+          res.status(500).json(err);
+        });
+      }
     );
 
     /**
@@ -207,7 +233,37 @@ export class BookingController extends Controller {
       stripNestedObjects(),
       filterOwner(),
       appendUser(),
-      (req, res) => this.update(req, res)
+      (req, res) => {
+        let bookingId: number = req.params.id;
+        let startTime: Date = new Date(req.body.start);
+        let endTime: Date = new Date (req.body.end);
+
+        this.model.findAndCountAll({
+          where :
+          {
+            [Op.and] :
+            {
+              [Op.not] :
+              {
+                [Op.or] :
+                {
+                  end : { [Op.lte] : startTime},
+                  start : { [Op.gte] : endTime}
+                }
+              },
+              id : { [Op.ne] : bookingId}
+            }
+          }
+        })
+        .then(result => {
+          if (result.count === 0){
+            this.update(req, res);
+          }
+        })
+        .catch(err => {
+          res.status(500).json(err);
+        });
+      }
     );
 
     /**
