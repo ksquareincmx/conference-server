@@ -148,32 +148,7 @@ export class BookingController extends Controller {
       stripNestedObjects(),
       filterOwner(),
       appendUser(),
-      (req, res) => {
-        let startTime: Date = new Date(req.body.start);
-        let endTime: Date = new Date (req.body.end);
-
-        this.model.findAndCountAll({
-          where :
-          {
-            [Op.not] :
-            {
-              [Op.or] :
-              {
-                end : { [Op.lte] : startTime},
-                start : { [Op.gte] : endTime}
-              }
-            }
-          }
-        })
-        .then(result => {
-          if (result.count === 0){
-            this.create(req, res);
-          }
-        })
-        .catch(err => {
-          res.status(500).json(err);
-        });
-      }
+      (req, res) => this.createBooking(req, res)
     );
 
     /**
@@ -233,37 +208,7 @@ export class BookingController extends Controller {
       stripNestedObjects(),
       filterOwner(),
       appendUser(),
-      (req, res) => {
-        let bookingId: number = req.params.id;
-        let startTime: Date = new Date(req.body.start);
-        let endTime: Date = new Date (req.body.end);
-
-        this.model.findAndCountAll({
-          where :
-          {
-            [Op.and] :
-            {
-              [Op.not] :
-              {
-                [Op.or] :
-                {
-                  end : { [Op.lte] : startTime},
-                  start : { [Op.gte] : endTime}
-                }
-              },
-              id : { [Op.ne] : bookingId}
-            }
-          }
-        })
-        .then(result => {
-          if (result.count === 0){
-            this.update(req, res);
-          }
-        })
-        .catch(err => {
-          res.status(500).json(err);
-        });
-      }
+      (req, res) => this.updateBooking(req, res)
     );
 
     /**
@@ -286,6 +231,93 @@ export class BookingController extends Controller {
     return this.router;
   }
 
+  createBooking(req: Request, res: Response){
+
+    let description = req.body.description;
+    let startTime = req.body.start;
+    let endTime = req.body.end;
+    let room = req.body.roomId;
+
+    if (description == null) return Controller.badRequest(res, "Bad Request: No description in request")
+    if (startTime == null) return Controller.badRequest(res, "Bad Request: No start in request.");
+    if (endTime == null) return Controller.badRequest(res, "Bad Request: No end in request.");
+    if (room == null) return Controller.badRequest(res, "Bad Request: No roomId in request")
+
+    this.model.findAndCountAll({
+      where: {
+        [Op.and]{
+          [Op.not]: {
+            [Op.or]: {
+              end: {
+                [Op.lte] : startTime
+              },
+              start: {
+                [Op.gte] : endTime
+              }
+            }
+          },
+          roomId: {
+            [Op.eq]: room
+          }
+        }
+      }
+    })
+    .then(result => {
+      if (result.count === 0){
+        this.create(req, res);
+      } else {
+        return Controller.noContent(res);
+      }
+    })
+    .catch(err => {
+      Controller.serverError(res);
+    });
+  }
+
+  updateBooking(req: Request, res: Response){
+
+    let bookingId = req.params.id;
+    let startTime = req.body.start;
+    let endTime = req.body.end;
+    let room = req.body.roomId;
+
+    if (startTime == null) return Controller.badRequest(res, "Bad Request: No start in request.");
+    if (endTime == null) return Controller.badRequest(res, "Bad Request: No end in request.");
+    if (room == null) return Controller.badRequest(res, "Bad Request: No roomId in request")
+    // TODO: Filter by id
+    this.model.findAndCountAll({
+      where: {
+        [Op.and]: {
+          [Op.not]: {
+            [Op.or]: {
+              end: {
+                [Op.lte]: startTime
+              },
+              start: {
+                 [Op.gte]: endTime
+               }
+            }
+          },
+          id: {
+            [Op.ne]: bookingId
+          },
+          roomId: {
+            [Op.eq]: room
+          }
+        }
+      }
+    })
+    .then(result => {
+      if (result.count === 0){
+        this.update(req, res);
+      } else {
+        return Controller.noContent(res);
+      }
+    })
+    .catch(err => {
+      return Controller.serverError(res);
+    });
+  }
 }
 
 const booking = new BookingController();
