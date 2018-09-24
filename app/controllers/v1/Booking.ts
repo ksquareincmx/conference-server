@@ -1,4 +1,5 @@
 
+import { Op } from 'sequelize'
 import { Controller } from "./../../libraries/Controller";
 import { Booking } from "./../../models/Booking";
 import { Request, Response, Router } from "express";
@@ -147,7 +148,7 @@ export class BookingController extends Controller {
       stripNestedObjects(),
       filterOwner(),
       appendUser(),
-      (req, res) => this.create(req, res)
+      (req, res) => this.createBooking(req, res)
     );
 
     /**
@@ -207,7 +208,7 @@ export class BookingController extends Controller {
       stripNestedObjects(),
       filterOwner(),
       appendUser(),
-      (req, res) => this.update(req, res)
+      (req, res) => this.updateBooking(req, res)
     );
 
     /**
@@ -230,6 +231,93 @@ export class BookingController extends Controller {
     return this.router;
   }
 
+  createBooking(req: Request, res: Response){
+
+    let description = req.body.description;
+    let startTime = req.body.start;
+    let endTime = req.body.end;
+    let room = req.body.roomId;
+
+    if (description == null) return Controller.badRequest(res, "Bad Request: No description in request")
+    if (startTime == null) return Controller.badRequest(res, "Bad Request: No start in request.");
+    if (endTime == null) return Controller.badRequest(res, "Bad Request: No end in request.");
+    if (room == null) return Controller.badRequest(res, "Bad Request: No roomId in request")
+
+    this.model.findAndCountAll({
+      where: {
+        [Op.and]{
+          [Op.not]: {
+            [Op.or]: {
+              end: {
+                [Op.lte] : startTime
+              },
+              start: {
+                [Op.gte] : endTime
+              }
+            }
+          },
+          roomId: {
+            [Op.eq]: room
+          }
+        }
+      }
+    })
+    .then(result => {
+      if (result.count === 0){
+        this.create(req, res);
+      } else {
+        return Controller.noContent(res);
+      }
+    })
+    .catch(err => {
+      Controller.serverError(res);
+    });
+  }
+
+  updateBooking(req: Request, res: Response){
+
+    let bookingId = req.params.id;
+    let startTime = req.body.start;
+    let endTime = req.body.end;
+    let room = req.body.roomId;
+
+    if (startTime == null) return Controller.badRequest(res, "Bad Request: No start in request.");
+    if (endTime == null) return Controller.badRequest(res, "Bad Request: No end in request.");
+    if (room == null) return Controller.badRequest(res, "Bad Request: No roomId in request")
+
+    this.model.findAndCountAll({
+      where: {
+        [Op.and]: {
+          [Op.not]: {
+            [Op.or]: {
+              end: {
+                [Op.lte]: startTime
+              },
+              start: {
+                 [Op.gte]: endTime
+               }
+            }
+          },
+          id: {
+            [Op.ne]: bookingId
+          },
+          roomId: {
+            [Op.eq]: room
+          }
+        }
+      }
+    })
+    .then(result => {
+      if (result.count === 0){
+        this.update(req, res);
+      } else {
+        return Controller.noContent(res);
+      }
+    })
+    .catch(err => {
+      return Controller.serverError(res);
+    });
+  }
 }
 
 const booking = new BookingController();
