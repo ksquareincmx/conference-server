@@ -284,7 +284,7 @@ export class BookingController extends Controller {
     if (startTime == null) return Controller.badRequest(res, "Bad Request: No start in request.");
     if (endTime == null) return Controller.badRequest(res, "Bad Request: No end in request.");
     if (room == null) return Controller.badRequest(res, "Bad Request: No roomId in request")
-    // TODO: Filter by id
+
     this.model.findAndCountAll({
       where: {
         [Op.and]: {
