@@ -1,11 +1,19 @@
 import React, { Component } from "react";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import LoginPage from "./pages/Login";
+import { AuthProvider, AuthConsumer } from "./providers/Auth";
 
 const Routes = () => (
   <Router>
     <div>
       <Route exact path="/" component={Home} />
-      <Route path="/login" component={Login} />
+      <Route
+        path="/login"
+        component={
+          //Login
+          <AuthConsumer>{auth => <LoginPage auth={auth} />}</AuthConsumer>
+        }
+      />
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/calendar" component={Calendar} />
     </div>
@@ -32,7 +40,7 @@ const Dashboard = () => (
 
 const Calendar = () => (
   <div>
-    <h3>Calendar</h3>
+    <h2>Calendar</h2>
   </div>
 );
 

@@ -8,9 +8,7 @@ class App extends Component {
   render() {
     return (
       <AuthProvider>
-        <Routes>
-          <AuthConsumer>{auth => <LoginPage auth={auth} />}</AuthConsumer>
-        </Routes>
+        <Routes />
       </AuthProvider>
     );
   }
