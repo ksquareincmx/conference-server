@@ -15,7 +15,7 @@ export class RoomController extends Controller {
   routes(): Router {
 
     /**
-        @api {get} /api/v1/Room/:id Get a list of Rooms
+        @api {get} /api/v1/Room/ Get a list of Rooms
         @apiPermission access
         @apiName getAllRooms
         @apiGroup Room
@@ -36,7 +36,7 @@ export class RoomController extends Controller {
     );
 
     /**
-        @api {get} /api/v1/Room/ Get a Room
+        @api {get} /api/v1/Room/:id Get a Room
         @apiPermission access
         @apiName getRoom
         @apiGroup Room
@@ -57,8 +57,8 @@ export class RoomController extends Controller {
     );
 
     /**
-        @api {post} /api/v1/Room/:id Create a Room
-        @apiPermission access
+        @api {post} /api/v1/Room/ Create a Room
+        @apiPermission access (only admin)
         @apiName postRoom
         @apiGroup Room
 
@@ -80,12 +80,13 @@ export class RoomController extends Controller {
       "/",
       validateJWT("access"),
       stripNestedObjects(),
-      (req, res) => this.create(req, res)
+      filterRoles(["admin"]),
+        (req, res) => this.create(req, res)
     );
 
     /**
         @api {put} /api/v1/Room/:id Modify a room
-        @apiPermission access
+        @apiPermission access (only admin)
         @apiName putRoom
         @apiGroup Room
 
@@ -107,12 +108,13 @@ export class RoomController extends Controller {
       "/:id",
       validateJWT("access"),
       stripNestedObjects(),
+      filterRoles(["admin"]),
       (req, res) => this.update(req, res)
     );
 
     /**
         @api {delete} /api/v1/Room/:id Delete a Room
-        @apiPermission access
+        @apiPermission access (only admin)
         @apiName deleteRoom
         @apiGroup Room
 
@@ -124,6 +126,7 @@ export class RoomController extends Controller {
     this.router.delete(
       "/:id",
       validateJWT("access"),
+      filterRoles(["admin"]),
       (req, res) => this.destroy(req, res)
     );
 

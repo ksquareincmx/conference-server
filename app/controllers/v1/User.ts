@@ -14,7 +14,7 @@ export class UserController extends Controller {
 
     /**
         @api {get} /api/v1/Users/:id Get an User
-        @apiPermission access (Checks if the requested user is self)
+        @apiPermission access
         @apiName getUser
         @apiGroup User
 
@@ -33,7 +33,6 @@ export class UserController extends Controller {
     this.router.get(
       "/:id",
       validateJWT("access"),
-      isSelfUser(),
       (req, res) => this.findOne(req, res)
     );
 

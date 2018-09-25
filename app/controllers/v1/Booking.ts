@@ -1,8 +1,17 @@
 
+import { Op } from 'sequelize'
 import { Controller } from "./../../libraries/Controller";
 import { Booking } from "./../../models/Booking";
 import { Request, Response, Router } from "express";
-import { validateJWT, filterOwner, appendUser, stripNestedObjects, filterRoles } from "./../../policies/General";
+import {
+  validateJWT,
+  filterOwner,
+  appendUser,
+  stripNestedObjects,
+  filterRoles,
+  adminOrOwner,
+  isOwner
+} from "./../../policies/General";
 
 export class BookingController extends Controller {
 
@@ -17,7 +26,7 @@ export class BookingController extends Controller {
 
   /**
     @api {get} /api/v1/Booking/ Gets a list of Booking
-    @apiPermission access (Enforces access only to owner)
+    @apiPermission access
     @apiName GetBooking
     @apiGroup Booking
 
@@ -48,13 +57,12 @@ export class BookingController extends Controller {
     this.router.get(
       "/",
       validateJWT("access"),
-      filterOwner(),
       (req, res) => this.find(req, res)
     );
 
   /**
     @api {get} /api/v1/Booking/:id Get a Booking
-    @apiPermission access (Enforces access only to owner)
+    @apiPermission access
     @apiName GetAllBooking
     @apiGroup Booking
 
@@ -87,7 +95,6 @@ export class BookingController extends Controller {
     this.router.get(
       "/:id",
       validateJWT("access"),
-      filterOwner(),
       (req, res) => this.findOne(req, res)
     );
 
@@ -147,12 +154,12 @@ export class BookingController extends Controller {
       stripNestedObjects(),
       filterOwner(),
       appendUser(),
-      (req, res) => this.create(req, res)
+      (req, res) => this.createBooking(req, res)
     );
 
     /**
-      @api {put} /api/v1/Booking/:id  Modify a Booking
-      @apiPermission access (Enforces access only to owner)
+      @api {put}   /api/v1/Booking/:id  Modify a Booking
+      @apiPermission access (admin and owner)
       @apiName PutBooking
       @apiGroup Booking
 
@@ -205,14 +212,14 @@ export class BookingController extends Controller {
       "/:id",
       validateJWT("access"),
       stripNestedObjects(),
-      filterOwner(),
       appendUser(),
-      (req, res) => this.update(req, res)
+      adminOrOwner(this.model),
+      (req, res) => this.updateBooking(req, res)
     );
 
     /**
       @api {delete} /api/v1/Booking/:id Removes a Booking
-      @apiPermission access
+      @apiPermission access (admin and owner)
       @apiName deleteBooking
       @apiGroup Booking
 
@@ -223,13 +230,100 @@ export class BookingController extends Controller {
     this.router.delete(
       "/:id",
       validateJWT("access"),
-      filterOwner(),
+      adminOrOwner(this.model),
       (req, res) => this.destroy(req, res)
     );
 
     return this.router;
   }
 
+  createBooking(req: Request, res: Response){
+
+    let description = req.body.description;
+    let startTime = req.body.start;
+    let endTime = req.body.end;
+    let room = req.body.roomId;
+
+    if (description == null) return Controller.badRequest(res, "Bad Request: No description in request")
+    if (startTime == null) return Controller.badRequest(res, "Bad Request: No start in request.");
+    if (endTime == null) return Controller.badRequest(res, "Bad Request: No end in request.");
+    if (room == null) return Controller.badRequest(res, "Bad Request: No roomId in request")
+
+    this.model.findAndCountAll({
+      where: {
+        [Op.and]: {
+          [Op.not]: {
+            [Op.or]: {
+              end: {
+                [Op.lte] : startTime
+              },
+              start: {
+                [Op.gte] : endTime
+              }
+            }
+          },
+          roomId: {
+            [Op.eq]: room
+          }
+        }
+      }
+    })
+    .then(result => {
+      if (result.count === 0){
+        this.create(req, res);
+      } else {
+        return Controller.noContent(res);
+      }
+    })
+    .catch(err => {
+      Controller.serverError(res);
+    });
+  }
+
+  updateBooking(req: Request, res: Response){
+
+    let bookingId = req.params.id;
+    let startTime = req.body.start;
+    let endTime = req.body.end;
+    let room = req.body.roomId;
+
+    if (startTime == null) return Controller.badRequest(res, "Bad Request: No start in request.");
+    if (endTime == null) return Controller.badRequest(res, "Bad Request: No end in request.");
+    if (room == null) return Controller.badRequest(res, "Bad Request: No roomId in request")
+
+    this.model.findAndCountAll({
+      where: {
+        [Op.and]: {
+          [Op.not]: {
+            [Op.or]: {
+              end: {
+                [Op.lte]: startTime
+              },
+              start: {
+                 [Op.gte]: endTime
+               }
+            }
+          },
+          id: {
+            [Op.ne]: bookingId
+          },
+          roomId: {
+            [Op.eq]: room
+          }
+        }
+      }
+    })
+    .then(result => {
+      if (result.count === 0){
+        this.update(req, res);
+      } else {
+        return Controller.noContent(res);
+      }
+    })
+    .catch(err => {
+      return Controller.serverError(res);
+    });
+  }
 }
 
 const booking = new BookingController();
