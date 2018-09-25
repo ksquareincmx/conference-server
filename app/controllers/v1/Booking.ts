@@ -3,7 +3,15 @@ import { Op } from 'sequelize'
 import { Controller } from "./../../libraries/Controller";
 import { Booking } from "./../../models/Booking";
 import { Request, Response, Router } from "express";
-import { validateJWT, filterOwner, appendUser, stripNestedObjects, filterRoles } from "./../../policies/General";
+import {
+  validateJWT,
+  filterOwner,
+  appendUser,
+  stripNestedObjects,
+  filterRoles,
+  adminOrOwner,
+  isOwner
+} from "./../../policies/General";
 
 export class BookingController extends Controller {
 
@@ -18,7 +26,7 @@ export class BookingController extends Controller {
 
   /**
     @api {get} /api/v1/Booking/ Gets a list of Booking
-    @apiPermission access (Enforces access only to owner)
+    @apiPermission access
     @apiName GetBooking
     @apiGroup Booking
 
@@ -49,13 +57,12 @@ export class BookingController extends Controller {
     this.router.get(
       "/",
       validateJWT("access"),
-      filterOwner(),
       (req, res) => this.find(req, res)
     );
 
   /**
     @api {get} /api/v1/Booking/:id Get a Booking
-    @apiPermission access (Enforces access only to owner)
+    @apiPermission access
     @apiName GetAllBooking
     @apiGroup Booking
 
@@ -88,7 +95,6 @@ export class BookingController extends Controller {
     this.router.get(
       "/:id",
       validateJWT("access"),
-      filterOwner(),
       (req, res) => this.findOne(req, res)
     );
 
@@ -152,8 +158,8 @@ export class BookingController extends Controller {
     );
 
     /**
-      @api {put} /api/v1/Booking/:id  Modify a Booking
-      @apiPermission access (Enforces access only to owner)
+      @api {put}   /api/v1/Booking/:id  Modify a Booking
+      @apiPermission access (admin and owner)
       @apiName PutBooking
       @apiGroup Booking
 
@@ -206,14 +212,14 @@ export class BookingController extends Controller {
       "/:id",
       validateJWT("access"),
       stripNestedObjects(),
-      filterOwner(),
       appendUser(),
+      adminOrOwner(this.model),
       (req, res) => this.updateBooking(req, res)
     );
 
     /**
       @api {delete} /api/v1/Booking/:id Removes a Booking
-      @apiPermission access
+      @apiPermission access (admin and owner)
       @apiName deleteBooking
       @apiGroup Booking
 
@@ -224,7 +230,7 @@ export class BookingController extends Controller {
     this.router.delete(
       "/:id",
       validateJWT("access"),
-      filterOwner(),
+      adminOrOwner(this.model),
       (req, res) => this.destroy(req, res)
     );
 
@@ -245,7 +251,7 @@ export class BookingController extends Controller {
 
     this.model.findAndCountAll({
       where: {
-        [Op.and]{
+        [Op.and]: {
           [Op.not]: {
             [Op.or]: {
               end: {
