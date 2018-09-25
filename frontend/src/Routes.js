@@ -20,13 +20,13 @@ const Home = () => (
 
 const Login = () => (
   <div>
-    <h2>About</h2>
+    <h2>Login</h2>
   </div>
 );
 
 const Dashboard = () => (
   <div>
-    <h2>Topics</h2>
+    <h2>Dashboard</h2>
   </div>
 );
 

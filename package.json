@@ -10,7 +10,7 @@
     "start": "node --require source-map-support/register dist/main.js",
     "test": "mocha"
   },
-  "apidoc":{
+  "apidoc": {
     "title": "conference booking",
     "version": "1.0.0",
     "description": "conference booking app"
@@ -79,6 +79,7 @@
     "serve-favicon": "2.5.0",
     "short-uuid": "3.0.0",
     "socket.io": "2.1.1",
+    "source-map": "^0.7.3",
     "source-map-support": "0.5.6",
     "token-generator": "1.0.0",
     "upath": "1.1.0",
