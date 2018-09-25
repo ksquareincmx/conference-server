@@ -3,7 +3,15 @@ import { Op } from 'sequelize'
 import { Controller } from "./../../libraries/Controller";
 import { Booking } from "./../../models/Booking";
 import { Request, Response, Router } from "express";
-import { validateJWT, filterOwner, appendUser, stripNestedObjects, filterRoles } from "./../../policies/General";
+import {
+  validateJWT,
+  filterOwner,
+  appendUser,
+  stripNestedObjects,
+  filterRoles,
+  adminOrOwner,
+  isOwner
+} from "./../../policies/General";
 
 export class BookingController extends Controller {
 
@@ -49,7 +57,6 @@ export class BookingController extends Controller {
     this.router.get(
       "/",
       validateJWT("access"),
-      filterOwner(),
       (req, res) => this.find(req, res)
     );
 
@@ -88,7 +95,6 @@ export class BookingController extends Controller {
     this.router.get(
       "/:id",
       validateJWT("access"),
-      filterOwner(),
       (req, res) => this.findOne(req, res)
     );
 
@@ -152,7 +158,7 @@ export class BookingController extends Controller {
     );
 
     /**
-      @api {put} /api/v1/Booking/:id  Modify a Booking
+      @api {put}   /api/v1/Booking/:id  Modify a Booking
       @apiPermission access (Enforces access only to owner)
       @apiName PutBooking
       @apiGroup Booking
@@ -206,8 +212,8 @@ export class BookingController extends Controller {
       "/:id",
       validateJWT("access"),
       stripNestedObjects(),
-      filterOwner(),
       appendUser(),
+      adminOrOwner(this.model),
       (req, res) => this.updateBooking(req, res)
     );
 
@@ -224,7 +230,7 @@ export class BookingController extends Controller {
     this.router.delete(
       "/:id",
       validateJWT("access"),
-      filterOwner(),
+      adminOrOwner(this.model),
       (req, res) => this.destroy(req, res)
     );
 
@@ -245,7 +251,7 @@ export class BookingController extends Controller {
 
     this.model.findAndCountAll({
       where: {
-        [Op.and]{
+        [Op.and]: {
           [Op.not]: {
             [Op.or]: {
               end: {

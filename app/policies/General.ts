@@ -72,13 +72,29 @@ export function isOwner(model: Model<any, any>, key: string = "userId") {
       .findById(id)
       .then((result: any) => {
         if (!result) return Controller.notFound(res);
-        if (result[key] !== userId) return Controller.forbidden(res);
+        if (result[key] != userId) return Controller.forbidden(res);
         req.session.instance = result;
         next();
       })
       .catch(err => {
         Controller.serverError(res);
       });
+  };
+}
+
+/*
+  Enforces access only to owner and the admin
+*/
+export function adminOrOwner(model: Model<any, any>){
+
+  return (req: Request, res: Response, next: Function) => {
+
+    if (req.session == null) req.session = {};
+    let role = req.session.jwt.role;
+    if (role == null) return Controller.unauthorized(res);
+    if (role != 'admin') return isOwner(model)(req, res, next);
+
+    next();
   };
 }
 

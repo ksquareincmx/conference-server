@@ -33,7 +33,6 @@ export class UserController extends Controller {
     this.router.get(
       "/:id",
       validateJWT("access"),
-      isSelfUser(),
       (req, res) => this.findOne(req, res)
     );
 
