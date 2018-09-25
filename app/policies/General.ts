@@ -72,7 +72,7 @@ export function isOwner(model: Model<any, any>, key: string = "userId") {
       .findById(id)
       .then((result: any) => {
         if (!result) return Controller.notFound(res);
-        if (result[key] != userId) return Controller.forbidden(res);
+        if (result[key] !== userId) return Controller.forbidden(res);
         req.session.instance = result;
         next();
       })

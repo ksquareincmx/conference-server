@@ -26,7 +26,7 @@ export class BookingController extends Controller {
 
   /**
     @api {get} /api/v1/Booking/ Gets a list of Booking
-    @apiPermission access (Enforces access only to owner)
+    @apiPermission access
     @apiName GetBooking
     @apiGroup Booking
 
@@ -62,7 +62,7 @@ export class BookingController extends Controller {
 
   /**
     @api {get} /api/v1/Booking/:id Get a Booking
-    @apiPermission access (Enforces access only to owner)
+    @apiPermission access
     @apiName GetAllBooking
     @apiGroup Booking
 
@@ -159,7 +159,7 @@ export class BookingController extends Controller {
 
     /**
       @api {put}   /api/v1/Booking/:id  Modify a Booking
-      @apiPermission access (Enforces access only to owner)
+      @apiPermission access (admin and owner)
       @apiName PutBooking
       @apiGroup Booking
 
@@ -219,7 +219,7 @@ export class BookingController extends Controller {
 
     /**
       @api {delete} /api/v1/Booking/:id Removes a Booking
-      @apiPermission access
+      @apiPermission access (admin and owner)
       @apiName deleteBooking
       @apiGroup Booking
 
