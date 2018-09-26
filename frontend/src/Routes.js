@@ -7,13 +7,7 @@ const Routes = () => (
   <Router>
     <div>
       <Route exact path="/" component={Home} />
-      <Route
-        path="/login"
-        component={
-          //Login
-          <AuthConsumer>{auth => <LoginPage auth={auth} />}</AuthConsumer>
-        }
-      />
+      <Route path="/login" component={Login} />
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/calendar" component={Calendar} />
     </div>
@@ -29,6 +23,7 @@ const Home = () => (
 const Login = () => (
   <div>
     <h2>Login</h2>
+    <AuthConsumer>{auth => <LoginPage auth={auth} />}</AuthConsumer>
   </div>
 );
 
