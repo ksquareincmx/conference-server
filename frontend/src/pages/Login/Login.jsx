@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { GoogleLogin, GoogleLogout } from "react-google-login";
 import "./Login.css";
+import LoginCard from './LoginCard'
 
 class LoginPage extends Component {
   onFailure = res => {
@@ -11,13 +12,15 @@ class LoginPage extends Component {
     return (
       <div className="login-page">
         {this.props.auth.jwt == null ? (
-          <GoogleLogin
-            clientId="129092023456-82964pfqurangtddv4q9g4q62cbq6abm.apps.googleusercontent.com"
-            buttonText="Login With Google"
-            className="login-button"
-            onSuccess={this.props.auth.onLogin}
-            onFailure={this.onFailure}
-          />
+          <LoginCard>
+            <GoogleLogin
+              clientId="129092023456-82964pfqurangtddv4q9g4q62cbq6abm.apps.googleusercontent.com"
+              buttonText="Sign in with Google"
+              className="login-button"
+              onSuccess={this.props.auth.onLogin}
+              onFailure={this.onFailure}
+            />
+          </LoginCard>
         ) : (
           <GoogleLogout
             buttonText="Logout"

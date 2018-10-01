@@ -22,7 +22,6 @@ const Home = () => (
 
 const Login = () => (
   <div>
-    <h2>Login</h2>
     <AuthConsumer>{auth => <LoginPage auth={auth} />}</AuthConsumer>
   </div>
 );
