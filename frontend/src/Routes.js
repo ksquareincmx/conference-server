@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import LoginPage from "./pages/Login";
+import AppointmentCard from './pages/AppointmentCard/'
 import { AuthProvider, AuthConsumer } from "./providers/Auth";
 
 const Routes = () => (
@@ -10,6 +11,7 @@ const Routes = () => (
       <Route path="/login" component={Login} />
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/calendar" component={Calendar} />
+      <Route path="/appointment" component={Appointment} />
     </div>
   </Router>
 );
@@ -32,6 +34,11 @@ const Dashboard = () => (
   </div>
 );
 
+const Appointment = () => (
+  <div>
+    <AppointmentCard />
+  </div>
+);
 const Calendar = () => (
   <div>
     <h2>Calendar</h2>

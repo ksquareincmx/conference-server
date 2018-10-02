@@ -9,7 +9,6 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 
 function NavBar(props) {
   return (
-
     <NavBarContainer>
       <NavLeftSide>
         <Button variant="fab" style={{ backgroundColor: "#7CCE22" }} aria-label="Edit" mini >
