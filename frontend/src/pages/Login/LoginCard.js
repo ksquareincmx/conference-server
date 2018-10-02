@@ -1,6 +1,7 @@
 import React from "react";
 import { Card, Grid } from "@material-ui/core/";
 import CardContent from "@material-ui/core/CardContent";
+import NavBar from '../../components/NavBar/NavBar'
 
 function LoginCard(props) {
   const styles = {
@@ -35,6 +36,7 @@ function LoginCard(props) {
 
   return (
     <Grid container justify="center">
+      <NavBar />
       <Card style={styles.card}>
         <header style={styles.header}>
           <span> Welcome!</span>
