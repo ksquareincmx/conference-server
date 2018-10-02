@@ -1,7 +1,7 @@
-import React from "react";
+import React, { Fragment } from "react";
 import { AppBar, Toolbar, Grid } from "@material-ui/core/";
 
-function NavBar(props) {
+function NavBarContainer(props) {
   const rightSide = props.children.find(
     child => child.type.componentName === "rightSide"
   );
@@ -10,7 +10,7 @@ function NavBar(props) {
   );
 
   return (
-    <div>
+    <Fragment>
       <AppBar position="static">
         <Toolbar style={{ backgroundColor: "#D3D3D3" }}>
           <Grid container direction="row" justify="space-between">
@@ -19,8 +19,8 @@ function NavBar(props) {
           </Grid>
         </Toolbar>
       </AppBar>
-    </div>
+    </Fragment>
   );
 }
 
-export default NavBar;
+export default NavBarContainer;
