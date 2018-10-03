@@ -1,15 +1,13 @@
 import React from 'react'
-import {Grid} from '@material-ui/core/'
+import { Grid } from '@material-ui/core/'
 
-function CardStatusHeader( props ) {
+function CardStatusHeader(props) {
 
-    const leftSide = props.children.find(child => child.type.componentName==='CardLeftStatus')
-    const rightSide = props.children.find(child => child.type.componentName==='CardRightStatus')
-
-    console.log(leftSide)
+    const leftSide = props.children.find(child => child.type.componentName === 'CardLeftStatus')
+    const rightSide = props.children.find(child => child.type.componentName === 'CardRightStatus')
 
     return (
-        <Grid container justify='space-between' alignItems='center' style={{height:50, padding:25}}>
+        <Grid container justify='space-between' alignItems='center' style={{ height: 50, padding: 25 }}>
             {leftSide}
             {rightSide}
         </Grid>
