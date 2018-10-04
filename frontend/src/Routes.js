@@ -1,16 +1,17 @@
-import React from 'react';
-import { BrowserRouter as Router, Route } from 'react-router-dom';
-import LoginPage from './pages/Login';
-import CalendarPage from './pages/Calendar';
-import { AuthConsumer } from './providers/Auth';
+import React, { Component } from 'react';
+import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
+import AppointmentCard from './pages/AppointmentCard/';
+import { AuthProvider, AuthConsumer } from './providers/Auth';
+import LoginView from './Views/Login';
 
 const Routes = () => (
   <Router>
     <div>
       <Route exact path="/" component={Home} />
-      <Route path="/login" component={Login} />
+      <Route path="/login" component={LoginView} />
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/calendar" component={Calendar} />
+      <Route path="/appointment" component={AppointmentCard} />
     </div>
   </Router>
 );
@@ -18,13 +19,6 @@ const Routes = () => (
 const Home = () => (
   <div>
     <h2>Home</h2>
-  </div>
-);
-
-const Login = () => (
-  <div>
-    <h2>Login</h2>
-    <AuthConsumer>{auth => <LoginPage auth={auth} />}</AuthConsumer>
   </div>
 );
 
