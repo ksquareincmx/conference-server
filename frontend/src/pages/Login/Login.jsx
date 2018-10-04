@@ -1,11 +1,12 @@
-import React, { Component } from "react";
-import { GoogleLogin, GoogleLogout } from "react-google-login";
-import "./Login.css";
-import LoginCard from './LoginCard'
+import React, { Component } from 'react';
+import { GoogleLogin, GoogleLogout } from 'react-google-login';
+import './Login.css';
+import LoginCard from './LoginCard';
+import { AuthConsumer } from '../../providers/Auth';
 
-class LoginPage extends Component {
+class LoginPageLogic extends Component {
   onFailure = res => {
-    console.log("Error:", res);
+    console.log('Error:', res);
   };
 
   render() {
@@ -22,15 +23,15 @@ class LoginPage extends Component {
             />
           </LoginCard>
         ) : (
-          <GoogleLogout
-            buttonText="Logout"
-            className="login-button"
-            onLogoutSuccess={this.props.auth.onLogout}
-          />
+          <GoogleLogout buttonText="Logout" className="login-button" onLogoutSuccess={this.props.auth.onLogout} />
         )}
       </div>
     );
   }
+}
+
+function LoginPage() {
+  return <AuthConsumer>{auth => <LoginPageLogic auth={auth} />}</AuthConsumer>;
 }
 
 export default LoginPage;

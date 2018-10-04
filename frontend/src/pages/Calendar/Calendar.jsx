@@ -48,8 +48,8 @@ class CalendarPage extends React.Component {
           step={15}
           //defaultView={BigCalendar.Views.WORK_WEEK}
           defaultView={BigCalendar.Views.DAY}
-          min={dates.add(dates.startOf(new Date(), 'day'), -16, 'hours')} // 9 a.m.
-          max={dates.add(dates.endOf(new Date(), 'day'), -5, 'hours')} // 6 p.m.
+          min={dates.add(dates.startOf(new Date(), 'day'), -15, 'hours')} // 9 a.m.
+          max={dates.add(dates.endOf(new Date(), 'day'), -6, 'hours')} // 6 p.m.
           scrollToTime={new Date(1970, 1, 1, 6)}
           localizer={localizer}
           onSelectEvent={event => alert(event.title)}
