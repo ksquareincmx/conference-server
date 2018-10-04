@@ -1,7 +1,8 @@
-import React, { Component } from "react";
-import { BrowserRouter as Router, Route, Link } from "react-router-dom";
-import LoginPage from "./pages/Login";
-import { AuthProvider, AuthConsumer } from "./providers/Auth";
+import React from 'react';
+import { BrowserRouter as Router, Route } from 'react-router-dom';
+import LoginPage from './pages/Login';
+import CalendarPage from './pages/Calendar';
+import { AuthConsumer } from './providers/Auth';
 
 const Routes = () => (
   <Router>
@@ -36,6 +37,7 @@ const Dashboard = () => (
 const Calendar = () => (
   <div>
     <h2>Calendar</h2>
+    <CalendarPage />
   </div>
 );
 
