@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import AppointmentCard from './pages/AppointmentCard/'
 import { AuthProvider, AuthConsumer } from "./providers/Auth";
 import LoginView from './Views/Login'
+import Modal from './Modals/AppointmentList'
 
 const Routes = () => (
   <Router>
