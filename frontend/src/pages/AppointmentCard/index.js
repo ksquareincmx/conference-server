@@ -1,1 +1,1 @@
-export { default } from './CardStatusContainer'
+export { default } from './AppointmentCard'

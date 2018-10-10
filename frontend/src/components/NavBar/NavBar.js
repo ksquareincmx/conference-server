@@ -8,6 +8,7 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 
 
 function NavBar(props) {
+
   return (
     <NavBarContainer>
       <NavLeftSide>
@@ -17,7 +18,7 @@ function NavBar(props) {
       </NavLeftSide>
 
       <NavRightSide>
-        <Typography style={{ color: 'black', fontFamily: 'roboto', fontSize: 20 }}>Roberto Cervera</Typography>
+        <Typography style={{ color: 'black', fontFamily: 'roboto', fontSize: 20 }}>{props.userName}</Typography>
         <IconButton color="secondary" aria-label="Menu"  >
           <AccountCircle style={{ fontSize: 40, color: '#736D6D' }} />
         </IconButton>

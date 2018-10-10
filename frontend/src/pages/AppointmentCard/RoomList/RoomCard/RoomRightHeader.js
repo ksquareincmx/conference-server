@@ -1,6 +1,6 @@
 import React from 'react'
 
-function CardConferenceRight(props) {
+function RoomRightHeader(props) {
     const styles = {
         div: {
             fontSize: 10
@@ -11,6 +11,6 @@ function CardConferenceRight(props) {
     );
 }
 
-CardConferenceRight.componentName = 'CardRightStatus'
+RoomRightHeader.componentName = 'RoomRightHeader'
 
-export default CardConferenceRight;
+export default RoomRightHeader;

@@ -1,6 +1,5 @@
 import React from 'react';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
-import AppointmentCard from './pages/AppointmentCard/';
 import LoginPage from './pages/Login';
 import HomePage from './pages/Home';
 import CalendarPage from './pages/Calendar';
@@ -13,7 +12,6 @@ const Routes = () => (
       <Route path="/login" component={LoginPage} />
       <Route path="/dashboard" component={DashboardPage} />
       <Route path="/calendar" component={CalendarPage} />
-      <Route path="/appointment" component={AppointmentCard} />
     </div>
   </Router>
 );
