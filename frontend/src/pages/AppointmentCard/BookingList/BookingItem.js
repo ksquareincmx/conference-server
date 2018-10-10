@@ -19,8 +19,6 @@ function BookingItem(props) {
 
   const startTime = addZero(startDate.getHours()) + ':' + addZero(startDate.getMinutes())
   const endTime = addZero(endDate.getHours()) + ':' + addZero(endDate.getMinutes())
-
-  console.log(props)
   return (
     <ListItem button>
       <Grid container direction='row' style={{ height: '100%', width: '100%' }}>

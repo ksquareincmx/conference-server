@@ -20,8 +20,6 @@ class BookigList extends React.Component {
   }
 
   render() {
-    console.log(this.state)
-
     return (
       <List component='nav' style={{
         maxHeight: 450,
