@@ -1,0 +1,42 @@
+.days-container {
+  display: flex;
+  flex-direction: row;
+  height: 500px;
+  margin: auto;
+}
+
+.days-container .rbc-toolbar {
+  visibility: hidden;
+  width: 0%;
+  height: 0%;
+}
+
+.days-container .rbc-calendar {
+  height: 440px;
+}
+
+.days-container .rbc-timeslot-group {
+  min-height: 30px;
+}
+
+.day-agenda {
+  width: 50%;
+}
+
+.day-header {
+  display: flex;
+  flex-direction: row;
+  height: 40px;
+}
+
+.day-header-separator {
+  width: 78.4844px;
+  min-width: 78.4844px;
+  max-width: 78.4844px;
+  height: 40px;
+}
+
+.conference-room-name {
+  width: 100%;
+  text-align: center;
+}

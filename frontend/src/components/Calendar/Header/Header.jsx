@@ -28,10 +28,10 @@ const HeaderView = props => {
       <div className="header-view-selector">
         <br />
         <div className="veiew-buttons-container">
-          <button onClick={props.onClickViewButton('Day')}>Day</button>
-          <button onClick={props.onClickViewButton('Week')}>Week</button>
-          <button onClick={props.onClickViewButton('Month')}>Month</button>
-          <button onClick={props.onClickViewButton('Year')}>Year</button>
+          <button onClick={props.onClickViewButton('DAYS')}>Day</button>
+          <button onClick={props.onClickViewButton('WEEKS')}>Week</button>
+          <button onClick={props.onClickViewButton('MONTHS')}>Month</button>
+          <button onClick={props.onClickViewButton('YEARS')}>Year</button>
         </div>
       </div>
       <div className="header-create-meeting">

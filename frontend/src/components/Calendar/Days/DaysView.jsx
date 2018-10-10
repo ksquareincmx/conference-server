@@ -1,30 +1,42 @@
 import React from 'react';
 
 import BigCalendar from 'react-big-calendar';
-import dates from 'react-big-calendar/lib/utils/dates';
-import 'react-big-calendar/lib/css/react-big-calendar.css';
+
 import './Days.css';
 
 const DaysView = props => {
+  const EventAgenda = idConference => ({ event }) => {
+    return (
+      <span style={{ textAlign: 'center' }}>
+        <em>
+          {event.title} in conference Room # {idConference + 1}
+        </em>
+      </span>
+    );
+  };
   return (
     <div className="days-container">
-      <div className="day-agenda">
+      <div className="day-agenda" style={{ width: '56.06125%' }}>
         <div className="day-header">
+          <div className="day-header-separator" />
           <h2 className="conference-room-name">Conference Room #1</h2>
         </div>
         <BigCalendar
           selectable
           events={props.events[0]}
           views={['day']}
-          step={15}
+          step={props.step}
           defaultView={BigCalendar.Views.DAY}
-          min={dates.add(dates.startOf(new Date(), 'day'), -15, 'hours')} // 9 a.m.
-          max={dates.add(dates.endOf(new Date(), 'day'), -6, 'hours')} // 6 p.m.
-          scrollToTime={new Date(1970, 1, 1, 6)}
+          min={props.minDate} // 9 a.m.
+          max={props.maxDate} // 6 p.m.
+          formats={{ timeGutterFormat: 'hh:mm A', dayFormat: 'ddd D' }}
           localizer={props.localizer}
           onSelectEvent={event => alert(event.title)}
           onSelectSlot={props.handleSelect(0)}
-          timeslots={4}
+          timeslots={props.timeSlots}
+          components={{
+            event: EventAgenda(0),
+          }}
         />
       </div>
       <div className="day-agenda">
@@ -35,15 +47,15 @@ const DaysView = props => {
           selectable
           events={props.events[1]}
           views={['day']}
-          step={15}
+          step={props.step}
           defaultView={BigCalendar.Views.DAY}
-          min={dates.add(dates.startOf(new Date(), 'day'), -15, 'hours')} // 9 a.m.
-          max={dates.add(dates.endOf(new Date(), 'day'), -6, 'hours')} // 6 p.m.
-          scrollToTime={new Date(1970, 1, 1, 6)}
+          min={props.minDate} // 9 a.m.
+          max={props.maxDate} // 6 p.m.
+          formats={{ timeGutterFormat: ' ' }}
           localizer={props.localizer}
           onSelectEvent={event => alert(event.title)}
           onSelectSlot={props.handleSelect(1)}
-          timeslots={4}
+          timeslots={props.timeSlots}
         />
       </div>
     </div>
