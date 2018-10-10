@@ -3,6 +3,9 @@ import { GoogleLogin, GoogleLogout } from 'react-google-login';
 import './Login.css';
 import LoginCard from './LoginCard';
 import { AuthConsumer } from '../../providers/Auth';
+import NavBar from '../../components/NavBar/NavBar'
+import { BookingConsumer, BookingProvider } from '../../providers/Booking'
+import AppointmentCard from '../../pages/AppointmentCard'
 
 class LoginPageLogic extends Component {
   onFailure = res => {
@@ -23,8 +26,22 @@ class LoginPageLogic extends Component {
             />
           </LoginCard>
         ) : (
-          <GoogleLogout buttonText="Logout" className="login-button" onLogoutSuccess={this.props.auth.onLogout} />
-        )}
+            <BookingProvider auth={this.props.auth}>
+              <BookingConsumer>
+                {booking => (
+
+                  <div>
+                    <NavBar
+                      userName={this.props.auth.user.name}
+                      book={booking} />
+                    <AppointmentCard
+                      booking={booking}
+                    />
+                  </div>
+                )}
+              </BookingConsumer>
+            </BookingProvider>
+          )}
       </div>
     );
   }
