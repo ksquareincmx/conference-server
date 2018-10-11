@@ -1,16 +1,17 @@
 import React from 'react';
+import dateFormat from 'dateformat';
 
 import BigCalendar from 'react-big-calendar';
 
 import './Days.css';
 
 const DaysView = props => {
-  const EventAgenda = idConference => ({ event }) => {
+  const EventAgenda = ({ event }) => {
+    const start = dateFormat(new Date(event.start), 'hh:MM TT');
+    const end = dateFormat(new Date(event.end), 'hh:MM TT');
     return (
-      <span style={{ textAlign: 'center' }}>
-        <em>
-          {event.title} in conference Room # {idConference + 1}
-        </em>
+      <span className="event-resume">
+        {event.title} in conference Room #{event.roomId + 1} ( {start} to {end} )
       </span>
     );
   };
@@ -35,7 +36,7 @@ const DaysView = props => {
           onSelectSlot={props.handleSelect(0)}
           timeslots={props.timeSlots}
           components={{
-            event: EventAgenda(0),
+            event: EventAgenda,
           }}
         />
       </div>
@@ -56,6 +57,9 @@ const DaysView = props => {
           onSelectEvent={event => alert(event.title)}
           onSelectSlot={props.handleSelect(1)}
           timeslots={props.timeSlots}
+          components={{
+            event: EventAgenda,
+          }}
         />
       </div>
     </div>

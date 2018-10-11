@@ -13,8 +13,8 @@ import './Calendar.css';
 const localizer = BigCalendar.momentLocalizer(moment);
 const minDate = dates.add(dates.startOf(new Date(), 'day'), -16, 'hours');
 const maxDate = dates.add(dates.endOf(new Date(), 'day'), -5, 'hours');
-const step = 30;
-const timeSlots = 2;
+const step = 15;
+const timeSlots = 4;
 
 const CalendarStrategy = props => {
   switch (props.type) {
@@ -48,6 +48,7 @@ class CalendarPage extends React.Component {
             start,
             end,
             title,
+            roomId: conferenceRoomName,
           });
           return { events: prevState.events };
         });
@@ -57,6 +58,10 @@ class CalendarPage extends React.Component {
 
   handlerOnClickViewButton = buttonIdentifier => () => {
     this.setState({ selector: buttonIdentifier });
+  };
+
+  handlerOnCLickTimeButton = buttonId => event => {
+    console.log(buttonId);
   };
 
   render() {
@@ -73,7 +78,7 @@ class CalendarPage extends React.Component {
           step={step}
           timeSlots={timeSlots}
         />
-        <FooterView />
+        <FooterView onClickButton={this.handlerOnCLickTimeButton} />
       </div>
     );
   }

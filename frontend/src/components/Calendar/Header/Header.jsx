@@ -23,7 +23,7 @@ const HeaderView = props => {
     <div className="header-container">
       <div className="header-date-container">
         <p>{daysNames[new Date().getDay()]}</p>
-        <p>{`${monthsNames[date.getMonth()]} ${date.getDate()} ${date.getYear() + 1900}`}</p>
+        <p>{`${monthsNames[date.getMonth()]} ${date.getDate()} ${date.getFullYear()}`}</p>
       </div>
       <div className="header-view-selector">
         <br />

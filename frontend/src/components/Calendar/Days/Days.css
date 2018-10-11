@@ -19,6 +19,38 @@
   min-height: 30px;
 }
 
+.days-container .rbc-event-label {
+  visibility: hidden;
+  width: 0%;
+  height: 0%;
+}
+
+.days-container .rbc-events-content {
+  text-align: center;
+}
+
+.days-container .event-resume {
+  text-align: center;
+  width: 100%;
+  margin: auto;
+}
+
+.days-container .rbc-time-slot {
+  background: white;
+}
+
+.days-container .rbc-event.rbc-selected {
+  background: skyblue;
+  color: black;
+  opacity: 0.9;
+}
+
+.days-container .rbc-event {
+  background: skyblue;
+  color: black;
+  opacity: 0.9;
+}
+
 .day-agenda {
   width: 50%;
 }
