@@ -25,7 +25,7 @@ const CalendarStrategy = props => {
     case 'MONTHS':
       return <MonthsView {...props} />;
     default:
-      return <DaysView {...props} />;
+      return <WeeksView {...props} />;
   }
 };
 

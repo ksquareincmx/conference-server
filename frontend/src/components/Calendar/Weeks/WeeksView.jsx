@@ -4,6 +4,10 @@ import BigCalendar from 'react-big-calendar';
 import './Weeks.css';
 
 const WeeksView = props => {
+  const resourceMap = [
+    { resourceId: 1, resourceTitle: 'Conference Room #1' },
+    { resourceId: 2, resourceTitle: 'Conference Room #2' },
+  ];
   return (
     <div className="weeks-container">
       <BigCalendar
@@ -16,8 +20,11 @@ const WeeksView = props => {
         max={props.maxDate} // 6 p.m.
         localizer={props.localizer}
         onSelectEvent={event => alert(event.title)}
-        onSelectSlot={props.handleSelect(0)}
+        onSelectSlot={props.handleSelect('week')}
         timeslots={props.timeSlots}
+        resources={resourceMap}
+        resourceIdAccessor="resourceId"
+        resourceTitleAccessor="resourceTitle"
       />
     </div>
   );

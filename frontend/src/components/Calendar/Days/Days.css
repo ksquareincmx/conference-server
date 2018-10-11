@@ -12,7 +12,7 @@
 }
 
 .days-container .rbc-calendar {
-  height: 440px;
+  height: 92%;
 }
 
 .days-container .rbc-timeslot-group {
@@ -58,7 +58,7 @@
 .day-header {
   display: flex;
   flex-direction: row;
-  height: 40px;
+  height: 8%;
 }
 
 .day-header-separator {
