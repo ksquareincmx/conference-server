@@ -29,13 +29,13 @@ class LoginPageLogic extends Component {
             <BookingProvider auth={this.props.auth}>
               <BookingConsumer>
                 {booking => (
-
-                  <div>
+                  < div >
                     <NavBar
                       userName={this.props.auth.user.name}
-                      book={booking} />
+                    />
                     <AppointmentCard
                       booking={booking}
+                      auth={this.props.auth}
                     />
                   </div>
                 )}

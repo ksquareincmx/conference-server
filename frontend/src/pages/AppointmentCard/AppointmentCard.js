@@ -55,7 +55,9 @@ class AppointmentCard extends React.Component {
               <Grid container style={{ height: '100%', width: '100%', marginBottom: 16 }}>
 
                 <Grid item xs={6} >
-                  <BookingList booking={this.props.booking} />
+                  <BookingList
+                    booking={this.props.booking}
+                    auth={this.props.auth} />
                 </Grid>
 
                 <Grid item xs={6} style={{

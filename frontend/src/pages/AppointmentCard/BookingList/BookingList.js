@@ -9,14 +9,12 @@ class BookigList extends React.Component {
     bookingItems: [],
   }
 
-
   componentDidMount() {
     this.props.booking.getListOfBooking().then(data =>
       this.setState(prevState => ({
         bookingItems: prevState.bookingItems.concat(data)
       }))
     )
-
   }
 
   render() {
@@ -36,6 +34,7 @@ class BookigList extends React.Component {
           />
         )
         }
+
       </List>
     );
   }

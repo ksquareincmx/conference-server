@@ -4,7 +4,7 @@ const ProfileService = (profileUri, token) => {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: token,
+        Authorization: 'Bearer ' + token,
       },
     }).then(res => res.json());
   };
@@ -14,7 +14,7 @@ const ProfileService = (profileUri, token) => {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: token,
+        Authorization: 'Bearer ' + token,
       },
     }).then(res => res.json());
   };
@@ -24,7 +24,7 @@ const ProfileService = (profileUri, token) => {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: token,
+        Authorization: 'Bearer ' + token,
       },
       body: {
         time_zone: profile.time_zone,
