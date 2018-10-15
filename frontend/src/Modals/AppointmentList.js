@@ -1,16 +1,17 @@
 import React from 'react'
-import { Card, Grid, CardHeader, CardContent } from '@material-ui/core/';
+import { Card, Grid, CardContent } from '@material-ui/core/';
 import Divider from '@material-ui/core/Divider';
 import SimpleSelect from './SimpleSelect'
 import TextField from '@material-ui/core/TextField';
-import MaterialButton from './MaterialButton'
+import MaterialButton from '../components/MaterialButton'
+import ChipList from '../components/ChipList'
 
 function AppointmentList(props) {
   const styles = {
     card: {
       backgroundColor: '#fefefe',
-      width: 700,
-      height: 500,
+      minWidth: 700,
+      minHeight: 600,
       borderRadius: 25,
       padding: 20,
       display: 'flex',
@@ -87,7 +88,9 @@ function AppointmentList(props) {
           />
 
         </CardContent>
-
+        <div style={{ display: 'flex', justifyContent: 'flex-start', marginLeft: 30 }}>
+          <ChipList />
+        </div>
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           <MaterialButton textButton='Back' colorButton='#1F599D' />
           <MaterialButton textButton='Next' colorButton='#5094E3' />

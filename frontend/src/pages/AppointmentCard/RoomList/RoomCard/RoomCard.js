@@ -1,11 +1,11 @@
 import React from 'react'
 import { Card, Grid, CardContent, Divider } from '@material-ui/core/';
-import CardStatusHeader from './CardStatusHeader'
-import CardLeftStatus from './CardConferencedLeft'
-import CardRightStatus from './CardConferenceRight'
-import Button from '../../components/MaterialButton'
+import RoomHeader from './RoomHeader'
+import RoomLeftHeader from './RoomLeftHeader'
+import RoomRightHeader from './RoomRightHeader'
+import Button from '../../../../components/MaterialButton'
 
-function CardConference(props) {
+function RoomCard(props) {
     const styles = {
         card: {
             height: 150,
@@ -19,10 +19,10 @@ function CardConference(props) {
         <Card style={styles.card}>
             <Grid container direction='row' style={{ height: '100%' }}>
                 <Grid item xs={12}>
-                    <CardStatusHeader>
-                        <CardLeftStatus />
-                        <CardRightStatus />
-                    </CardStatusHeader>
+                    <RoomHeader>
+                        <RoomLeftHeader />
+                        <RoomRightHeader />
+                    </RoomHeader>
                     <Divider />
                 </Grid>
 
@@ -39,4 +39,4 @@ function CardConference(props) {
     );
 }
 
-export default CardConference;
+export default RoomCard;
