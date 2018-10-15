@@ -4,6 +4,7 @@ import moment from 'moment';
 import DaysView from '../../components/Calendar/Days';
 import WeeksView from '../../components/Calendar/Weeks';
 import MonthsView from '../../components/Calendar/Months';
+import YearsView from '../../components/Calendar/Years';
 import HeaderView from '../../components/Calendar/Header';
 import FooterView from '../../components/Calendar/Footer';
 import dates from 'react-big-calendar/lib/utils/dates';
@@ -24,8 +25,10 @@ const CalendarStrategy = props => {
       return <WeeksView {...props} />;
     case 'MONTHS':
       return <MonthsView {...props} />;
+    case 'YEARS':
+      return <YearsView {...props} />;
     default:
-      return <WeeksView {...props} />;
+      return <YearsView {...props} />;
   }
 };
 
