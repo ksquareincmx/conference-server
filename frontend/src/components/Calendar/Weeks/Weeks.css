@@ -2,6 +2,8 @@
   height: 500px;
   width: 1200px;
   margin: auto;
+  display: flex;
+  flex-direction: row;
 }
 
 .weeks-container div.rbc-time-header {
