@@ -8,7 +8,7 @@ const WeeksView = props => {
     <div className="weeks-container">
       <BigCalendar
         selectable
-        events={props.events[0]}
+        events={[...props.events[0], ...props.events[1]]}
         views={['work_week']}
         step={props.step}
         defaultView={BigCalendar.Views.WORK_WEEK}
@@ -18,19 +18,7 @@ const WeeksView = props => {
         onSelectEvent={event => alert(event.title)}
         onSelectSlot={props.handleSelect(0)}
         timeslots={props.timeSlots}
-      />
-      <BigCalendar
-        selectable
-        events={props.events[1]}
-        views={['work_week']}
-        step={props.step}
-        defaultView={BigCalendar.Views.WORK_WEEK}
-        min={props.minDate} // 9 a.m.
-        max={props.maxDate} // 6 p.m.
-        localizer={props.localizer}
-        onSelectEvent={event => alert(event.title)}
-        onSelectSlot={props.handleSelect(1)}
-        timeslots={props.timeSlots}
+        components={props.components}
       />
     </div>
   );

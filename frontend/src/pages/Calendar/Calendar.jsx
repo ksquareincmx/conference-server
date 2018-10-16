@@ -8,6 +8,7 @@ import YearsView from '../../components/Calendar/Years';
 import HeaderView from '../../components/Calendar/Header';
 import FooterView from '../../components/Calendar/Footer';
 import dates from 'react-big-calendar/lib/utils/dates';
+import dateFormat from 'dateformat';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import './Calendar.css';
 
@@ -28,7 +29,7 @@ const CalendarStrategy = props => {
     case 'YEARS':
       return <YearsView {...props} />;
     default:
-      return <YearsView {...props} />;
+      return <DaysView {...props} />;
   }
 };
 
@@ -40,22 +41,39 @@ class CalendarPage extends React.Component {
     };
   }
 
+  handleEventView = ({ event }) => {
+    const start = dateFormat(new Date(event.start), 'hh:MM TT');
+    const end = dateFormat(new Date(event.end), 'hh:MM TT');
+
+    let color = 'blue';
+    if (event.roomId) {
+      color = 'red';
+    }
+
+    return (
+      <span style={{ color }}>
+        <strong>{event.title}</strong>
+        {event.desc && ':  ' + event.desc}
+      </span>
+    );
+  };
+
   handleSelect = conferenceRoomName => ({ start, end }) => {
     const title = window.prompt('New Event name');
     if (title) {
       if (end < new Date()) {
-        alert('La fecha de finalización no puede ser previa a la fecha actual');
-      } else {
-        this.setState(prevState => {
-          prevState.events[conferenceRoomName].push({
-            start,
-            end,
-            title,
-            roomId: conferenceRoomName,
-          });
-          return { events: prevState.events };
-        });
+        return alert('La fecha de finalización no puede ser previa a la fecha actual');
       }
+
+      this.setState(prevState => {
+        prevState.events[conferenceRoomName].push({
+          start,
+          end,
+          title,
+          roomId: conferenceRoomName,
+        });
+        return { events: prevState.events };
+      });
     }
   };
 
@@ -75,6 +93,9 @@ class CalendarPage extends React.Component {
           type={this.state.selector}
           events={this.state.events}
           handleSelect={this.handleSelect}
+          components={{
+            event: this.handleEventView,
+          }}
           localizer={localizer}
           minDate={minDate}
           maxDate={maxDate}

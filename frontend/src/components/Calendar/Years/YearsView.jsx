@@ -17,6 +17,7 @@ const monthRow = props => {
         localizer={props.localizer}
         defaultDate={new Date(dateToday.getFullYear(), idMonth)}
         localizer={props.localizer}
+        components={props.components}
       />
     </div>
   );
