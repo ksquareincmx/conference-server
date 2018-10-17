@@ -5,8 +5,8 @@ import baseUri from '../../config/baseUri';
 const AuthContext = React.createContext({
   user: null,
   jwt: null,
-  onLogin: () => {},
-  onLogout: () => {},
+  onLogin: () => { },
+  onLogout: () => { },
 });
 
 export const AuthConsumer = AuthContext.Consumer;
