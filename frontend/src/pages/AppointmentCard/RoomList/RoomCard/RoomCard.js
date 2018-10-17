@@ -15,13 +15,19 @@ function RoomCard(props) {
         }
     }
     styles.card.backgroundColor = props.backgroundColor
+
+    let colorStatus = 'green'
+    if (props.status) {
+        colorStatus = 'red'
+    }
+
     return (
         <Card style={styles.card}>
             <Grid container direction='row' style={{ height: '100%' }}>
                 <Grid item xs={12}>
                     <RoomHeader>
-                        <RoomLeftHeader />
-                        <RoomRightHeader />
+                        <RoomLeftHeader roomName={props.roomName} />
+                        <RoomRightHeader colorStatus={colorStatus} />
                     </RoomHeader>
                     <Divider />
                 </Grid>

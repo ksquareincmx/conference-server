@@ -10,7 +10,8 @@ function AppointmentList(props) {
   const styles = {
     card: {
       backgroundColor: '#fefefe',
-      minWidth: 700,
+      width: 700,
+      maxWidth: 700,
       minHeight: 600,
       borderRadius: 25,
       padding: 20,

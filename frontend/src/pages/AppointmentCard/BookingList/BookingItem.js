@@ -22,13 +22,13 @@ function BookingItem(props) {
   return (
     <ListItem button>
       <Grid container direction='row' style={{ height: '100%', width: '100%' }}>
-        <Grid item xs={2} container direction='column' justify='center'>
+        <Grid item xs={3} container direction='column' justify='center'>
           <ListItemIcon>
             <InboxIcon />
           </ListItemIcon>
           <div style={{ fontSize: 15, color: 'gray' }}> {props.roomId}</div>
         </Grid>
-        <Grid item xs={8} container direction='column'>
+        <Grid item xs={7} container direction='column'>
           <div style={{ fontSize: 20 }}> {props.userId} </div>
           <div style={{ color: 'gray' }}> {startTime + ' to ' + endTime} </div>
         </Grid>

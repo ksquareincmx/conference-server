@@ -3,13 +3,15 @@ import React from 'react'
 function RoomLeftHeader(props) {
     const styles = {
         div: {
-            fontSize: 10,
-            fontWeight: 'bold'
+            fontSize: 15,
+            fontWeight: 'bold',
+            color: props.colorStatus
+
         }
     }
 
     return (
-        <div style={styles.div}>Conference Room # 1 </div>
+        <div style={styles.div}> {props.roomName} </div>
     );
 }
 
