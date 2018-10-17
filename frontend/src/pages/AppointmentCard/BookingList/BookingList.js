@@ -10,11 +10,11 @@ class BookigList extends React.Component {
   }
 
   componentDidMount() {
-    this.props.booking.getListOfBooking().then(data =>
+    this.props.booking.getListOfBooking().then(data => {
       this.setState(prevState => ({
         bookingItems: prevState.bookingItems.concat(data)
       }))
-    )
+    })
   }
 
   render() {
@@ -27,14 +27,12 @@ class BookigList extends React.Component {
         {this.state.bookingItems.map(data =>
           <BookingItem
             key={cuid()}
-            userId={data.userId}
-            roomId={data.roomId}
+            userId={data.user.name}
+            roomId={data.room.name}
             startDate={data.start}
             endDate={data.end}
           />
-        )
-        }
-
+        )}
       </List>
     );
   }

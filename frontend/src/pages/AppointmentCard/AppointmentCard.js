@@ -31,12 +31,10 @@ class AppointmentCard extends React.Component {
 
   render() {
     return (
-
       <Grid
         container
         justify='center'
       >
-
         <Card style={this.styles.card}>
 
           <header style={this.styles.header} >
@@ -67,7 +65,7 @@ class AppointmentCard extends React.Component {
                   borderLeftStyle: 'solid'
                 }}>
 
-                  <RoomList />
+                  <RoomList roomService={this.props.roomService} />
 
                   <div style={{ marginTop: 40 }}>
                     <Button textButton='Go to the calendar' colorButton='#1F599D' />
@@ -83,8 +81,5 @@ class AppointmentCard extends React.Component {
     );
   }
 }
-
-
-
 
 export default AppointmentCard;

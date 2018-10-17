@@ -12,7 +12,7 @@ const BookingContext = React.createContext({
 
 export const BookingConsumer = BookingContext.Consumer;
 export class BookingProvider extends React.Component {
-  bookingService = BookingService(baseUri + 'Booking/', this.props.auth.jwt.token);
+  bookingService = BookingService(baseUri + 'Booking/?include=["Room","User"]', this.props.auth.jwt.token);
   createNewBooking = booking => {
     return this.bookingService.createOne(booking);
   };
