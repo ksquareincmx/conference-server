@@ -9,7 +9,7 @@ const WeeksView = props => {
       <BigCalendar
         selectable
         events={[...props.events[0], ...props.events[1]]}
-        views={['work_week']}
+        views={[props.type]}
         step={props.step}
         defaultView={BigCalendar.Views.WORK_WEEK}
         min={props.minDate} // 9 a.m.

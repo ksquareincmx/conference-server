@@ -15,18 +15,19 @@ import './Calendar.css';
 const localizer = BigCalendar.momentLocalizer(moment);
 const minDate = dates.add(dates.startOf(new Date(), 'day'), -16, 'hours');
 const maxDate = dates.add(dates.endOf(new Date(), 'day'), -5, 'hours');
+const dateToday = new Date();
 const step = 15;
 const timeSlots = 4;
 
 const CalendarStrategy = props => {
   switch (props.type) {
-    case 'DAYS':
+    case 'day':
       return <DaysView {...props} />;
-    case 'WEEKS':
+    case 'work_week':
       return <WeeksView {...props} />;
-    case 'MONTHS':
+    case 'month':
       return <MonthsView {...props} />;
-    case 'YEARS':
+    case 'year':
       return <YearsView {...props} />;
     default:
       return <DaysView {...props} />;
@@ -38,6 +39,7 @@ class CalendarPage extends React.Component {
     super(...args);
     this.state = {
       events: [[], []],
+      selector: 'day',
     };
   }
 
@@ -88,7 +90,7 @@ class CalendarPage extends React.Component {
   render() {
     return (
       <div className="calendar-container">
-        <HeaderView onClickViewButton={this.handlerOnClickViewButton} />
+        <HeaderView onClickViewButton={this.handlerOnClickViewButton} date={dateToday} />
         <CalendarStrategy
           type={this.state.selector}
           events={this.state.events}
@@ -101,6 +103,7 @@ class CalendarPage extends React.Component {
           maxDate={maxDate}
           step={step}
           timeSlots={timeSlots}
+          date={dateToday}
         />
         <FooterView onClickButton={this.handlerOnCLickTimeButton} />
       </div>

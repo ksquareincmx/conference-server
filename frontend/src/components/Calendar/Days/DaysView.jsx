@@ -13,7 +13,7 @@ const dayGrid = props => idConference => {
       <BigCalendar
         selectable
         events={props.events[idConference]}
-        views={['day']}
+        views={[props.type]}
         step={props.step}
         defaultView={BigCalendar.Views.DAY}
         min={props.minDate} // 9 a.m.

@@ -16,22 +16,21 @@ const monthsNames = [
   'November',
   'December',
 ];
-const date = new Date();
 
 const HeaderView = props => {
   return (
     <div className="header-container">
       <div className="header-date-container">
-        <p>{daysNames[new Date().getDay()]}</p>
-        <p>{`${monthsNames[date.getMonth()]} ${date.getDate()} ${date.getFullYear()}`}</p>
+        <p>{daysNames[props.date.getDay()]}</p>
+        <p>{`${monthsNames[props.date.getMonth()]} ${props.date.getDate()} ${props.date.getFullYear()}`}</p>
       </div>
       <div className="header-view-selector">
         <br />
         <div className="veiew-buttons-container">
-          <button onClick={props.onClickViewButton('DAYS')}>Day</button>
-          <button onClick={props.onClickViewButton('WEEKS')}>Week</button>
-          <button onClick={props.onClickViewButton('MONTHS')}>Month</button>
-          <button onClick={props.onClickViewButton('YEARS')}>Year</button>
+          <button onClick={props.onClickViewButton('day')}>Day</button>
+          <button onClick={props.onClickViewButton('work_week')}>Week</button>
+          <button onClick={props.onClickViewButton('month')}>Month</button>
+          <button onClick={props.onClickViewButton('year')}>Year</button>
         </div>
       </div>
       <div className="header-create-meeting">

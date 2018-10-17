@@ -8,7 +8,7 @@ const MonthsView = props => {
     <div className="months-container">
       <BigCalendar
         events={[...props.events[0], ...props.events[1]]}
-        views={['month']}
+        views={[props.type]}
         defaultView={BigCalendar.Views.MONTH}
         min={props.minDate}
         max={props.maxDate}
