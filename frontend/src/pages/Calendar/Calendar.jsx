@@ -105,7 +105,7 @@ class CalendarPage extends React.Component {
           timeSlots={timeSlots}
           date={dateToday}
         />
-        <FooterView onClickButton={this.handlerOnCLickTimeButton} />
+        <FooterView onClickButton={this.handlerOnCLickTimeButton} date={dateToday} type={this.state.selector} />
       </div>
     );
   }

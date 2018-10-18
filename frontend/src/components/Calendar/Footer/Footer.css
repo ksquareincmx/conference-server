@@ -6,8 +6,8 @@
 }
 
 .time-buttons-container {
-  height: 20px;
-  width: 200px;
+  height: 30px;
+  width: 300px;
   display: flex;
   flex-direction: row;
   margin: auto;
