@@ -17,13 +17,51 @@ const monthsNames = [
   'December',
 ];
 
+const weekOfYear = date => {
+  let d = new Date(+date);
+  d.setHours(0, 0, 0);
+  d.setDate(d.getDate() + 4 - (d.getDay() || 7));
+  return Math.ceil(((d - new Date(d.getFullYear(), 0, 1)) / 8.64e7 + 1) / 7);
+};
+
+const headerDateContainer = (date, typeView) => {
+  switch (typeView) {
+    case 'day':
+      return (
+        <div className="header-date-container">
+          <p>{daysNames[date.getDay()]}</p>
+          <p>{`${monthsNames[date.getMonth()]} ${date.getDate()} ${date.getFullYear()}`}</p>
+        </div>
+      );
+    case 'work_week':
+      return (
+        <div className="header-date-container">
+          <p>Week #{weekOfYear(date)}</p>
+          <p>{`${monthsNames[date.getMonth()]} ${date.getDate()} ${date.getFullYear()}`}</p>
+        </div>
+      );
+    case 'month':
+      return (
+        <div className="header-date-container">
+          <p>{monthsNames[date.getMonth()]}</p>
+          <p>{date.getFullYear()}</p>
+        </div>
+      );
+    case 'year':
+      return (
+        <div className="header-date-container">
+          <p>{date.getFullYear()}</p>
+        </div>
+      );
+    default:
+      return {};
+  }
+};
+
 const HeaderView = props => {
   return (
     <div className="header-container">
-      <div className="header-date-container">
-        <p>{daysNames[props.date.getDay()]}</p>
-        <p>{`${monthsNames[props.date.getMonth()]} ${props.date.getDate()} ${props.date.getFullYear()}`}</p>
-      </div>
+      {headerDateContainer(props.date, props.type)}
       <div className="header-view-selector">
         <br />
         <div className="veiew-buttons-container">

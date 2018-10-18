@@ -90,7 +90,7 @@ class CalendarPage extends React.Component {
   render() {
     return (
       <div className="calendar-container">
-        <HeaderView onClickViewButton={this.handlerOnClickViewButton} date={dateToday} />
+        <HeaderView onClickViewButton={this.handlerOnClickViewButton} date={dateToday} type={this.state.selector} />
         <CalendarStrategy
           type={this.state.selector}
           events={this.state.events}
