@@ -8,7 +8,7 @@ const dayGrid = props => idConference => {
   return (
     <div className="day-agenda">
       <div className="day-header">
-        <h2 className="conference-room-name">Conference Room #1</h2>
+        <h2 className="conference-room-name">Conference Room #{idConference + 1}</h2>
       </div>
       <BigCalendar
         selectable
