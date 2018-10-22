@@ -1,7 +1,7 @@
 .header-container {
+  height: 100px;
   display: flex;
   flex-direction: row;
-  width: 800px;
   margin: auto;
 }
 
@@ -17,12 +17,14 @@
 
 .header-create-meeting {
   width: 20%;
-  text-align: right;
+  text-align: center;
 }
 
 .create-meating-button {
-  background: blue;
+  background: steelblue;
   color: white;
+  width: 60%;
+  margin-top: 10%;
 }
 
 .header-view-selector {
