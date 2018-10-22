@@ -6,7 +6,7 @@ import './Days.css';
 
 const dayGrid = props => idConference => {
   return (
-    <div className="day-agenda">
+    <div className="day-agenda" key={idConference}>
       <div className="day-header">
         <h2 className="conference-room-name">Conference Room #{idConference + 1}</h2>
       </div>
@@ -24,6 +24,8 @@ const dayGrid = props => idConference => {
         onSelectSlot={props.handleSelect(idConference)}
         timeslots={props.timeSlots}
         components={props.components}
+        date={props.date}
+        onNavigate={() => {}}
       />
     </div>
   );

@@ -12,13 +12,15 @@ const WeeksView = props => {
         views={[props.type]}
         step={props.step}
         defaultView={BigCalendar.Views.WORK_WEEK}
-        min={props.minDate} // 9 a.m.
-        max={props.maxDate} // 6 p.m.
+        min={props.minDate}
+        max={props.maxDate}
         localizer={props.localizer}
         onSelectEvent={event => alert(event.title)}
         onSelectSlot={props.handleSelect(0)}
         timeslots={props.timeSlots}
         components={props.components}
+        date={props.date}
+        onNavigate={() => {}}
       />
     </div>
   );

@@ -12,9 +12,11 @@ const MonthsView = props => {
         defaultView={BigCalendar.Views.MONTH}
         min={props.minDate}
         max={props.maxDate}
-        scrollToTime={new Date(1970, 1, 1, 6)}
         localizer={props.localizer}
         components={props.components}
+        date={props.date}
+        onNavigate={() => {}}
+        selectable={False}
       />
     </div>
   );

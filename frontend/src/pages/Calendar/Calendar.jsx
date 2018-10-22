@@ -8,11 +8,8 @@ import YearsView from '../../components/Calendar/Years';
 import HeaderView from '../../components/Calendar/Header';
 import FooterView from '../../components/Calendar/Footer';
 import dates from 'react-big-calendar/lib/utils/dates';
-import dateFormat from 'dateformat';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import './Calendar.css';
-
-const dateToday = new Date();
 
 // Constants for HeaderStrategy
 const daysNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -30,8 +27,6 @@ const monthsNames = [
   'November',
   'December',
 ];
-const dayNameToday = daysNames[dateToday.getDay()];
-const monthNameToday = monthsNames[dateToday.getMonth()];
 
 // Constants for CalendarStrategy
 const localizer = BigCalendar.momentLocalizer(moment);
@@ -89,6 +84,14 @@ const CalendarStrategy = props => {
       return <DaysView {...props} />;
   }
 };
+const getNameDay = date => daysNames[date.getDay()];
+const getNameMonth = date => monthsNames[date.getMonth()];
+const getWeekOfYear = date => {
+  let d = new Date(+date);
+  d.setHours(0, 0, 0);
+  d.setDate(d.getDate() + 4 - (d.getDay() || 7));
+  return Math.ceil(((d - new Date(d.getFullYear(), 0, 1)) / 8.64e7 + 1) / 7);
+};
 
 class CalendarPage extends React.Component {
   constructor(...args) {
@@ -96,13 +99,11 @@ class CalendarPage extends React.Component {
     this.state = {
       events: [[], []],
       selector: 'day',
+      focusDate: new Date(),
     };
   }
 
   handleEventView = ({ event }) => {
-    const start = dateFormat(new Date(event.start), 'hh:MM TT');
-    const end = dateFormat(new Date(event.end), 'hh:MM TT');
-
     let color = 'blue';
     if (event.roomId) {
       color = 'red';
@@ -139,15 +140,19 @@ class CalendarPage extends React.Component {
     this.setState({ selector: buttonIdentifier });
   };
 
-  handlerOnCLickTimeButton = buttonId => event => {
-    console.log(buttonId);
-  };
-
-  getWeekOfYear = date => {
-    let d = new Date(+date);
-    d.setHours(0, 0, 0);
-    d.setDate(d.getDate() + 4 - (d.getDay() || 7));
-    return Math.ceil(((d - new Date(d.getFullYear(), 0, 1)) / 8.64e7 + 1) / 7);
+  handlerOnCLickTimeButton = buttonId => () => {
+    let selector;
+    this.state.selector === 'work_week' ? (selector = 'week') : (selector = this.state.selector);
+    switch (buttonId) {
+      case 'previous':
+        this.setState(prevState => ({ focusDate: dates.add(prevState.focusDate, -1, selector) }));
+        break;
+      case 'next':
+        this.setState(prevState => ({ focusDate: dates.add(prevState.focusDate, 1, selector) }));
+        break;
+      default:
+        return {};
+    }
   };
 
   FooterChangeButtonLabels = type => {
@@ -157,7 +162,6 @@ class CalendarPage extends React.Component {
           previousButtonLabel: 'Previus day',
           nextButtonLabel: 'Next day',
         };
-
       case 'work_week':
         return {
           previousButtonLabel: 'Previus week',
@@ -189,12 +193,12 @@ class CalendarPage extends React.Component {
           headerDateContainer={
             <HeaderStrategy
               type={this.state.selector}
-              dayName={dayNameToday}
-              monthName={monthNameToday}
-              numberDayInMonth={dateToday.getDate()}
-              numberWeekInYear={this.getWeekOfYear(dateToday)}
-              fullYear={dateToday.getFullYear()}
-              date={dateToday}
+              numberDayInMonth={this.state.focusDate.getDate()}
+              fullYear={this.state.focusDate.getFullYear()}
+              date={this.state.focusDate}
+              dayName={getNameDay(this.state.focusDate)}
+              monthName={getNameMonth(this.state.focusDate)}
+              numberWeekInYear={getWeekOfYear(this.state.focusDate)}
             />
           }
         />
@@ -202,21 +206,17 @@ class CalendarPage extends React.Component {
           type={this.state.selector}
           events={this.state.events}
           handleSelect={this.handleSelect}
-          components={{
-            event: this.handleEventView,
-          }}
+          components={{ event: this.handleEventView }}
           localizer={localizer}
           minDate={minDate}
           maxDate={maxDate}
           step={step}
           timeSlots={timeSlots}
-          date={dateToday}
+          date={this.state.focusDate}
         />
         <FooterView
           {...this.FooterChangeButtonLabels(this.state.selector)}
           onClickButton={this.handlerOnCLickTimeButton}
-          date={dateToday}
-          type={this.state.selector}
         />
       </div>
     );
