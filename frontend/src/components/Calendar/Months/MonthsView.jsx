@@ -16,7 +16,6 @@ const MonthsView = props => {
         components={props.components}
         date={props.date}
         onNavigate={() => {}}
-        selectable={False}
       />
     </div>
   );

@@ -15,7 +15,6 @@ const monthRow = props => idMonth => (
       components={props.components}
       date={new Date(props.date.getFullYear(), idMonth)}
       onNavigate={() => {}}
-      selectable={False}
     />
   </div>
 );
