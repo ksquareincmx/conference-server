@@ -622,7 +622,7 @@
     "title": "Get a Booking",
     "permission": [
       {
-        "name": "access (Enforces access only to owner)"
+        "name": "access"
       }
     ],
     "name": "GetAllBooking",
@@ -795,7 +795,7 @@
     "title": "Gets a list of Booking",
     "permission": [
       {
-        "name": "access (Enforces access only to owner)"
+        "name": "access"
       }
     ],
     "name": "GetBooking",
@@ -1240,7 +1240,7 @@
     "title": "Modify a Booking",
     "permission": [
       {
-        "name": "access (Enforces access only to owner)"
+        "name": "access (admin and owner)"
       }
     ],
     "name": "PutBooking",
@@ -1525,7 +1525,7 @@
     "title": "Removes a Booking",
     "permission": [
       {
-        "name": "access"
+        "name": "access (admin and owner)"
       }
     ],
     "name": "deleteBooking",
@@ -1821,7 +1821,7 @@
     "title": "Delete a Room",
     "permission": [
       {
-        "name": "access"
+        "name": "access (only admin)"
       }
     ],
     "name": "deleteRoom",
@@ -1852,7 +1852,7 @@
   },
   {
     "type": "get",
-    "url": "/api/v1/Room/:id",
+    "url": "/api/v1/Room/",
     "title": "Get a list of Rooms",
     "permission": [
       {
@@ -1921,7 +1921,7 @@
   },
   {
     "type": "get",
-    "url": "/api/v1/Room/",
+    "url": "/api/v1/Room/:id",
     "title": "Get a Room",
     "permission": [
       {
@@ -1990,11 +1990,11 @@
   },
   {
     "type": "post",
-    "url": "/api/v1/Room/:id",
+    "url": "/api/v1/Room/",
     "title": "Create a Room",
     "permission": [
       {
-        "name": "access"
+        "name": "access (only admin)"
       }
     ],
     "name": "postRoom",
@@ -2097,7 +2097,7 @@
     "title": "Modify a room",
     "permission": [
       {
-        "name": "access"
+        "name": "access (only admin)"
       }
     ],
     "name": "putRoom",
@@ -2235,7 +2235,7 @@
     "title": "Get an User",
     "permission": [
       {
-        "name": "access (Checks if the requested user is self)"
+        "name": "access"
       }
     ],
     "name": "getUser",
