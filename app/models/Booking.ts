@@ -1,5 +1,6 @@
-import { Table, Column, DataType, BelongsTo, ForeignKey } from "sequelize-typescript";
+import { Table, Column, DataType, BelongsTo, ForeignKey, HasMany } from "sequelize-typescript";
 import { BaseModel } from "../libraries/BaseModel";
+import { BookingAttendee } from "./BookingAttendee";
 import { User } from "./User";
 import { Room } from "./Room";
 
@@ -28,6 +29,14 @@ export class Booking extends BaseModel<Booking> {
   })
   end: Date;
 
+  // id from google calendar
+  @Column({
+    type: DataType.STRING,
+    allowNull: true,
+    defaultValue: null
+  })
+  eventId: string;
+
   @ForeignKey(() => Room)
   @Column
   roomId: number;
@@ -41,4 +50,7 @@ export class Booking extends BaseModel<Booking> {
 
   @BelongsTo(() => User)
   user: User;
+
+  @HasMany(() => BookingAttendee)
+  bookingAttendee: BookingAttendee[];
 }
