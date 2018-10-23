@@ -37,3 +37,12 @@ export function getRandomColor() {
   let index = Math.floor(Math.random() * colors.length);
   return colors[index];
 }
+
+export function getActualDate() {
+  let date = new Date();
+  let actualDate = date.toLocaleString("es-MX", {
+    formatMatcher: "basic",
+    timeZone: "America/Mexico_City"
+  });
+  return actualDate;
+}

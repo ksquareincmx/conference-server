@@ -160,7 +160,8 @@ export class Controller {
           let parts: Array<string> = sort.split(" ");
           let colName: string = parts[0];
           let orderParam: string = parts[1];
-          if (orderParam !== "ASC" && orderParam !== "DESC") throw new Error("invalid query");
+          if (orderParam !== "ASC" && orderParam !== "DESC")
+            throw new Error("invalid query");
           sort = [[colName, orderParam]];
         } catch (e) {
           // Invalid string
@@ -268,7 +269,8 @@ export class Controller {
 
   create(req: Request, res: Response) {
     let values: any = req.body;
-    if (!_.isObject(values)) return Controller.serverError(res, new Error("Invalid data in body"));
+    if (!_.isObject(values))
+      return Controller.serverError(res, new Error("Invalid data in body"));
     this.model
       .create(values)
       .then(result => {
@@ -346,7 +348,8 @@ export class Controller {
     let id = req.params.id;
     // Get values
     let values: any = req.body;
-    if (!_.isObject(values)) return Controller.serverError(res, new Error("Invalid data in body"));
+    if (!_.isObject(values))
+      return Controller.serverError(res, new Error("Invalid data in body"));
     // Make sure id is not changed in the values to update
     values.id = id;
     // For applying constraints (usefull with policies)
