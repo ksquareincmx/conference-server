@@ -18,7 +18,9 @@ function MaterialButton(props) {
   return (
     <Button
       style={styles.button}
-      variant="contained" >
+      variant="contained"
+      onClick={props.onClick}
+    >
 
       {props.textButton}
     </Button>)

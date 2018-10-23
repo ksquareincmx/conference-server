@@ -10,7 +10,7 @@ class BookigList extends React.Component {
   }
 
   componentDidMount() {
-    this.props.booking.getListOfBooking().then(data => {
+    this.props.booking.getDetailedListOfBooking().then(data => {
       this.setState(prevState => ({
         bookingItems: prevState.bookingItems.concat(data)
       }))

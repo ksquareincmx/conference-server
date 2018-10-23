@@ -8,11 +8,13 @@ const BookingContext = React.createContext({
   getListOfBooking: () => { },
   modifyBooking: () => { },
   removeBooking: () => { },
+  getDetailedListOfBooking: () => { },
 });
 
 export const BookingConsumer = BookingContext.Consumer;
+
 export class BookingProvider extends React.Component {
-  bookingService = BookingService(baseUri + 'Booking/?include=["Room","User"]', this.props.auth.jwt.token);
+  bookingService = BookingService(baseUri + 'Booking/', this.props.auth.jwt.token);
   createNewBooking = booking => {
     return this.bookingService.createOne(booking);
   };
@@ -25,6 +27,9 @@ export class BookingProvider extends React.Component {
     return this.bookingService.getAll();
   };
 
+  getDetailedListOfBooking = () => {
+    return this.bookingService.getAllWithDetails();
+  };
   modifyBooking = (booking, id) => {
     return this.bookingService.updateOne(booking, id);
   };
@@ -40,6 +45,7 @@ export class BookingProvider extends React.Component {
           createNewBooking: this.createNewBooking,
           getBooking: this.getBooking,
           getListOfBooking: this.getsListOfBooking,
+          getDetailedListOfBooking: this.getDetailedListOfBooking,
           modifyBooking: this.modifyBooking,
           removeBooking: this.removeBooking,
         }}>

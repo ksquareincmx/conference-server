@@ -1,0 +1,60 @@
+.rbc-toolbar {
+  visibility: hidden;
+  width: 0%;
+  height: 0%;
+}
+
+.rbc-calendar {
+  height: 80%;
+}
+
+.rbc-time-header {
+  visibility: hidden;
+  height: 0%;
+}
+
+.rbc-time-content {
+  overflow: hidden;
+}
+
+.days-container {
+  display: flex;
+  flex-direction: row;
+  width: 800px;
+  margin: auto;
+}
+
+.day-agenda {
+  width: 50%;
+}
+
+.day-header {
+  display: flex;
+  flex-direction: row;
+}
+
+.day-header-separator {
+  ∫width: 78.4844px;
+  min-width: 78.4844px;
+  max-width: 78.4844px;
+  height: 78.4844px;
+}
+
+div.day-agenda-hours-colum .rbc-time-gutter {
+  visibility: visible;
+  width: 10%;
+}
+
+.conference-room-name {
+  width: 100%;
+  text-align: center;
+}
+
+.rbc-events-container {
+  overflow: hidden;
+}
+
+.rbc-time-gutter {
+  visibility: hidden;
+  width: 0%;
+}

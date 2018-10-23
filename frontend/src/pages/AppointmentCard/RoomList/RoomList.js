@@ -38,6 +38,7 @@ class RoomList extends React.Component {
               roomName={room.name}
               backgroundColor={room.backgroundColor}
               colorButton={room.colorButton}
+              onClick={this.props.onClick}
               status={room.presence}
               key={room.roomId} />
           ))
