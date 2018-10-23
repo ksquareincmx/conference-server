@@ -2,12 +2,12 @@ const BookingService = (bookingUri, token) => {
   const createOne = booking => {
     return fetch(bookingUri, {
       method: 'POST',
-      body: {
+      body: JSON.stringify({
         description: booking.description,
-        rommId: booking.roomId,
+        roomId: booking.roomId,
         start: booking.start,
         end: booking.end,
-      },
+      }),
       headers: {
         'Content-Type': 'application/json',
         Authorization: 'Bearer ' + token,
@@ -27,6 +27,17 @@ const BookingService = (bookingUri, token) => {
 
   const getAll = () => {
     return fetch(bookingUri, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + token,
+      },
+    }).then(res => res.json());
+  };
+
+  const getAllWithDetails = () => {
+    const NewbookingUri = bookingUri + '?include=["Room","User"]'
+    return fetch(NewbookingUri, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -65,6 +76,7 @@ const BookingService = (bookingUri, token) => {
     createOne,
     getOne,
     getAll,
+    getAllWithDetails,
     updateOne,
     deleteOne,
   };

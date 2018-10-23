@@ -38,7 +38,7 @@ function RoomCard(props) {
                     </CardContent>
                 </Grid>
                 <Grid container justify='flex-end'>
-                    <Button textButton='Quick Appointment' colorButton={props.colorButton} />
+                    <Button textButton='Quick Appointment' colorButton={props.colorButton} onClick={props.onClick} />
                 </Grid>
             </Grid>
         </Card>
