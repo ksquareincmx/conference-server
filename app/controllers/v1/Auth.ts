@@ -233,8 +233,8 @@ export class AuthController extends Controller {
     );
 
     return {
-      token: token,
-      expires: expires,
+      token,
+      expires,
       expires_in: expires_in
     };
   }
