@@ -273,17 +273,24 @@ export class AuthController extends Controller {
     }
   }
 
-  private sendEmailPasswordChanged(user: any, name?: string): Promise<any> {
+  private async sendEmailPasswordChanged(user: any, name?: string) {
     let subject = "Password restored";
+    try {
+      const info = await mailer.sendEmail(
+        user.email,
+        subject,
+        "password_changed",
+        user.profile.locale,
+        {
+          name: name || user.email
+        }
+      );
 
-    return mailer
-      .sendEmail(user.email, subject, "password_changed", user.profile.locale, {
-        name: name || user.email
-      })
-      .then(info => {
-        log.debug("Sending password changed email to:", user.email, info);
-        return info;
-      });
+      log.debug("Sending password changed email to:", user.email, info);
+      return info;
+    } catch (err) {
+      log.debug(err.messsage);
+    }
   }
 
   private handleResetEmail(email: string): Promise<any> {
