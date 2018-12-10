@@ -293,33 +293,34 @@ export class AuthController extends Controller {
     }
   }
 
-  private handleResetEmail(email: string): Promise<any> {
-    return Promise.resolve(
-      User.findOne({
+  private async handleResetEmail(email: string) {
+    try {
+      const user = await User.findOne({
         where: { email: email },
         include: [{ model: Profile, as: "profile" }]
-      })
-        .then(user => {
-          if (!user) {
-            throw { error: "notFound", msg: "Email not found" };
-          }
-          // Create reset token
-          let token = this.createToken(user, "reset");
-          return {
-            token: token.token,
-            email: email,
-            name: user.name,
-            user: user
-          };
-        })
-        .then(emailInfo => {
-          return this.sendEmailNewPassword(
-            emailInfo.user,
-            emailInfo.token,
-            emailInfo.name
-          );
-        })
-    );
+      });
+
+      if (!user) {
+        throw { error: "notFound", msg: "Email not found" };
+      }
+
+      //create reset token
+      const token = this.createToken(user, "reset");
+      const emailInfo = {
+        token: token.token,
+        name: user.name,
+        email,
+        user
+      };
+
+      return this.sendEmailNewPassword(
+        emailInfo.user,
+        emailInfo.token,
+        emailInfo.name
+      );
+    } catch (err) {
+      log.debug("An error has ocurred:", err.message);
+    }
   }
 
   private handleResetChPass(token: string, password: string): Promise<any> {
