@@ -51,7 +51,7 @@ export class AuthController extends Controller {
 
     */
 
-    this.router.post("/login", (req, res) => this.login(req, res));
+    this.router.post("/login", this.login);
 
     /**
       @api {post} /api/v1/auth/logout/ Logout
@@ -64,9 +64,7 @@ export class AuthController extends Controller {
 
     */
 
-    this.router.post("/logout", validateJWT("access"), (req, res) =>
-      this.logout(req, res)
-    );
+    this.router.post("/logout", validateJWT("access"), this.logout);
 
     /**
       @api {post} /api/v1/auth/register/ Register
@@ -94,7 +92,7 @@ export class AuthController extends Controller {
 
     */
 
-    this.router.post("/register", (req, res) => this.register(req, res));
+    this.router.post("/register", this.register);
 
     /*
       @apiDescription Validates the reset token passed as a query param and redirects to a reset token UI
@@ -105,7 +103,7 @@ export class AuthController extends Controller {
 
     */
 
-    this.router.get("/reset", (req, res) => this.resetGet(req, res));
+    this.router.get("/reset", this.resetGet);
 
     /*
       @api {post} /api/v1/auth/reset/ Reset
@@ -118,7 +116,7 @@ export class AuthController extends Controller {
 
     */
 
-    this.router.post("/reset", (req, res) => this.resetPost(req, res));
+    this.router.post("/reset", this.resetPost);
 
     /**
       @api {post} /api/v1/auth/change/ Change password
@@ -150,9 +148,7 @@ export class AuthController extends Controller {
 
     */
 
-    this.router.post("/change", validateJWT("access"), (req, res) =>
-      this.changePassword(req, res)
-    );
+    this.router.post("/change", validateJWT("access"), this.changePassword);
 
     /**
       @api {post} /api/v1/auth/refresh/ Refresh token
@@ -179,9 +175,7 @@ export class AuthController extends Controller {
 
     */
 
-    this.router.post("/refresh", validateJWT("refresh"), (req, res) =>
-      this.refreshToken(req, res)
-    );
+    this.router.post("/refresh", validateJWT("refresh"), this.refreshToken);
 
     /**
       @api {post} /api/v1/auth/googleLogin/ Google login
@@ -210,7 +204,7 @@ export class AuthController extends Controller {
 
     */
 
-    this.router.post("/googlelogin", (req, res) => this.googleLogin(req, res));
+    this.router.post("/googlelogin", this.googleLogin);
 
     return this.router;
   }
