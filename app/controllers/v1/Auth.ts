@@ -253,15 +253,10 @@ export class AuthController extends Controller {
     return credentials;
   }
 
-  private sendEmailNewPassword(
-    user: any,
-    token: string,
-    name?: string
-  ): Promise<any> {
+  private async sendEmailNewPassword(user: any, token: string, name?: string) {
     let subject = "Instructions for restoring your password";
-
-    return mailer
-      .sendEmail(
+    try {
+      const info = await mailer.sendEmail(
         user.email,
         subject,
         "password_recovery",
@@ -270,11 +265,12 @@ export class AuthController extends Controller {
           url: `${config.urls.baseApi}/auth/reset?token=${token}`,
           name: name || user.email
         }
-      )
-      .then(info => {
-        log.debug("Sending password recovery email to:", user.email, info);
-        return info;
-      });
+      );
+      log.debug("Sending password recovery email to:", user.email, info);
+      return info;
+    } catch (error) {
+      log.debug("An error has ocurrerred:", error.message);
+    }
   }
 
   private sendEmailPasswordChanged(user: any, name?: string): Promise<any> {
