@@ -90,7 +90,8 @@ export const config: any = {
         "prompto.io",
         "ksquareinc.com",
         "infolob.com",
-        "scouting.org"
+        "scouting.org",
+        "gmail.com"
       ]
     }
   }
