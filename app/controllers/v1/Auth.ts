@@ -449,23 +449,24 @@ export class AuthController extends Controller {
     }
   }
 
-  logout(req: Request, res: Response) {
-    let token: string = req.session.jwtstring;
-    let decodedjwt: any = req.session.jwt;
-    if (_.isUndefined(token)) return Controller.unauthorized(res);
-    if (_.isUndefined(decodedjwt)) return Controller.unauthorized(res);
+  async logout(req: Request, res: Response) {
+    const token: string = req.session.jwtstring;
+    const decodedjwt: any = req.session.jwt;
+    if (_.isUndefined(token) || _.isUndefined(decodedjwt)) {
+      return Controller.unauthorized(res);
+    }
+
     // Put token in blacklist
-    JWTBlacklist.create({
-      token: token,
-      expires: decodedjwt.exp
-    })
-      .then(result => {
-        Controller.ok(res);
-        return null;
-      })
-      .catch(err => {
-        return Controller.serverError(res, err);
+    try {
+      await JWTBlacklist.create({
+        expires: decodedjwt.exp,
+        token
       });
+      Controller.ok(res);
+      return null;
+    } catch (err) {
+      return Controller.serverError(res, err);
+    }
   }
 
   refreshToken(req: Request, res: Response) {
