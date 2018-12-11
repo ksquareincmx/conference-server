@@ -469,30 +469,29 @@ export class AuthController extends Controller {
     }
   }
 
-  refreshToken(req: Request, res: Response) {
+  async refreshToken(req: Request, res: Response) {
     // Refresh token has been previously authenticated in validateJwt as refresh token
-    let refreshToken: string = req.session.jwtstring;
-    let decodedjwt: any = req.session.jwt;
-    let reqUser: any = req.session.user;
+    const refreshToken: string = req.session.jwtstring;
+    const decodedjwt: any = req.session.jwt;
+    const reqUser: any = req.session.user;
     // Put refresh token in blacklist
-    JWTBlacklist.create({
-      token: refreshToken,
-      expires: decodedjwt.exp
-    })
-      .then(result => {
-        return User.findOne({ where: { id: reqUser.id } });
-      })
-      .then((user: any) => {
-        if (!user) {
-          return Controller.unauthorized(res);
-        }
-        // Create new token and refresh token and send
-        let credentials: any = this.getCredentials(user);
-        return Controller.ok(res, credentials);
-      })
-      .catch(err => {
-        return Controller.serverError(res, err);
+    try {
+      await JWTBlacklist.create({
+        token: refreshToken,
+        expires: decodedjwt.exp
       });
+
+      const user: any = User.findOne({ where: { id: reqUser.id } });
+      if (!user) {
+        return Controller.unauthorized(res);
+      }
+
+      // Create new token and refresh token and send
+      const credentials: any = this.getCredentials(user);
+      return Controller.ok(res, credentials);
+    } catch (err) {
+      return Controller.serverError(res, err);
+    }
   }
 
   register(req: Request, res: Response) {
