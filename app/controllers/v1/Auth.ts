@@ -4,6 +4,7 @@ import { Profile } from "./../../models/Profile";
 import { JWTBlacklist } from "./../../models/JWTBlacklist";
 import { Request, Response, Router } from "express";
 import { log } from "./../../libraries/Log";
+import { isEmpty } from "./../../libraries/util";
 import { config } from "./../../config/config";
 import { validateJWT } from "./../../policies/General";
 import { OAuth2Client } from "google-auth-library";
@@ -323,6 +324,7 @@ export class AuthController extends Controller {
     }
   }
 
+  // TODO: async/ await over promise
   private handleResetChPass(token: string, password: string): Promise<any> {
     return this.validateJWT(token, "reset")
       .then(decodedjwt => {
@@ -373,6 +375,7 @@ export class AuthController extends Controller {
       });
   }
 
+  // TODO: async/ await over promise
   public validateJWT(token: string, type: string): Promise<any> {
     // Decode token
     let decodedjwt: any;
@@ -416,40 +419,34 @@ export class AuthController extends Controller {
     );
   }
 
-  login(req: Request, res: Response) {
-    let email = req.body.email;
-    let password = req.body.password;
+  async login(req: Request, res: Response) {
+    const email = req.body.email;
+    const password = req.body.password;
     // Validate
-    if (email == null || password == null) return Controller.badRequest(res);
-
-    let results = {
-      user: null
-    };
+    if (isEmpty(email) || isEmpty(password)) {
+      return Controller.badRequest(res);
+    }
 
     // Only accept logging by password for users without googleId
-    User.findOne({
-      where: { email: email, googleId: null },
-      include: [{ model: Profile, as: "profile" }]
-    })
-      .then(user => {
-        if (!user) {
-          return false;
-        }
-        results.user = user;
-        return user.authenticate(password);
-      })
-      .then(authenticated => {
-        if (authenticated === true) {
-          let credentials: any = this.getCredentials(results.user);
+    try {
+      const user = await User.findOne({
+        where: { email: email, googleId: null },
+        include: [{ model: Profile, as: "profile" }]
+      });
+
+      if (isEmpty(user)) {
+        const authenticate = await user.authenticate(password);
+        if (authenticate === true) {
+          const credentials: any = await this.getCredentials(user);
           return Controller.ok(res, credentials);
         } else {
           return Controller.unauthorized(res);
         }
-      })
-      .catch(err => {
-        log.error(err);
-        return Controller.badRequest(res);
-      });
+      }
+    } catch (err) {
+      log.error(err);
+      return Controller.badRequest(res);
+    }
   }
 
   logout(req: Request, res: Response) {
