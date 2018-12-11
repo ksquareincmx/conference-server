@@ -603,51 +603,43 @@ export class AuthController extends Controller {
       });
   }
 
-  changePassword(req: Request, res: Response) {
-    let email = req.body.email;
-    let oldPass = req.body.oldPass;
-    let newPass = req.body.newPass;
+  changePassword = async (req: Request, res: Response) => {
+    const email = req.body.email;
+    const oldPass = req.body.oldPass;
+    const newPass = req.body.newPass;
     // Validate
-    if (email == null || oldPass == null || newPass == null)
+    if (isEmpty(email) || isEmpty(oldPass) || isEmpty(newPass) == null)
       return Controller.badRequest(res);
-    if (email.length === 0 || oldPass.length === 0 || newPass.length === 0)
-      return Controller.badRequest(res);
+
     // IMPORTANT: Check if email is the same as the one in the token
-    if (email != req.session.jwt.email) return Controller.unauthorized(res);
+    if (email != req.session.jwt.email) {
+      return Controller.unauthorized(res);
+    }
 
-    let results = {
-      user: null
-    };
-
-    User.findOne<User>({
-      where: { id: req.session.jwt.id },
-      include: [{ model: Profile, as: "profile" }]
-    })
-      .then((user: User) => {
-        if (!user) {
-          return false;
-        }
-        results.user = user;
-        return user.authenticate(oldPass);
-      })
-      .then(authenticated => {
-        if (authenticated === true) {
-          results.user.password = newPass;
-          return results.user.save();
+    try {
+      let user: any = await User.findOne<User>({
+        where: { id: req.session.jwt.id },
+        include: [{ model: Profile, as: "profile" }]
+      });
+      if (!isEmpty(user)) {
+        const authenticate = await user.authenticate(oldPass);
+        if (authenticate === true) {
+          user.password = newPass;
+          const savedUser = user.save();
+          if (!savedUser) {
+            return Controller.serverError(res);
+          }
+          const credentials = this.getCredentials(user);
+          return Controller.ok(res, credentials);
         } else {
           return Controller.unauthorized(res);
         }
-      })
-      .then(result => {
-        if (!result) return Controller.serverError(res);
-        let credentials: any = this.getCredentials(results.user);
-        return Controller.ok(res, credentials);
-      })
-      .catch(err => {
-        log.error(err);
-        return Controller.badRequest(res);
-      });
-  }
+      }
+    } catch (err) {
+      log.error(err);
+      return Controller.badRequest(res);
+    }
+  };
 
   googleLogin = async (req: Request, res: Response) => {
     const idToken = req.body.idToken;
