@@ -649,9 +649,11 @@ export class AuthController extends Controller {
       });
   }
 
-  async googleLogin(req: Request, res: Response) {
+  googleLogin = async (req: Request, res: Response) => {
     const idToken = req.body.idToken;
-    if (idToken == null) return Controller.badRequest(res);
+    if (isEmpty(idToken)) {
+      return Controller.badRequest(res);
+    }
     try {
       const ticket = await gAuthClient.verifyIdToken({
         idToken,
@@ -659,15 +661,19 @@ export class AuthController extends Controller {
       });
       const payload = ticket.getPayload();
       const userId = payload["sub"];
-      const domain = payload["hd"] || payload["email"].split("@")[1]; //Allow gmail domains, temporal solution
+      const domain = payload["hd"] || payload["email"].split("@")[1];
       const email = payload["email"];
       const name = payload["name"];
       const picture = payload["picture"];
 
-      if (
-        domain == null ||
-        config.auth.google.allowedDomains.indexOf(domain) < 0
-      ) {
+      const isValidDomain = domain => {
+        if (config.auth.google.allowedDomains.indexOf(domain) < 0) {
+          return false;
+        }
+        return true;
+      };
+
+      if (!isValidDomain(domain) || isEmpty(domain)) {
         return Controller.unauthorized(res, "Unauthorized domain");
       }
 
@@ -676,7 +682,7 @@ export class AuthController extends Controller {
         where: { googleId: userId, email },
         include: [{ model: Profile, as: "profile" }]
       });
-      if (user == null) {
+      if (isEmpty(user)) {
         // Create new user
         user = await User.create({
           email,
@@ -704,7 +710,7 @@ export class AuthController extends Controller {
         return Controller.forbidden(res, "email in use");
       } else if (err) return Controller.serverError(res, err);
     }
-  }
+  };
 }
 
 const controller = new AuthController();
