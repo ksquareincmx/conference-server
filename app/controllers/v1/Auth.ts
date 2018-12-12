@@ -324,56 +324,45 @@ export class AuthController extends Controller {
     }
   }
 
-  // TODO: async/ await over promise
-  private handleResetChPass(token: string, password: string): Promise<any> {
-    return this.validateJWT(token, "reset")
-      .then(decodedjwt => {
-        if (!decodedjwt) {
-          throw { error: "unauthorized", msg: "Invalid Token" };
-        }
-        // Save new password
-        let results = {
-          user: null
-        };
-        return User.findOne({
-          where: { id: decodedjwt.id },
-          include: [{ model: Profile, as: "profile" }]
-        })
-          .then(user => {
-            if (!user) {
-              throw { error: "unauthorized" };
-            }
-            results.user = user;
-            user.password = password;
-            return user.save();
-          })
-          .then(result => {
-            if (!result) {
-              throw { error: "serverError", msg: null };
-            }
+  private handleResetChPass = async (token: string, password: string) => {
+    try {
+      const decodedjwt = await this.validateJWT(token, "reset");
+      if (!decodedjwt) {
+        throw { error: "unauthorized", msg: "Invalid Token" };
+      }
 
-            // Blacklist JWT asynchronously
-            JWTBlacklist.create({
-              token: token,
-              expires: decodedjwt.exp
-            }).catch(err => {
-              log.error(err);
-            });
-
-            this.sendEmailPasswordChanged(results.user); // We send it asynchronously, we don't care if there is a mistake
-
-            let credentials: any = this.getCredentials(results.user);
-            return credentials;
-          })
-          .catch(err => {
-            log.error(err);
-            throw { error: "badRequest", msg: err };
-          });
-      })
-      .catch(err => {
-        throw { error: "unauthorized", msg: err };
+      let user: any = await User.findOne({
+        where: { id: decodedjwt },
+        include: [{ model: Profile, as: "profile" }]
       });
-  }
+
+      if (!user) {
+        throw { error: "unauthorized" };
+      }
+
+      user.password = password;
+      const savedUser = user.save();
+      if (!savedUser) {
+        throw { error: "serverError", msg: null };
+      }
+      // Blacklist JWT asynchronously
+      JWTBlacklist.create({
+        token: token,
+        expires: decodedjwt.exp
+      }).catch(err => {
+        log.error(err);
+      });
+
+      // We send it asynchronously, we don't care if there is a mistake
+      this.sendEmailPasswordChanged(user);
+
+      const credentials: any = this.getCredentials(user);
+      return credentials;
+    } catch (err) {
+      log.error(err);
+      throw { error: "unauthorized", msg: err };
+    }
+  };
 
   // TODO: async/ await over promise
   public validateJWT(token: string, type: string): Promise<any> {
