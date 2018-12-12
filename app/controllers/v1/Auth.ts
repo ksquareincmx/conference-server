@@ -210,7 +210,7 @@ export class AuthController extends Controller {
     return this.router;
   }
 
-  public createToken(user: any, type: string) {
+  public createToken = (user: any, type: string) => {
     let expiryUnit: any = config.jwt[type].expiry.unit;
     let expiryLength = config.jwt[type].expiry.length;
     let expires = moment()
@@ -238,9 +238,9 @@ export class AuthController extends Controller {
       expires,
       expires_in: expires_in
     };
-  }
+  };
 
-  protected getCredentials(user: any): any {
+  protected getCredentials = (user: any): any => {
     // Prepare response object
     let token = this.createToken(user, "access");
     let refreshToken = this.createToken(user, "refresh");
@@ -252,9 +252,13 @@ export class AuthController extends Controller {
       profile: user.profile
     };
     return credentials;
-  }
+  };
 
-  private async sendEmailNewPassword(user: any, token: string, name?: string) {
+  private sendEmailNewPassword = async (
+    user: any,
+    token: string,
+    name?: string
+  ) => {
     let subject = "Instructions for restoring your password";
     try {
       const info = await mailer.sendEmail(
@@ -272,9 +276,9 @@ export class AuthController extends Controller {
     } catch (error) {
       log.debug("An error has ocurrerred:", error.message);
     }
-  }
+  };
 
-  private async sendEmailPasswordChanged(user: any, name?: string) {
+  private sendEmailPasswordChanged = async (user: any, name?: string) => {
     let subject = "Password restored";
     try {
       const info = await mailer.sendEmail(
@@ -292,9 +296,9 @@ export class AuthController extends Controller {
     } catch (err) {
       log.debug(err.messsage);
     }
-  }
+  };
 
-  private async handleResetEmail(email: string) {
+  private handleResetEmail = async (email: string) => {
     try {
       const user = await User.findOne({
         where: { email: email },
@@ -322,7 +326,7 @@ export class AuthController extends Controller {
     } catch (err) {
       log.debug("An error has ocurred:", err.message);
     }
-  }
+  };
 
   private handleResetChPass = async (token: string, password: string) => {
     try {
@@ -399,7 +403,7 @@ export class AuthController extends Controller {
     }
   };
 
-  async login(req: Request, res: Response) {
+  login = async (req: Request, res: Response) => {
     const email = req.body.email;
     const password = req.body.password;
     // Validate
@@ -427,9 +431,9 @@ export class AuthController extends Controller {
       log.error(err);
       return Controller.badRequest(res);
     }
-  }
+  };
 
-  async logout(req: Request, res: Response) {
+  logout = async (req: Request, res: Response) => {
     const token: string = req.session.jwtstring;
     const decodedjwt: any = req.session.jwt;
     if (_.isUndefined(token) || _.isUndefined(decodedjwt)) {
@@ -447,9 +451,9 @@ export class AuthController extends Controller {
     } catch (err) {
       return Controller.serverError(res, err);
     }
-  }
+  };
 
-  async refreshToken(req: Request, res: Response) {
+  refreshToken = async (req: Request, res: Response) => {
     // Refresh token has been previously authenticated in validateJwt as refresh token
     const refreshToken: string = req.session.jwtstring;
     const decodedjwt: any = req.session.jwt;
@@ -472,7 +476,7 @@ export class AuthController extends Controller {
     } catch (err) {
       return Controller.serverError(res, err);
     }
-  }
+  };
 
   register = async (req: Request, res: Response) => {
     const newUser = {
