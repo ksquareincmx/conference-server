@@ -546,46 +546,55 @@ export class AuthController extends Controller {
       1. Request sending of recovery token via email (body: { email: '...' })
       2. Set new password (body: { token: 'mytoken', password: 'newpassword' })
   */
-  resetPost(req: Request, res: Response) {
+  resetPost = async (req: Request, res: Response) => {
     // Validate if case 2
-    let token: string = req.body.token;
-    let password: string = req.body.password;
+    const token: string = req.body.token;
+    const password: string = req.body.password;
 
     if (!_.isUndefined(token) && !_.isUndefined(password)) {
-      return this.handleResetChPass(token, password)
-        .then(credentials => Controller.ok(res, credentials))
-        .catch(err => {
-          log.error(err);
-          if (err.error == "badRequest")
+      try {
+        const credentials = await this.handleResetChPass(token, password);
+        return Controller.ok(res, credentials);
+      } catch (err) {
+        log.error(err);
+        switch (err.error) {
+          case "badRequest":
             return Controller.badRequest(res, err.msg);
-          if (err.error == "notFound") return Controller.notFound(res, err.msg);
-          if (err.error == "serverError")
+          case "notFound":
+            return Controller.notFound(res, err.msg);
+          case "serverError":
             return Controller.serverError(res, err.msg);
-          return Controller.serverError(res);
-        });
+          default:
+            return Controller.serverError(res);
+        }
+      }
     }
 
     // Validate case 1
-    let email: string = req.body.email;
+    const email: string = req.body.email;
+
     if (!_.isUndefined(email)) {
-      return this.handleResetEmail(email)
-        .then(info => {
-          log.info(info);
-          Controller.ok(res);
-        })
-        .catch(err => {
-          log.error(err);
-          if (err.error == "badRequest")
+      try {
+        const info = await this.handleResetEmail(email);
+        log.info(info);
+        Controller.ok(res);
+      } catch (err) {
+        log.error(err);
+        switch (err.error) {
+          case "badRequest":
             return Controller.badRequest(res, err.msg);
-          if (err.error == "notFound") return Controller.notFound(res, err.msg);
-          if (err.error == "serverError")
+          case "notFound":
+            return Controller.notFound(res, err.msg);
+          case "serverError":
             return Controller.serverError(res, err.msg);
-          return Controller.serverError(res);
-        });
+          default:
+            return Controller.serverError(res);
+        }
+      }
     }
 
     return Controller.badRequest(res);
-  }
+  };
 
   resetGet = async (req: Request, res: Response) => {
     const token: any = req.query.token;
