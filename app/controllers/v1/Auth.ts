@@ -494,15 +494,15 @@ export class AuthController extends Controller {
     }
   }
 
-  register(req: Request, res: Response) {
-    let newUser = {
+  register = async (req: Request, res: Response) => {
+    const newUser = {
       email: req.body.email,
       password: req.body.password
     };
 
     // Optional extra params:
-    let locale: string | undefined = req.body.locale;
-    let timezone: string | undefined = req.body.timezone;
+    const locale: string | undefined = req.body.locale;
+    const timezone: string | undefined = req.body.timezone;
 
     // Validate
     if (newUser.email == null || newUser.password == null)
@@ -510,36 +510,37 @@ export class AuthController extends Controller {
     // Email and password length should be validated on user create TODO test
 
     let user: any;
-    User.create(newUser)
-      .then(result => {
-        // We need to do another query because before the profile wasn't ready
-        return User.findOne({
-          where: { id: result.id },
-          include: [{ model: Profile, as: "profile" }]
-        })
-          .then(result => {
-            user = result;
-            // Set extra params:
-            if (locale != null) user.profile.locale = locale;
-            if (timezone != null) user.profile.time_zone = timezone;
-            return user.profile.save();
-          })
-          .then(result => {
-            let credentials: any = this.getCredentials(user);
-            return Controller.ok(res, credentials);
-          });
-      })
-      .catch(err => {
-        if (
-          err.errors != null &&
-          err.errors.length &&
-          err.errors[0].type === "unique violation" &&
-          err.errors[0].path === "email"
-        ) {
-          return Controller.forbidden(res, "email in use");
-        } else if (err) return Controller.serverError(res, err);
+
+    try {
+      const createdUser: any = await User.create(newUser);
+      // We need to do another query because before the profile wasn't ready
+      let user: any = await User.findOne({
+        where: { id: createdUser.id },
+        include: [{ model: Profile, as: "profile" }]
       });
-  }
+
+      // Set extra params:
+      if (locale != null) {
+        user.profile.locale = locale;
+      }
+      if (timezone != null) {
+        user.profile.time_zone = timezone;
+      }
+
+      const savedUserProfile = await user.profile.save();
+      const credentials: any = this.getCredentials(user);
+      return Controller.ok(res, credentials);
+    } catch (err) {
+      if (
+        err.errors != null &&
+        err.errors.length &&
+        err.errors[0].type === "unique violation" &&
+        err.errors[0].path === "email"
+      ) {
+        return Controller.forbidden(res, "email in use");
+      } else if (err) return Controller.serverError(res, err);
+    }
+  };
 
   /*
     This can serve two different use cases:
