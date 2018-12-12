@@ -587,21 +587,24 @@ export class AuthController extends Controller {
     return Controller.badRequest(res);
   }
 
-  resetGet(req: Request, res: Response) {
-    let token: any = req.query.token;
-    if (_.isUndefined(token)) return Controller.unauthorized(res);
+  resetGet = async (req: Request, res: Response) => {
+    const token: any = req.query.token;
+    if (_.isUndefined(token)) {
+      return Controller.unauthorized(res);
+    }
     // Decode token
-    this.validateJWT(token, "reset")
-      .then(decodedjwt => {
-        if (decodedjwt)
-          res.redirect(`${config.urls.base}/recovery/#/reset?token=${token}`);
-        else Controller.unauthorized(res);
+    try {
+      const decodedjwt = await this.validateJWT(token, "reset");
+      if (decodedjwt) {
+        res.redirect(`${config.urls.base}/recovery/#/reset?token=${token}`);
+      } else {
+        Controller.unauthorized(res);
         return null;
-      })
-      .catch(err => {
-        return Controller.unauthorized(res, err);
-      });
-  }
+      }
+    } catch (err) {
+      return Controller.unauthorized(res, err);
+    }
+  };
 
   changePassword = async (req: Request, res: Response) => {
     const email = req.body.email;
