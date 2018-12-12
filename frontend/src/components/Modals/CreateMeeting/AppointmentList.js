@@ -4,8 +4,8 @@ import Divider from '@material-ui/core/Divider';
 import TimeSelect from './TimeSelect'
 import RoomSelect from './RoomSelect'
 import TextField from '@material-ui/core/TextField';
-import MaterialButton from '../../components/MaterialButton'
-import ChipList from '../../components/ChipList/'
+import MaterialButton from '../../../components/MaterialButton'
+import ChipList from '../../../components/ChipList'
 import DatePicker from './DatePicker'
 
 class AppointmentList extends React.Component {
@@ -274,7 +274,6 @@ class AppointmentList extends React.Component {
               textButton='Back'
               onClick={this.props.handleOnCloseModal}
               colorButton='#1F599D' />
-
 
             <MaterialButton
               textButton='Next'
