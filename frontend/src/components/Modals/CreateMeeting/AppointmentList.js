@@ -115,7 +115,6 @@ class AppointmentList extends React.Component {
         window.location.href = '/calendar'
       })
     }
-
   }
 
   ReasonAppointmentChangedHanlder = (event) => {
