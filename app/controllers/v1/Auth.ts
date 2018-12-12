@@ -364,49 +364,40 @@ export class AuthController extends Controller {
     }
   };
 
-  // TODO: async/ await over promise
-  public validateJWT(token: string, type: string): Promise<any> {
+  public validateJWT = async (token: string, type: string) => {
     // Decode token
-    let decodedjwt: any;
     try {
-      decodedjwt = jwt.verify(token, config.jwt.secret);
+      const decodedjwt: any = jwt.verify(token, config.jwt.secret);
+      const reqTime = Date.now();
+
+      if (decodedjwt.exp <= reqTime) {
+        throw new Error("Token expired");
+      }
+      // Check if token is early
+      if (!_.isUndefined(decodedjwt.nbf) && reqTime <= decodedjwt.nbf) {
+        throw new Error("This token is early.");
+      }
+
+      // If audience doesn't match
+      if (config.jwt[type].audience !== decodedjwt.aud) {
+        throw new Error("This token cannot be accepted for this domain.");
+      }
+
+      // If the subject doesn't match
+      if (config.jwt[type].subject !== decodedjwt.sub) {
+        throw new Error("This token cannot be used for this request.");
+      }
+      const blacklist = await JWTBlacklist.findOne({ where: { token: token } });
+
+      if (!isEmpty(blacklist)) {
+        throw new Error("This Token is blacklisted");
+      }
+
+      return decodedjwt;
     } catch (err) {
-      return Promise.reject(err);
+      throw { name: err.name, message: err.message };
     }
-    let reqTime = Date.now();
-    // Check if token expired
-    if (decodedjwt.exp <= reqTime) {
-      return Promise.reject("Token expired");
-    }
-    // Check if token is early
-    if (!_.isUndefined(decodedjwt.nbf) && reqTime <= decodedjwt.nbf) {
-      return Promise.reject("This token is early.");
-    }
-
-    // If audience doesn't match
-    if (config.jwt[type].audience !== decodedjwt.aud) {
-      return Promise.reject("This token cannot be accepted for this domain.");
-    }
-
-    // If the subject doesn't match
-    if (config.jwt[type].subject !== decodedjwt.sub) {
-      return Promise.reject("This token cannot be used for this request.");
-    }
-
-    // Check if blacklisted
-    return Promise.resolve(
-      JWTBlacklist.findOne({ where: { token: token } })
-        .then(result => {
-          // if exists in blacklist, reject
-          if (result != null)
-            return Promise.reject("This Token is blacklisted.");
-          return Promise.resolve(decodedjwt);
-        })
-        .catch(err => {
-          return Promise.reject(err);
-        })
-    );
-  }
+  };
 
   async login(req: Request, res: Response) {
     const email = req.body.email;
