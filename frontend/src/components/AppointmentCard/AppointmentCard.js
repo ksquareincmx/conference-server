@@ -3,7 +3,6 @@ import { Card, Grid } from '@material-ui/core/';
 import Header from './Header'
 import Content from './Content'
 
-
 class AppointmentCard extends React.Component {
 
   styles = {

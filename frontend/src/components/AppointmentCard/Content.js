@@ -4,7 +4,7 @@ import RoomList from './RoomList/'
 import Button from '../../components/MaterialButton'
 import BookingList from './BookingList/'
 import Modal from '@material-ui/core/Modal';
-import AppointmentList from '../../Modals/CreateMeeting/'
+import AppointmentList from '../../components/Modals/CreateMeeting/AppointmentList'
 import { Grid } from '@material-ui/core/';
 
 class Content extends React.Component {
