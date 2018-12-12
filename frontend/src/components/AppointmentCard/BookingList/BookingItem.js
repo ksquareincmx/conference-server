@@ -12,28 +12,48 @@ function addZero(i) {
   return i;
 }
 
+
+const GetDate = (date) => {
+  return addZero(date.getDate()) + '/' + addZero(date.getMonth() + 1) + '/' + date.getFullYear()
+}
+
 function BookingItem(props) {
 
-  const startDate = new Date(props.startDate)
-  const endDate = new Date(props.endDate)
+  const startNotFormmat = props.startDate.substring(0, props.startDate.length - 1)
+  const startDate = new Date(startNotFormmat)
+
+  const endNotFormat = props.endDate.substring(0, props.endDate.length - 1)
+  const endDate = new Date(endNotFormat)
 
   const startTime = addZero(startDate.getHours()) + ':' + addZero(startDate.getMinutes())
   const endTime = addZero(endDate.getHours()) + ':' + addZero(endDate.getMinutes())
+
+  const booking = {
+    userId: props.userId,
+    bookingId: props.bookingId,
+    userName: props.userName,
+    roomName: props.roomName,
+    roomId: props.roomId,
+    startDate: props.startDate,
+    endDate: props.endDate,
+    attendees: props.attendees
+  }
+
   return (
-    <ListItem button>
+    <ListItem button onClick={props.clicked(booking)}>
       <Grid container direction='row' style={{ height: '100%', width: '100%' }}>
         <Grid item xs={3} container direction='column' justify='center'>
           <ListItemIcon>
             <InboxIcon />
           </ListItemIcon>
-          <div style={{ fontSize: 15, color: 'gray' }}> {props.roomId}</div>
+          <div style={{ fontSize: 15, color: 'gray' }}> {props.roomName}</div>
         </Grid>
         <Grid item xs={7} container direction='column'>
-          <div style={{ fontSize: 20 }}> {props.userId} </div>
+          <div style={{ fontSize: 20 }}> {props.userName} </div>
           <div style={{ color: 'gray' }}> {startTime + ' to ' + endTime} </div>
         </Grid>
         <Grid item xs={2}>
-          <div style={{ color: 'gray' }}>Today</div>
+          <div style={{ color: 'gray' }}>{GetDate(startDate)}</div>
         </Grid>
       </Grid>
       <Divider />

@@ -95,7 +95,7 @@ export class RoomController extends Controller {
       "/",
       validateJWT("access"),
       stripNestedObjects(),
-      filterRoles(["admin"]),
+      //filterRoles(["admin"]),
       (req, res) => this.create(req, res)
     );
 

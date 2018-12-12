@@ -17,6 +17,12 @@ const styles = theme => ({
   },
 });
 
+
+
+const changedDateHandler = (event, SetDate) => {
+  SetDate(event.target.value)
+}
+
 function DatePickers(props) {
   const { classes } = props;
 
@@ -26,11 +32,13 @@ function DatePickers(props) {
         id="date"
         label="date"
         type="date"
-        defaultValue="2017-05-24"
+        value={(props.date)}
         className={classes.textField}
         InputLabelProps={{
           shrink: true,
         }}
+        disabled={props.disabled}
+        onChange={(event) => changedDateHandler(event, props.SetDate)}
       />
     </form>
   );

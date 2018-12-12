@@ -22,7 +22,6 @@ export class AuthController extends Controller {
   }
 
   routes(): Router {
-
     /*
       @api {post} /api/v1/auth/login/ Login
       @apiPermission none
@@ -65,10 +64,8 @@ export class AuthController extends Controller {
 
     */
 
-    this.router.post(
-      "/logout",
-      validateJWT("access"),
-      (req, res) => this.logout(req, res)
+    this.router.post("/logout", validateJWT("access"), (req, res) =>
+      this.logout(req, res)
     );
 
     /**
@@ -97,10 +94,7 @@ export class AuthController extends Controller {
 
     */
 
-    this.router.post(
-      "/register",
-      (req, res) => this.register(req, res)
-    );
+    this.router.post("/register", (req, res) => this.register(req, res));
 
     /*
       @apiDescription Validates the reset token passed as a query param and redirects to a reset token UI
@@ -156,10 +150,8 @@ export class AuthController extends Controller {
 
     */
 
-    this.router.post(
-      "/change",
-      validateJWT("access"),
-      (req, res) => this.changePassword(req, res)
+    this.router.post("/change", validateJWT("access"), (req, res) =>
+      this.changePassword(req, res)
     );
 
     /**
@@ -187,10 +179,8 @@ export class AuthController extends Controller {
 
     */
 
-    this.router.post(
-      "/refresh",
-      validateJWT("refresh"),
-      (req, res) => this.refreshToken(req, res)
+    this.router.post("/refresh", validateJWT("refresh"), (req, res) =>
+      this.refreshToken(req, res)
     );
 
     /**
@@ -269,14 +259,24 @@ export class AuthController extends Controller {
     return credentials;
   }
 
-  private sendEmailNewPassword(user: any, token: string, name?: string): Promise<any> {
+  private sendEmailNewPassword(
+    user: any,
+    token: string,
+    name?: string
+  ): Promise<any> {
     let subject = "Instructions for restoring your password";
 
     return mailer
-      .sendEmail(user.email, subject, "password_recovery", user.profile.locale, {
-        url: `${config.urls.baseApi}/auth/reset?token=${token}`,
-        name: name || user.email
-      })
+      .sendEmail(
+        user.email,
+        subject,
+        "password_recovery",
+        user.profile.locale,
+        {
+          url: `${config.urls.baseApi}/auth/reset?token=${token}`,
+          name: name || user.email
+        }
+      )
       .then(info => {
         log.debug("Sending password recovery email to:", user.email, info);
         return info;
@@ -298,17 +298,29 @@ export class AuthController extends Controller {
 
   private handleResetEmail(email: string): Promise<any> {
     return Promise.resolve(
-      User.findOne({ where: { email: email }, include: [{ model: Profile, as: "profile" }] })
+      User.findOne({
+        where: { email: email },
+        include: [{ model: Profile, as: "profile" }]
+      })
         .then(user => {
           if (!user) {
             throw { error: "notFound", msg: "Email not found" };
           }
           // Create reset token
           let token = this.createToken(user, "reset");
-          return { token: token.token, email: email, name: user.name, user: user };
+          return {
+            token: token.token,
+            email: email,
+            name: user.name,
+            user: user
+          };
         })
         .then(emailInfo => {
-          return this.sendEmailNewPassword(emailInfo.user, emailInfo.token, emailInfo.name);
+          return this.sendEmailNewPassword(
+            emailInfo.user,
+            emailInfo.token,
+            emailInfo.name
+          );
         })
     );
   }
@@ -396,7 +408,8 @@ export class AuthController extends Controller {
       JWTBlacklist.findOne({ where: { token: token } })
         .then(result => {
           // if exists in blacklist, reject
-          if (result != null) return Promise.reject("This Token is blacklisted.");
+          if (result != null)
+            return Promise.reject("This Token is blacklisted.");
           return Promise.resolve(decodedjwt);
         })
         .catch(err => {
@@ -497,7 +510,8 @@ export class AuthController extends Controller {
     let timezone: string | undefined = req.body.timezone;
 
     // Validate
-    if (newUser.email == null || newUser.password == null) return Controller.badRequest(res);
+    if (newUser.email == null || newUser.password == null)
+      return Controller.badRequest(res);
     // Email and password length should be validated on user create TODO test
 
     let user: any;
@@ -547,9 +561,11 @@ export class AuthController extends Controller {
         .then(credentials => Controller.ok(res, credentials))
         .catch(err => {
           log.error(err);
-          if (err.error == "badRequest") return Controller.badRequest(res, err.msg);
+          if (err.error == "badRequest")
+            return Controller.badRequest(res, err.msg);
           if (err.error == "notFound") return Controller.notFound(res, err.msg);
-          if (err.error == "serverError") return Controller.serverError(res, err.msg);
+          if (err.error == "serverError")
+            return Controller.serverError(res, err.msg);
           return Controller.serverError(res);
         });
     }
@@ -564,9 +580,11 @@ export class AuthController extends Controller {
         })
         .catch(err => {
           log.error(err);
-          if (err.error == "badRequest") return Controller.badRequest(res, err.msg);
+          if (err.error == "badRequest")
+            return Controller.badRequest(res, err.msg);
           if (err.error == "notFound") return Controller.notFound(res, err.msg);
-          if (err.error == "serverError") return Controller.serverError(res, err.msg);
+          if (err.error == "serverError")
+            return Controller.serverError(res, err.msg);
           return Controller.serverError(res);
         });
     }
@@ -580,7 +598,8 @@ export class AuthController extends Controller {
     // Decode token
     this.validateJWT(token, "reset")
       .then(decodedjwt => {
-        if (decodedjwt) res.redirect(`${config.urls.base}/recovery/#/reset?token=${token}`);
+        if (decodedjwt)
+          res.redirect(`${config.urls.base}/recovery/#/reset?token=${token}`);
         else Controller.unauthorized(res);
         return null;
       })
@@ -594,7 +613,8 @@ export class AuthController extends Controller {
     let oldPass = req.body.oldPass;
     let newPass = req.body.newPass;
     // Validate
-    if (email == null || oldPass == null || newPass == null) return Controller.badRequest(res);
+    if (email == null || oldPass == null || newPass == null)
+      return Controller.badRequest(res);
     if (email.length === 0 || oldPass.length === 0 || newPass.length === 0)
       return Controller.badRequest(res);
     // IMPORTANT: Check if email is the same as the one in the token
@@ -644,12 +664,15 @@ export class AuthController extends Controller {
       });
       const payload = ticket.getPayload();
       const userId = payload["sub"];
-      const domain = payload["hd"];
+      const domain = payload["hd"] || payload["email"].split("@")[1];
       const email = payload["email"];
       const name = payload["name"];
       const picture = payload["picture"];
 
-      if (domain == null || config.auth.google.allowedDomains.indexOf(domain) < 0) {
+      if (
+        domain == null ||
+        config.auth.google.allowedDomains.indexOf(domain) < 0
+      ) {
         return Controller.unauthorized(res, "Unauthorized domain");
       }
 

@@ -45,7 +45,6 @@ class ChipList extends React.Component {
 
   render() {
     return (
-
       <div>
         <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
           <TextField

@@ -250,7 +250,7 @@ export class BookingController extends Controller {
         }
       })
       .catch(err => {
-        if (err !== null) Controller.serverError(res);
+        if (err !== null) Controller.serverError(res, err);
       });
   }
 

@@ -17,23 +17,27 @@ class AppointmentCard extends React.Component {
       textAlign: 'center',
       borderRadius: 25
     },
-
   };
 
 
 
   render() {
+
     return (
       <Grid
         container
         justify='center'
       >
         <Card style={this.styles.card}>
-
           <Header />
 
-          <Grid container alignItems='flex-start' style={{ height: '100%' }}>
-            <Content booking={this.props.booking} auth={this.props.auth} roomService={this.props.roomService} />
+          <Grid container style={{ height: '100%' }}>
+            <Content
+              booking={this.props.booking}
+              auth={this.props.auth}
+              roomService={this.props.roomService}
+              userService={this.props.userService}
+            />
           </Grid>
         </Card>
       </Grid>
