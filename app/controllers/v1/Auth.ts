@@ -210,6 +210,30 @@ export class AuthController extends Controller {
     return this.router;
   }
 
+  /**
+   * @typedef {Object} User
+   * @property {number} id - user's id.
+   * @property {string} googleId - user's googleId.
+   * @property {string} picture -url user's picture.
+   * @property {string} name - user's name.
+   * @property {string} email - user's email.
+   * @property {string} password - user's password.
+   * @property {string} role - 'user's role.
+   */
+
+  /**
+   * @typedef {Object} TokenInfo
+   * @property {string} token - token.
+   * @property {number} expires - expiration date in miliseconds.
+   * @property {number} expiresIn - expiration date in seconds.
+   */
+
+  /**
+   * Returns the new token's information thats is assigned to an user.
+   * @param {User} user - user to whom the new token is assigned.
+   * @param {string} type - jwt's type : ("secret", "access", "refresh", "reset")
+   * @return {TokenInfo} - token's information.
+   */
   public createToken = (user: any, type: string) => {
     const expiryUnit: any = config.jwt[type].expiry.unit;
     const expiryLength = config.jwt[type].expiry.length;
@@ -232,6 +256,8 @@ export class AuthController extends Controller {
       },
       config.jwt.secret
     );
+
+    console.log(typeof token, typeof expires, typeof expiresIn);
 
     return {
       token,
