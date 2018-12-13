@@ -257,8 +257,6 @@ export class AuthController extends Controller {
       config.jwt.secret
     );
 
-    console.log(typeof token, typeof expires, typeof expiresIn);
-
     return {
       token,
       expires,
@@ -266,11 +264,41 @@ export class AuthController extends Controller {
     };
   };
 
+  /** @typedef {Object} PartiallyUser
+   *  @property {number} id - user's id
+   *  @property {string} name - user's name
+   *  @property {string} email - user's email
+   *  @property {string} role - user's role
+   */
+
+  /** @typedef {Object} Profile
+   *  @property {number} id - user's id.
+   *  @property {string} timezone - profile's timezone.
+   *  @property {string} locale - profile's locales.
+   *  @property {number} userId - user's userId.
+   *  @property {string} createAt - date of creation of the user in the DB
+   *  @property {string} updateAt - date of update of the user in the DB.
+   */
+
+  /**
+   * @typedef {Object} Credentials user's infomation.
+   * @property {string} token - token value.
+   * @property {number} expires - expiration date in miliseconds.
+   * @property {TokenInfo} refresh_token - token.
+   * @property {PartiallyUser} user - user's info.
+   * @property {Profile} profile - user's profile.
+   */
+
+  /**
+   * Returns the user's credentials
+   * @param {User} user - user from whom get the credentials
+   * @return {Credentials} - user's credential
+   */
   protected getCredentials = (user: any): any => {
     // Prepare response object
-    let token = this.createToken(user, "access");
-    let refreshToken = this.createToken(user, "refresh");
-    let credentials = {
+    const token = this.createToken(user, "access");
+    const refreshToken = this.createToken(user, "refresh");
+    const credentials = {
       token: token.token,
       expires: token.expires,
       refresh_token: refreshToken,
