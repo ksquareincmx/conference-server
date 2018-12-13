@@ -48,9 +48,5 @@ export function getActualDate() {
 }
 
 export function isEmpty(attribute) {
-  //check if it's a falsy value, don't include 0
-  if (!attribute && attribute !== 0) {
-    return true;
-  }
-  return false;
+  return !attribute && attribute !== 0;
 }
