@@ -422,6 +422,25 @@ export class AuthController extends Controller {
     }
   };
 
+  /**
+   * @typedef {object} DecodedJWT
+   * @property {number} id - user's id.
+   * @property {string} sub - subject.
+   * @property {string} aud - audience.
+   * @property {number} exp - expiration time.
+   * @property {number} iat - issue at.
+   * @property {string} jti - jwt id.
+   * @property {string} email - user's email.
+   * @property {string} role - user's role.
+
+   */
+
+  /**
+   * Returns the decoded JWT, if it's invalid throw an error.
+   * @param {string} token - token value.
+   * @param {string} type - token type: ("secret", "access", "refresh", "reset").
+   * @param {DecodedJWT} decodedjwt - decoded JSON Web Token.
+   */
   public validateJWT = async (token: string, type: string) => {
     // Decode token
     try {
