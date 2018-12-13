@@ -211,15 +211,15 @@ export class AuthController extends Controller {
   }
 
   public createToken = (user: any, type: string) => {
-    let expiryUnit: any = config.jwt[type].expiry.unit;
-    let expiryLength = config.jwt[type].expiry.length;
-    let expires = moment()
+    const expiryUnit: any = config.jwt[type].expiry.unit;
+    const expiryLength = config.jwt[type].expiry.length;
+    const expires = moment()
       .add(expiryLength, expiryUnit)
       .valueOf();
-    let issued = Date.now();
-    let expires_in = (expires - issued) / 1000; // seconds
+    const issued = Date.now();
+    const expiresIn = (expires - issued) / 1000; // seconds
 
-    let token = jwt.sign(
+    const token = jwt.sign(
       {
         id: user.id,
         sub: config.jwt[type].subject,
@@ -236,7 +236,7 @@ export class AuthController extends Controller {
     return {
       token,
       expires,
-      expires_in: expires_in
+      expiresIn
     };
   };
 
