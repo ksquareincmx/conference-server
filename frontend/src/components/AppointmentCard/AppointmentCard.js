@@ -18,8 +18,6 @@ class AppointmentCard extends React.Component {
     },
   };
 
-
-
   render() {
 
     return (
