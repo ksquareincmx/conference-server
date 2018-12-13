@@ -47,6 +47,11 @@ export function getActualDate() {
   return actualDate;
 }
 
+/**
+ * Checks if it's a falsy value. Don't includes 0.
+ * @param {*} Value to evaluate
+ * @return {boolean}
+ */
 export function isEmpty(attribute) {
   return !attribute && attribute !== 0;
 }
