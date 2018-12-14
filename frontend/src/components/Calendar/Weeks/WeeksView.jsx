@@ -1,7 +1,7 @@
-import React from 'react';
+import React from "react";
 
-import BigCalendar from 'react-big-calendar';
-import './Weeks.css';
+import BigCalendar from "react-big-calendar";
+import "components/Calendar/Weeks/Weeks.css";
 
 const WeeksView = props => {
   return (

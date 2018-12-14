@@ -1,29 +1,29 @@
-import React from 'react';
-import AuthService from '../../services/AuthService';
-import baseUri from '../../config/baseUri';
+import React from "react";
+import AuthService from "services/AuthService";
+import baseUri from "config/baseUri";
 
 const AuthContext = React.createContext({
   user: null,
   jwt: null,
   onLogin: () => { },
-  onLogout: () => { },
+  onLogout: () => { }
 });
 
 export const AuthConsumer = AuthContext.Consumer;
 
 export class AuthProvider extends React.Component {
-  authService = AuthService(baseUri + 'auth/googlelogin');
+  authService = AuthService(baseUri + "auth/googlelogin");
   state = {
     user: null,
-    jwt: null,
+    jwt: null
   };
 
   componentDidMount() {
     // this.refreshLocalStorage();
-    if (typeof Storage !== 'undefined') {
-      if (localStorage.getItem('cb_jwt') && localStorage.getItem('cb_user')) {
-        const user = JSON.parse(localStorage.getItem('cb_user'));
-        const jwt = JSON.parse(localStorage.getItem('cb_jwt'));
+    if (typeof Storage !== "undefined") {
+      if (localStorage.getItem("cb_jwt") && localStorage.getItem("cb_user")) {
+        const user = JSON.parse(localStorage.getItem("cb_user"));
+        const jwt = JSON.parse(localStorage.getItem("cb_jwt"));
         this.setState({ user, jwt });
       }
     }
@@ -37,9 +37,9 @@ export class AuthProvider extends React.Component {
         jwt: {
           token: res.token,
           expires: res.expires,
-          refreshToken: res.refresh_token,
+          refreshToken: res.refresh_token
         },
-        user: res.user, // { id: number, email: string, name: string, role: string, picture: string }
+        user: res.user // { id: number, email: string, name: string, role: string, picture: string }
       });
       this.refreshLocalStorage();
     } catch (err) {
@@ -50,15 +50,15 @@ export class AuthProvider extends React.Component {
   onLogout = () => {
     this.setState({
       user: null,
-      jwt: null,
+      jwt: null
     });
     this.refreshLocalStorage();
   };
 
   refreshLocalStorage() {
     const { user, jwt } = this.state;
-    localStorage.setItem('cb_user', JSON.stringify(user));
-    localStorage.setItem('cb_jwt', JSON.stringify(jwt));
+    localStorage.setItem("cb_user", JSON.stringify(user));
+    localStorage.setItem("cb_jwt", JSON.stringify(jwt));
   }
 
   render() {
@@ -67,8 +67,9 @@ export class AuthProvider extends React.Component {
         value={{
           ...this.state,
           onLogin: this.onLogin,
-          onLogout: this.onLogout,
-        }}>
+          onLogout: this.onLogout
+        }}
+      >
         {this.props.children}
       </AuthContext.Provider>
     );

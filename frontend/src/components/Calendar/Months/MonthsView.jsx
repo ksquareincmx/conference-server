@@ -1,7 +1,7 @@
-import React from 'react';
+import React from "react";
 
-import BigCalendar from 'react-big-calendar';
-import './Months.css';
+import BigCalendar from "react-big-calendar";
+import "components/Calendar/Months/Months.css";
 
 const MonthsView = props => {
   return (

@@ -1,47 +1,49 @@
-import React from 'react'
-import List from '@material-ui/core/List';
-import BookingItem from './BookingItem'
-import cuid from 'cuid'
+import React from "react";
+import List from "@material-ui/core/List";
+import BookingItem from "components/AppointmentCard/BookingList/BookingItem";
+import cuid from "cuid";
 
 class BookigList extends React.Component {
-
   state = {
-    bookingItems: [],
-  }
+    bookingItems: []
+  };
 
   GetUsers = () => {
-    let bookingItems = Promise.all(this.state.bookingItems.map(async (book) => {
-      const user = await this.props.userService.getUser(book.userId);
-      const room = await this.props.roomService.getRoom(book.roomId)
+    let bookingItems = Promise.all(
+      this.state.bookingItems.map(async book => {
+        const user = await this.props.userService.getUser(book.userId);
+        const room = await this.props.roomService.getRoom(book.roomId);
 
-      return {
-        ...book,
-        userName: user.name,
-        roomName: room.name
-      }
-
-    }))
+        return {
+          ...book,
+          userName: user.name,
+          roomName: room.name
+        };
+      })
+    );
 
     bookingItems.then(res => {
-      this.setState({ bookingItems: res })
-    })
-  }
+      this.setState({ bookingItems: res });
+    });
+  };
 
   componentDidMount() {
     this.props.booking.getDetailedListOfBooking().then(data => {
-      this.setState({ bookingItems: data }, () => this.GetUsers())
-    })
+      this.setState({ bookingItems: data }, () => this.GetUsers());
+    });
   }
 
   render() {
     return (
-      <List component='nav' style={{
-        maxHeight: 450,
-        overflow: 'auto',
-        maxWidth: 550
-      }}>
-        {this.state.bookingItems.map(data =>
-
+      <List
+        component="nav"
+        style={{
+          maxHeight: 450,
+          overflow: "auto",
+          maxWidth: 550
+        }}
+      >
+        {this.state.bookingItems.map(data => (
           <BookingItem
             key={cuid()}
             userId={data.userId}
@@ -54,7 +56,7 @@ class BookigList extends React.Component {
             attendees={data.attendees}
             clicked={this.props.clicked}
           />
-        )}
+        ))}
       </List>
     );
   }

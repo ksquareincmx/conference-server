@@ -1,16 +1,16 @@
-import React from 'react';
-import UserService from '../../services/UserService';
-import baseUri from '../../config/baseUri';
+import React from "react";
+import UserService from "services/UserService";
+import baseUri from "config/baseUri";
 
 const UserContext = React.createContext({
-  getUser: () => { },
-  getUsers: () => { },
-  modifyUser: () => { },
+  getUser: () => {},
+  getUsers: () => {},
+  modifyUser: () => {}
 });
 
 export const UserConsumer = UserContext.Consumer;
 export class UserProvider extends React.Component {
-  userService = UserService(baseUri + 'User/', this.props.auth.jwt.token);
+  userService = UserService(baseUri + "User/", this.props.auth.jwt.token);
   getUser = id => {
     return this.userService.getOne(id);
   };
@@ -29,10 +29,11 @@ export class UserProvider extends React.Component {
         value={{
           getUser: this.getUser,
           getUsers: this.getUsers,
-          modifyUser: this.modifyUser,
-        }}>
+          modifyUser: this.modifyUser
+        }}
+      >
         {this.props.children}
       </UserContext.Provider>
-    )
+    );
   }
 }

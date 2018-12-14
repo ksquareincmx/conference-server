@@ -2,15 +2,15 @@ import React from 'react';
 import BigCalendar from 'react-big-calendar';
 import moment from 'moment';
 import DaysView from '../../components/Calendar/Days';
-import WeeksView from '../../components/Calendar/Weeks';
-import MonthsView from '../../components/Calendar/Months';
-import YearsView from '../../components/Calendar/Years';
-import HeaderView from '../../components/Calendar/Header';
-import FooterView from '../../components/Calendar/Footer';
+import WeeksView from 'components/Calendar/Weeks';
+import MonthsView from 'components/Calendar/Months';
+import YearsView from 'components/Calendar/Years';
+import HeaderView from 'components/Calendar/Header';
+import FooterView from 'components/Calendar/Footer';
 import dates from 'react-big-calendar/lib/utils/dates';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import './Calendar.css';
-import NavBar from '../../components/NavBar/NavBar';
+import NavBar from 'components/NavBar/NavBar';
 
 // Constants for HeaderStrategy
 const daysNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];

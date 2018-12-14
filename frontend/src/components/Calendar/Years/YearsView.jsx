@@ -1,7 +1,7 @@
-import React from 'react';
+import React from "react";
 
-import BigCalendar from 'react-big-calendar';
-import './Years.css';
+import BigCalendar from "react-big-calendar";
+import "components/Calendar/Years/Years.css";
 
 const monthRow = props => idMonth => (
   <div className="column" key={idMonth}>
@@ -22,9 +22,15 @@ const monthRow = props => idMonth => (
 const YearsView = props => {
   return (
     <div className="years-container">
-      <div className="row">{[0, 1, 2, 3].map(monthRow({ ...props, type: 'month' }))}</div>
-      <div className="row">{[4, 5, 6, 7].map(monthRow({ ...props, type: 'month' }))}</div>
-      <div className="row">{[8, 9, 10, 11].map(monthRow({ ...props, type: 'month' }))}</div>
+      <div className="row">
+        {[0, 1, 2, 3].map(monthRow({ ...props, type: "month" }))}
+      </div>
+      <div className="row">
+        {[4, 5, 6, 7].map(monthRow({ ...props, type: "month" }))}
+      </div>
+      <div className="row">
+        {[8, 9, 10, 11].map(monthRow({ ...props, type: "month" }))}
+      </div>
     </div>
   );
 };
