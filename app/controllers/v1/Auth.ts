@@ -202,7 +202,12 @@ export class AuthController extends Controller {
       @apiSuccess {String}    body.user.email                  User email
       @apiSuccess {String}    body.user.role                   User role ("user", "admin")
       @apiSuccess {Object}    body.profile                     User profile
-
+      @apiSuccess {Number}    body.profile.id                  User id
+      @apiSuccess {String}    body.profile.timezone            Profile timezon
+      @apiSuccess {String}    body.profile.locale              Profile locale
+      @apiSuccess {Number}    body.profile.userId              User id
+      @apiSuccess {String}    body.profile.createAt            User create date
+      @apiSuccess {String}    body.profile.updateAt            User update date
     */
 
     this.router.post("/googlelogin", this.googleLogin);
