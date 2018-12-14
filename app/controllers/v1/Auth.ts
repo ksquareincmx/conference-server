@@ -487,13 +487,13 @@ export class AuthController extends Controller {
     // Only accept logging by password for users without googleId
     try {
       const user = await User.findOne({
-        where: { email: email, googleId: null },
+        where: { email, googleId: null },
         include: [{ model: Profile, as: "profile" }]
       });
 
       if (isEmpty(user)) {
         const authenticate = await user.authenticate(password);
-        if (authenticate === true) {
+        if (authenticate) {
           const credentials: any = await this.getCredentials(user);
           return Controller.ok(res, credentials);
         } else {
@@ -538,7 +538,7 @@ export class AuthController extends Controller {
         expires: decodedjwt.exp
       });
 
-      const user: any = User.findOne({ where: { id: reqUser.id } });
+      const user: any = await User.findOne({ where: { id: reqUser.id } });
       if (!user) {
         return Controller.unauthorized(res);
       }
@@ -662,12 +662,12 @@ export class AuthController extends Controller {
     // Decode token
     try {
       const decodedjwt = await this.validateJWT(token, "reset");
-      if (decodedjwt) {
-        res.redirect(`${config.urls.base}/recovery/#/reset?token=${token}`);
-      } else {
+      if (!decodedjwt) {
         Controller.unauthorized(res);
         return null;
       }
+
+      res.redirect(`${config.urls.base}/recovery/#/reset?token=${token}`);
     } catch (err) {
       return Controller.unauthorized(res, err);
     }
@@ -693,7 +693,7 @@ export class AuthController extends Controller {
       });
       if (!isEmpty(user)) {
         const authenticate = await user.authenticate(oldPass);
-        if (authenticate === true) {
+        if (authenticate) {
           user.password = newPass;
           const savedUser = user.save();
           if (!savedUser) {
@@ -729,10 +729,7 @@ export class AuthController extends Controller {
       const picture = payload["picture"];
 
       const isValidDomain = domain => {
-        if (config.auth.google.allowedDomains.indexOf(domain) < 0) {
-          return false;
-        }
-        return true;
+        return !(config.auth.google.allowedDomains.indexOf(domain) < 0);
       };
 
       if (!isValidDomain(domain) || isEmpty(domain)) {
