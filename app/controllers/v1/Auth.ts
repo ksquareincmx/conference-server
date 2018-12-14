@@ -49,6 +49,12 @@ export class AuthController extends Controller {
       @apiSuccess {String}    body.user.email                  User email
       @apiSuccess {String}    body.user.role                   User role ("user", "admin")
       @apiSuccess {Object}    body.profile                     User profile
+      @apiSuccess {Number}    body.profile.id                  User id
+      @apiSuccess {String}    body.profile.timezone            Profile timezon
+      @apiSuccess {String}    body.profile.locale              Profile locale
+      @apiSuccess {Number}    body.profile.userId              User id
+      @apiSuccess {String}    body.profile.createAt            User create date
+      @apiSuccess {String}    body.profile.updateAt            User update date
 
     */
 
@@ -62,6 +68,7 @@ export class AuthController extends Controller {
 
       @apiHeader { String }   Content-Type Application/Json
       @apiHeader { String }   Authorization Bearer [jwt token]
+
 
     */
 
@@ -90,6 +97,12 @@ export class AuthController extends Controller {
       @apiSuccess {String}    body.user.email                  User email
       @apiSuccess {String}    body.user.role                   User role ("user", "admin")
       @apiSuccess {Object}    body.profile                     User profile
+      @apiSuccess {Number}    body.profile.id                  User id
+      @apiSuccess {String}    body.profile.timezone            Profile timezon
+      @apiSuccess {String}    body.profile.locale              Profile locale
+      @apiSuccess {Number}    body.profile.userId              User id
+      @apiSuccess {String}    body.profile.createAt            User create date
+      @apiSuccess {String}    body.profile.updateAt            User update date
 
     */
 
@@ -114,6 +127,29 @@ export class AuthController extends Controller {
 
       @apiHeader { String }   Content-Type Application/Json
       @apiHeader { String }   Authorization Bearer [jwt token]
+
+      @apiParam {String}  body.email          User email
+      @apiParam {String}  body.password       User password
+
+      @apiSuccess {Object}    body                       Success credentials
+      @apiSuccess {String}    body.token                 JWT token
+      @apiSuccess {Number}    body.expires               Token expiration time
+      @apiSuccess {Object}    body.refresh_token         JWT refresh token data
+      @apiSuccess {String}    body.refresh_token.token   JWT Refresh Token
+      @apiSuccess {Number}    body.refresh_token.expires       Refresh token expiration time
+      @apiSuccess {Number}    body.refresh_token.expires_in    Refresh token expiration time
+      @apiSuccess {Object}    body.user                        User details
+      @apiSuccess {Number}    body.user.id                     User id
+      @apiSuccess {String}    body.user.name                   User name
+      @apiSuccess {String}    body.user.email                  User email
+      @apiSuccess {String}    body.user.role                   User role ("user", "admin")
+      @apiSuccess {Object}    body.profile                     User profile
+      @apiSuccess {Number}    body.profile.id                  User id
+      @apiSuccess {String}    body.profile.timezone            Profile timezon
+      @apiSuccess {String}    body.profile.locale              Profile locale
+      @apiSuccess {Number}    body.profile.userId              User id
+      @apiSuccess {String}    body.profile.createAt            User create date
+      @apiSuccess {String}    body.profile.updateAt            User update date
 
     */
 
@@ -146,6 +182,12 @@ export class AuthController extends Controller {
       @apiSuccess {String}    body.user.email                  User email
       @apiSuccess {String}    body.user.role                   User role ("user", "admin")
       @apiSuccess {Object}    body.profile                     User profile
+      @apiSuccess {Number}    body.profile.id                  User id
+      @apiSuccess {String}    body.profile.timezone            Profile timezon
+      @apiSuccess {String}    body.profile.locale              Profile locale
+      @apiSuccess {Number}    body.profile.userId              User id
+      @apiSuccess {String}    body.profile.createAt            User create date
+      @apiSuccess {String}    body.profile.updateAt            User update date
 
     */
 
@@ -173,6 +215,12 @@ export class AuthController extends Controller {
       @apiSuccess {String}    body.user.email                  User email
       @apiSuccess {String}    body.user.role                   User role ("user", "admin")
       @apiSuccess {Object}    body.profile                     User profile
+      @apiSuccess {Number}    body.profile.id                  User id
+      @apiSuccess {String}    body.profile.timezone            Profile timezon
+      @apiSuccess {String}    body.profile.locale              Profile locale
+      @apiSuccess {Number}    body.profile.userId              User id
+      @apiSuccess {String}    body.profile.createAt            User create date
+      @apiSuccess {String}    body.profile.updateAt            User update date
 
     */
 
