@@ -35,8 +35,8 @@ export class BookingController extends Controller {
     @apiName GetBooking
     @apiGroup Booking
 
-    @apiHeader { String }   Content-Type Application/Json
-    @apiHeader { String }   Authorization Bearer [jwt token]
+    @apiHeader {String}   Content-Type Application/Json
+    @apiHeader {String}   Authorization Bearer [jwt token]
 
     @apiParam   {Boolean}   body.onlyFuture      Shows only the actual and futures booking
 
@@ -50,7 +50,7 @@ export class BookingController extends Controller {
     @apiSuccess {Number}  body.userId            User's id who created the booking
     @apiSuccess {Date}    body.updatedAt         Booking creation date
     @apiSuccess {Date}    body.createdAt         Booking update date
-    @apiSuccess {Array<String>} body.attendes    Emails from users who will attend the event
+    @apiSuccess {String[]} body.attendes    Emails from users who will attend the event
   */
 
     this.router.get("/", validateJWT("access"), (req, res) =>
@@ -63,8 +63,8 @@ export class BookingController extends Controller {
     @apiName GetAllBooking
     @apiGroup Booking
 
-    @apiHeader { String }   Content-Type Application/Json
-    @apiHeader { String }   Authorization Bearer [jwt token]
+    @apiHeader {String}   Content-Type Application/Json
+    @apiHeader {String}   Authorization Bearer [jwt token]
 
     @apiSuccess {Object}  body                   Booking details
     @apiSuccess {Number}  body.id                Booking id
@@ -76,7 +76,7 @@ export class BookingController extends Controller {
     @apiSuccess {Number}  body.userId            User's id who created the booking
     @apiSuccess {Date}    body.updatedAt         Booking creation date
     @apiSuccess {Date}    body.createdAt         Booking update date
-    @apiSuccess {Array<String>} body.attendes    Emails from users who will attend the event
+    @apiSuccess {String[]} body.attendes    Emails from users who will attend the event
     */
 
     this.router.get("/:id", validateJWT("access"), (req, res) =>
@@ -89,15 +89,15 @@ export class BookingController extends Controller {
       @apiName PostBooking
       @apiGroup Booking
 
-      @apiHeader { String } Content-Type Application/Json
-      @apiHeader { String } Authorization Bearer [jwt token]
+      @apiHeader {String} Content-Type Application/Json
+      @apiHeader {String} Authorization Bearer [jwt token]
 
       @apiParam {Object}    body                   Booking details
       @apiParam {Date}      body.start             Booking date start
       @apiParam {Date}      body.end               Booking date end
       @apiParam {String}    body.description       Booking description
       @apiParam {Number}    body.roomId            Booking room id
-      @apiParam {Array<String>}  body.attendees    Emails from users who will attend the event
+      @apiParam {String[]}  body.attendees    Emails from users who will attend the event
 
       @apiSuccess {Object}  body                   Booking details
       @apiSuccess {Number}  body.id                Booking id
@@ -108,7 +108,7 @@ export class BookingController extends Controller {
       @apiSuccess {String}  body.eventId           Google calendar event's id
       @apiSuccess {Date}    body.updatedAt         Booking creation date
       @apiSuccess {Date}    body.createdAt         Booking update date
-      @apiSuccess {Array<String>}  body.attendees    Emails from users who will attend the event
+      @apiSuccess {String[]}  body.attendees    Emails from users who will attend the event
 
     */
 
@@ -135,7 +135,7 @@ export class BookingController extends Controller {
       @apiParam {Date}      body.end               Booking date end
       @apiParam {String}    body.description       Booking description
       @apiParam {Number}    body.roomId            Booking room id
-      @apiParam {Array<String>}  body.attendees    Emails from users who will attend the event
+      @apiParam {String[]}  body.attendees    Emails from users who will attend the event
 
       @apiSuccess {Object}  body                   Booking details
       @apiSuccess {Number}  body.id                Booking id
@@ -146,7 +146,7 @@ export class BookingController extends Controller {
       @apiSuccess {String}  body.eventId           Google calendar event's id
       @apiSuccess {Date}    body.updatedAt         Booking creation date
       @apiSuccess {Date}    body.createdAt         Booking update date
-      @apiSuccess {Array<String>}  body.attendees    Emails from users who will attend the event
+      @apiSuccess {String[]}  body.attendees    Emails from users who will attend the event
 
     */
 
