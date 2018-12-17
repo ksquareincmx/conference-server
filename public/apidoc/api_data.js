@@ -302,6 +302,48 @@ define({ "api": [
             "optional": false,
             "field": "body.profile",
             "description": "<p>User profile</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "body.profile.id",
+            "description": "<p>User id</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "body.profile.timezone",
+            "description": "<p>Profile timezon</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "body.profile.locale",
+            "description": "<p>Profile locale</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "body.profile.userId",
+            "description": "<p>User id</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "body.profile.createAt",
+            "description": "<p>User create date</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "body.profile.updateAt",
+            "description": "<p>User update date</p>"
           }
         ]
       }
@@ -469,6 +511,48 @@ define({ "api": [
             "optional": false,
             "field": "body.profile",
             "description": "<p>User profile</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "body.profile.id",
+            "description": "<p>User id</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "body.profile.timezone",
+            "description": "<p>Profile timezon</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "body.profile.locale",
+            "description": "<p>Profile locale</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "body.profile.userId",
+            "description": "<p>User id</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "body.profile.createAt",
+            "description": "<p>User create date</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "body.profile.updateAt",
+            "description": "<p>User update date</p>"
           }
         ]
       }
@@ -608,6 +692,48 @@ define({ "api": [
             "optional": false,
             "field": "body.profile",
             "description": "<p>User profile</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "body.profile.id",
+            "description": "<p>User id</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "body.profile.timezone",
+            "description": "<p>Profile timezon</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "body.profile.locale",
+            "description": "<p>Profile locale</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "body.profile.userId",
+            "description": "<p>User id</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "body.profile.createAt",
+            "description": "<p>User create date</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "body.profile.updateAt",
+            "description": "<p>User update date</p>"
           }
         ]
       }
@@ -647,19 +773,6 @@ define({ "api": [
         ]
       }
     },
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "Number",
-            "optional": false,
-            "field": "body.id",
-            "description": "<p>Booking id</p>"
-          }
-        ]
-      }
-    },
     "success": {
       "fields": {
         "Success 200": [
@@ -672,17 +785,24 @@ define({ "api": [
           },
           {
             "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "body.id",
+            "description": "<p>Booking id</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "string",
+            "optional": false,
+            "field": "body.description",
+            "description": "<p>Booking description</p>"
+          },
+          {
+            "group": "Success 200",
             "type": "Date",
             "optional": false,
             "field": "body.start",
             "description": "<p>Booking date start</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "body.description",
-            "description": "<p>Booking description</p>"
           },
           {
             "group": "Success 200",
@@ -693,94 +813,45 @@ define({ "api": [
           },
           {
             "group": "Success 200",
-            "type": "Number",
+            "type": "String",
+            "optional": false,
+            "field": "body.eventId",
+            "description": "<p>Google calendar event's id</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Numbe",
             "optional": false,
             "field": "body.roomId",
-            "description": "<p>Booking room id</p>"
+            "description": "<p>Booking room</p>"
           },
           {
             "group": "Success 200",
             "type": "Number",
             "optional": false,
             "field": "body.userId",
-            "description": "<p>Booking user id</p>"
+            "description": "<p>User's id who created the booking</p>"
           },
           {
             "group": "Success 200",
-            "type": "Object",
+            "type": "Date",
             "optional": false,
-            "field": "body.room",
-            "description": "<p>Room details</p>"
+            "field": "body.updatedAt",
+            "description": "<p>Booking creation date</p>"
           },
           {
             "group": "Success 200",
-            "type": "String",
+            "type": "Date",
             "optional": false,
-            "field": "body.room.name",
-            "description": "<p>Room name</p>"
+            "field": "body.createdAt",
+            "description": "<p>Booking update date</p>"
           },
           {
             "group": "Success 200",
-            "type": "String",
+            "type": "String[]",
             "optional": false,
-            "field": "body.room.color",
-            "description": "<p>Room color</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "Boolean",
-            "optional": false,
-            "field": "body.room.presence",
-            "description": "<p>Room presence</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "Object",
-            "optional": false,
-            "field": "body.user",
-            "description": "<p>User details</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "body.user.googleId",
-            "description": "<p>User google account id</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "body.user.picture",
-            "description": "<p>The URL of the user profile picture (provided by google)</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "body.user.name",
-            "description": "<p>User name</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "body.user.email",
-            "description": "<p>User email</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "body.user.password",
-            "description": "<p>User password (Minimum length 8 characters)</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "body.user.role",
-            "description": "<p>User role (&quot;user&quot;, &quot;admin&quot;)</p>"
+            "field": "body.attendes",
+            "description": "<p>Emails from users who will attend the event</p>"
           }
         ]
       }
@@ -820,6 +891,19 @@ define({ "api": [
         ]
       }
     },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Boolean",
+            "optional": false,
+            "field": "body.onlyFuture",
+            "description": "<p>Shows only the actual and futures booking</p>"
+          }
+        ]
+      }
+    },
     "success": {
       "fields": {
         "Success 200": [
@@ -832,17 +916,24 @@ define({ "api": [
           },
           {
             "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "body.id",
+            "description": "<p>Booking id</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "string",
+            "optional": false,
+            "field": "body.description",
+            "description": "<p>Booking description</p>"
+          },
+          {
+            "group": "Success 200",
             "type": "Date",
             "optional": false,
             "field": "body.start",
             "description": "<p>Booking date start</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "body.description",
-            "description": "<p>Booking description</p>"
           },
           {
             "group": "Success 200",
@@ -853,94 +944,45 @@ define({ "api": [
           },
           {
             "group": "Success 200",
-            "type": "Number",
+            "type": "String",
+            "optional": false,
+            "field": "body.eventId",
+            "description": "<p>Google calendar event's id</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Numbe",
             "optional": false,
             "field": "body.roomId",
-            "description": "<p>Booking room id</p>"
+            "description": "<p>Booking room</p>"
           },
           {
             "group": "Success 200",
             "type": "Number",
             "optional": false,
             "field": "body.userId",
-            "description": "<p>Booking user id</p>"
+            "description": "<p>User's id who created the booking</p>"
           },
           {
             "group": "Success 200",
-            "type": "Object",
+            "type": "Date",
             "optional": false,
-            "field": "body.room",
-            "description": "<p>Room details</p>"
+            "field": "body.updatedAt",
+            "description": "<p>Booking creation date</p>"
           },
           {
             "group": "Success 200",
-            "type": "String",
+            "type": "Date",
             "optional": false,
-            "field": "body.room.name",
-            "description": "<p>Room name</p>"
+            "field": "body.createdAt",
+            "description": "<p>Booking update date</p>"
           },
           {
             "group": "Success 200",
-            "type": "String",
+            "type": "String[]",
             "optional": false,
-            "field": "body.room.color",
-            "description": "<p>Room color</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "Boolean",
-            "optional": false,
-            "field": "body.room.presence",
-            "description": "<p>Room presence</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "Object",
-            "optional": false,
-            "field": "body.user",
-            "description": "<p>User details</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "body.user.googleId",
-            "description": "<p>User google account id</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "body.user.picture",
-            "description": "<p>The URL of the user profile picture (provided by google)</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "body.user.name",
-            "description": "<p>User name</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "body.user.email",
-            "description": "<p>User email</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "body.user.password",
-            "description": "<p>User password (Minimum length 8 characters)</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "body.user.role",
-            "description": "<p>User role (&quot;user&quot;, &quot;admin&quot;)</p>"
+            "field": "body.attendes",
+            "description": "<p>Emails from users who will attend the event</p>"
           }
         ]
       }
@@ -988,7 +1030,7 @@ define({ "api": [
             "type": "Object",
             "optional": false,
             "field": "body",
-            "description": "<p>Booking</p>"
+            "description": "<p>Booking details</p>"
           },
           {
             "group": "Parameter",
@@ -999,17 +1041,17 @@ define({ "api": [
           },
           {
             "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "body.description",
-            "description": "<p>Booking description</p>"
-          },
-          {
-            "group": "Parameter",
             "type": "Date",
             "optional": false,
             "field": "body.end",
             "description": "<p>Booking date end</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "body.description",
+            "description": "<p>Booking description</p>"
           },
           {
             "group": "Parameter",
@@ -1020,87 +1062,10 @@ define({ "api": [
           },
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "String[]",
             "optional": false,
-            "field": "body.userId",
-            "description": "<p>Booking user id</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "Object",
-            "optional": false,
-            "field": "body.room",
-            "description": "<p>Room details</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "body.room.name",
-            "description": "<p>Room name</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "body.room.color",
-            "description": "<p>Room color</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "Boolean",
-            "optional": false,
-            "field": "body.room.presence",
-            "description": "<p>Room presence</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "Object",
-            "optional": false,
-            "field": "body.user",
-            "description": "<p>User details</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "body.user.googleId",
-            "description": "<p>User google account id</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "body.user.picture",
-            "description": "<p>The URL of the user profile picture (provided by google)</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "body.user.name",
-            "description": "<p>User name</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "body.user.email",
-            "description": "<p>User email</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "body.user.password",
-            "description": "<p>User password (Minimum length 8 characters)</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "body.user.role",
-            "description": "<p>User role (&quot;user&quot;, &quot;admin&quot;)</p>"
+            "field": "body.attendees",
+            "description": "<p>Emails from users who will attend the event</p>"
           }
         ]
       }
@@ -1113,7 +1078,21 @@ define({ "api": [
             "type": "Object",
             "optional": false,
             "field": "body",
-            "description": "<p>Booking</p>"
+            "description": "<p>Booking details</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "body.id",
+            "description": "<p>Booking id</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "string",
+            "optional": false,
+            "field": "body.description",
+            "description": "<p>Booking description</p>"
           },
           {
             "group": "Success 200",
@@ -1121,13 +1100,6 @@ define({ "api": [
             "optional": false,
             "field": "body.start",
             "description": "<p>Booking date start</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "body.description",
-            "description": "<p>Booking description</p>"
           },
           {
             "group": "Success 200",
@@ -1140,92 +1112,36 @@ define({ "api": [
             "group": "Success 200",
             "type": "Number",
             "optional": false,
-            "field": "body.roomId",
-            "description": "<p>Booking room id</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "Number",
-            "optional": false,
             "field": "body.userId",
-            "description": "<p>Booking user id</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "Object",
-            "optional": false,
-            "field": "body.room",
-            "description": "<p>Room details</p>"
+            "description": "<p>User's id who created the booking</p>"
           },
           {
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "body.room.name",
-            "description": "<p>Room name</p>"
+            "field": "body.eventId",
+            "description": "<p>Google calendar event's id</p>"
           },
           {
             "group": "Success 200",
-            "type": "String",
+            "type": "Date",
             "optional": false,
-            "field": "body.room.color",
-            "description": "<p>Room color</p>"
+            "field": "body.updatedAt",
+            "description": "<p>Booking creation date</p>"
           },
           {
             "group": "Success 200",
-            "type": "Boolean",
+            "type": "Date",
             "optional": false,
-            "field": "body.room.presence",
-            "description": "<p>Room presence</p>"
+            "field": "body.createdAt",
+            "description": "<p>Booking update date</p>"
           },
           {
             "group": "Success 200",
-            "type": "Object",
+            "type": "String[]",
             "optional": false,
-            "field": "body.user",
-            "description": "<p>User details</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "body.user.googleId",
-            "description": "<p>User google account id</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "body.user.picture",
-            "description": "<p>The URL of the user profile picture (provided by google)</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "body.user.name",
-            "description": "<p>User name</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "body.user.email",
-            "description": "<p>User email</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "body.user.password",
-            "description": "<p>User password (Minimum length 8 characters)</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "body.user.role",
-            "description": "<p>User role (&quot;user&quot;, &quot;admin&quot;)</p>"
+            "field": "body.attendees",
+            "description": "<p>Emails from users who will attend the event</p>"
           }
         ]
       }
@@ -1273,7 +1189,7 @@ define({ "api": [
             "type": "Object",
             "optional": false,
             "field": "body",
-            "description": "<p>Booking</p>"
+            "description": "<p>Booking details</p>"
           },
           {
             "group": "Parameter",
@@ -1284,17 +1200,17 @@ define({ "api": [
           },
           {
             "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "body.description",
-            "description": "<p>Booking description</p>"
-          },
-          {
-            "group": "Parameter",
             "type": "Date",
             "optional": false,
             "field": "body.end",
             "description": "<p>Booking date end</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "body.description",
+            "description": "<p>Booking description</p>"
           },
           {
             "group": "Parameter",
@@ -1305,87 +1221,10 @@ define({ "api": [
           },
           {
             "group": "Parameter",
-            "type": "Number",
+            "type": "String[]",
             "optional": false,
-            "field": "body.userId",
-            "description": "<p>Booking user id</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "Object",
-            "optional": false,
-            "field": "body.room",
-            "description": "<p>Room details</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "body.room.name",
-            "description": "<p>Room name</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "body.room.color",
-            "description": "<p>Room color</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "Boolean",
-            "optional": false,
-            "field": "body.room.presence",
-            "description": "<p>Room presence</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "Object",
-            "optional": false,
-            "field": "body.user",
-            "description": "<p>User details</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "body.user.googleId",
-            "description": "<p>User google account id</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "body.user.picture",
-            "description": "<p>The URL of the user profile picture (provided by google)</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "body.user.name",
-            "description": "<p>User name</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "body.user.email",
-            "description": "<p>User email</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "body.user.password",
-            "description": "<p>User password (Minimum length 8 characters)</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "body.user.role",
-            "description": "<p>User role (&quot;user&quot;, &quot;admin&quot;)</p>"
+            "field": "body.attendees",
+            "description": "<p>Emails from users who will attend the event</p>"
           }
         ]
       }
@@ -1398,7 +1237,21 @@ define({ "api": [
             "type": "Object",
             "optional": false,
             "field": "body",
-            "description": "<p>Booking</p>"
+            "description": "<p>Booking details</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "body.id",
+            "description": "<p>Booking id</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "string",
+            "optional": false,
+            "field": "body.description",
+            "description": "<p>Booking description</p>"
           },
           {
             "group": "Success 200",
@@ -1406,13 +1259,6 @@ define({ "api": [
             "optional": false,
             "field": "body.start",
             "description": "<p>Booking date start</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "body.description",
-            "description": "<p>Booking description</p>"
           },
           {
             "group": "Success 200",
@@ -1425,92 +1271,36 @@ define({ "api": [
             "group": "Success 200",
             "type": "Number",
             "optional": false,
-            "field": "body.roomId",
-            "description": "<p>Booking room id</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "Number",
-            "optional": false,
             "field": "body.userId",
-            "description": "<p>Booking user id</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "Object",
-            "optional": false,
-            "field": "body.room",
-            "description": "<p>Room details</p>"
+            "description": "<p>User's id who created the booking</p>"
           },
           {
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "body.room.name",
-            "description": "<p>Room name</p>"
+            "field": "body.eventId",
+            "description": "<p>Google calendar event's id</p>"
           },
           {
             "group": "Success 200",
-            "type": "String",
+            "type": "Date",
             "optional": false,
-            "field": "body.room.color",
-            "description": "<p>Room color</p>"
+            "field": "body.updatedAt",
+            "description": "<p>Booking creation date</p>"
           },
           {
             "group": "Success 200",
-            "type": "Boolean",
+            "type": "Date",
             "optional": false,
-            "field": "body.room.presence",
-            "description": "<p>Room presence</p>"
+            "field": "body.createdAt",
+            "description": "<p>Booking update date</p>"
           },
           {
             "group": "Success 200",
-            "type": "Object",
+            "type": "String[]",
             "optional": false,
-            "field": "body.user",
-            "description": "<p>User details</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "body.user.googleId",
-            "description": "<p>User google account id</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "body.user.picture",
-            "description": "<p>The URL of the user profile picture (provided by google)</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "body.user.name",
-            "description": "<p>User name</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "body.user.email",
-            "description": "<p>User email</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "body.user.password",
-            "description": "<p>User password (Minimum length 8 characters)</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "body.user.role",
-            "description": "<p>User role (&quot;user&quot;, &quot;admin&quot;)</p>"
+            "field": "body.attendees",
+            "description": "<p>Emails from users who will attend the event</p>"
           }
         ]
       }
@@ -1854,12 +1644,12 @@ define({ "api": [
     "type": "get",
     "url": "/api/v1/Room/",
     "title": "Get a list of Rooms",
+    "name": "getAllRooms",
     "permission": [
       {
         "name": "access"
       }
     ],
-    "name": "getAllRooms",
     "group": "Room",
     "header": {
       "fields": {
@@ -1910,7 +1700,28 @@ define({ "api": [
             "type": "Boolean",
             "optional": false,
             "field": "body.presence",
-            "description": "<p>If there is someone in the room</p>"
+            "description": "<p>If there is someone in the room (For future sensor integration)</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "body.bookingId",
+            "description": "<p>Booking id if not available, null if available</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Date",
+            "optional": false,
+            "field": "body.updatedAt",
+            "description": "<p>Room creation date</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Date",
+            "optional": false,
+            "field": "body.createdAt",
+            "description": "<p>Room update date</p>"
           }
         ]
       }
@@ -1980,6 +1791,27 @@ define({ "api": [
             "optional": false,
             "field": "body.presence",
             "description": "<p>If there is someone in the room</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "body.bookingId",
+            "description": "<p>Booking id if not available, null if available</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Date",
+            "optional": false,
+            "field": "body.updatedAt",
+            "description": "<p>Room creation date</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Date",
+            "optional": false,
+            "field": "body.createdAt",
+            "description": "<p>Room update date</p>"
           }
         ]
       }
@@ -2065,6 +1897,13 @@ define({ "api": [
           },
           {
             "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "body.id",
+            "description": "<p>Room id</p>"
+          },
+          {
+            "group": "Success 200",
             "type": "String",
             "optional": false,
             "field": "body.name",
@@ -2083,6 +1922,20 @@ define({ "api": [
             "optional": false,
             "field": "body.presence",
             "description": "<p>If there is someone in the room</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Date",
+            "optional": false,
+            "field": "body.updatedAt",
+            "description": "<p>Room creation date</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Date",
+            "optional": false,
+            "field": "body.createdAt",
+            "description": "<p>Room update date</p>"
           }
         ]
       }
@@ -2186,6 +2039,20 @@ define({ "api": [
             "optional": false,
             "field": "body.presence",
             "description": "<p>If there is someone in the room</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Date",
+            "optional": false,
+            "field": "body.updatedAt",
+            "description": "<p>Room creation date</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Date",
+            "optional": false,
+            "field": "body.createdAt",
+            "description": "<p>Room update date</p>"
           }
         ]
       }
