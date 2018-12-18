@@ -371,25 +371,28 @@ export class BookingController extends Controller {
     }
   };
 
-  findOneBooking(req: Request, res: Response) {
-    let bookingId = req.params.id;
-    this.model
-      .findById(bookingId)
-      .then(async result => {
-        if (!result) {
-          res.status(404).end();
-        } else {
-          let parsedResult = JSON.parse(JSON.stringify(result, null, 2));
-          let attendees = await getAttendees(bookingId);
-          parsedResult["attendees"] = attendees.map(x => x["email"]);
+  findOneBooking = async (req: Request, res: Response) => {
+    const bookingId = req.params.id;
 
-          res.status(200).json(parsedResult);
-        }
-      })
-      .catch(err => {
-        return Controller.serverError(res, err);
-      });
-  }
+    try {
+      const booking = await this.model.findById(bookingId);
+      if (!booking) {
+        Controller.notFound(res);
+      }
+
+      const parsedBooking = JSON.parse(JSON.stringify(booking, null, 2));
+      const attendees = await getAttendees(bookingId);
+
+      const finalBooking = {
+        ...parsedBooking,
+        attendees: attendees.map(attende => attende.email)
+      };
+
+      res.status(200).json(finalBooking);
+    } catch (err) {
+      Controller.serverError(res, err);
+    }
+  };
 
   findAllBooking(req: Request, res: Response) {
     let onlyFuture = req.query.onlyFuture == "true";
