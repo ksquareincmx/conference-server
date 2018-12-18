@@ -276,27 +276,40 @@ export class BookingController extends Controller {
     }
   };
 
-  updateBooking(req: Request, res: Response) {
-    let description = req.body.description;
-    let attendees = req.body.attendees;
-    let startTime = req.body.start;
-    let bookingId = req.params.id;
-    let endTime = req.body.end;
-    let room = req.body.roomId;
-    attendees.push(req.session.user.email);
+  updateBooking = async (req: Request, res: Response) => {
+    const description = req.body.description;
+    const startTime = req.body.start;
+    const endTime = req.body.end;
+    const roomId = req.body.roomId;
+    const attendees = req.body.attendees;
+    const bookingId = req.params.id;
 
-    let values: any = req.body;
-    values.id = bookingId;
-
-    if (startTime == null)
-      return Controller.badRequest(res, "Bad Request: No start in request.");
-    if (endTime == null)
-      return Controller.badRequest(res, "Bad Request: No end in request.");
-    if (room == null)
+    if (isEmpty(description)) {
+      return Controller.badRequest(
+        res,
+        "Bad Request: No description in request"
+      );
+    } else if (isEmpty(startTime)) {
+      return Controller.badRequest(
+        res,
+        "Bad Request: No start date in request."
+      );
+    } else if (isEmpty(endTime)) {
+      return Controller.badRequest(res, "Bad Request: No end date in request.");
+    } else if (isEmpty(roomId)) {
       return Controller.badRequest(res, "Bad Request: No roomId in request");
+    } else if (attendees.constructor !== Array) {
+      return Controller.badRequest(
+        res,
+        "Bad Request: No attendes as Array in request"
+      );
+    }
 
-    this.model
-      .findAndCountAll({
+    attendees.push(req.session.user.email);
+    const bookingObj = { ...req.body, id: bookingId };
+
+    try {
+      const bookings = await this.model.findAndCountAll({
         where: {
           [Op.and]: {
             [Op.not]: {
@@ -313,49 +326,50 @@ export class BookingController extends Controller {
               [Op.ne]: bookingId
             },
             roomId: {
-              [Op.eq]: room
+              [Op.eq]: roomId
             }
           }
         }
-      })
-      .then(result => {
-        if (result.count === 0) {
-          return this.model.findById(bookingId);
-        } else {
-          Controller.noContent(res);
-          throw null;
-        }
-      })
-      .then(async result => {
-        if (!result) {
-          res.status(404).end();
-          throw null;
-        } else {
-          await calendarService.updateEvent(
-            result.eventId,
-            startTime,
-            endTime,
-            description,
-            attendees
-          );
-          let updatedAttendees = await updateBookingAttendee(
-            bookingId,
-            attendees
-          );
-
-          result.update(values).then(async updatedResult => {
-            let parsedResult = JSON.parse(
-              JSON.stringify(updatedResult, null, 2)
-            );
-            parsedResult["attendees"] = updatedAttendees;
-            res.status(200).json(parsedResult);
-          });
-        }
-      })
-      .catch(err => {
-        if (err) return Controller.serverError(res);
       });
-  }
+      //if exist a booking that overlaps whit start and end
+      if (bookings.count > 0) {
+        return Controller.noContent(res);
+      }
+
+      const booking = await this.model.findById(bookingId);
+      if (!booking) {
+        res.status(404).end();
+      }
+
+      // update the event and send emails
+      await calendarService.updateEvent(
+        booking.eventId,
+        startTime,
+        endTime,
+        description,
+        attendees
+      );
+
+      // update tables attende and bookingAttende
+      const updatedAttendees = await updateBookingAttendee(
+        bookingId,
+        attendees
+      );
+
+      const updatedBooking = await booking.update(bookingObj);
+      const parsedUpdatedBooking = JSON.parse(
+        JSON.stringify(updatedBooking, null, 2)
+      );
+      const finalUpdatedBooking = {
+        ...parsedUpdatedBooking,
+        attendees: updatedAttendees
+      };
+
+      res.status(200).json(finalUpdatedBooking);
+    } catch (err) {
+      return Controller.serverError(res);
+    }
+  };
 
   findOneBooking(req: Request, res: Response) {
     let bookingId = req.params.id;
