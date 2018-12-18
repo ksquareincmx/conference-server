@@ -181,6 +181,25 @@ export class BookingController extends Controller {
     return this.router;
   }
 
+  bookingsPlusAttendees = async bookings => {
+    // Add attendees to booking
+    try {
+      const bookingsWithAttendees = bookings.map(async booking => {
+        const attendees = await getAttendees(booking.id);
+        const bookingWithAttendees = {
+          ...booking,
+          attendes: attendees.map(attendee => attendee.email)
+        };
+        return bookingWithAttendees;
+      });
+
+      const finalBookings = await Promise.all(bookingsWithAttendees);
+      return finalBookings;
+    } catch (err) {
+      throw err;
+    }
+  };
+
   destroyBooking = async (req: Request, res: Response) => {
     const bookingId = req.params.id;
 
@@ -394,40 +413,49 @@ export class BookingController extends Controller {
     }
   };
 
-  findAllBooking(req: Request, res: Response) {
-    let onlyFuture = req.query.onlyFuture == "true";
-    let filterDate: any = new Date("1999-01-01T00:00:00");
+  findAllBooking = async (req: Request, res: Response) => {
+    const fromDate: string = req.query.fromDate;
+    const toDate: Date = new Date(fromDate);
+    const isValidDate = date => date.toString() !== "Invalid Date";
 
-    // only show the actual booking (if exist) and the futures bookings
-    // otherwise show all bookings
-    if (onlyFuture) {
-      let date = new Date();
-      filterDate = date.toLocaleString("es-MX", {
-        formatMatcher: "basic",
-        timeZone: "America/Mexico_City"
-      });
-    }
+    try {
+      // Obtain all bookings
+      if (isEmpty(fromDate)) {
+        const bookings = await this.model.findAll();
 
-    this.model
-      .findAll({
-        where: {
-          end: { [Op.gte]: filterDate }
+        if (bookings) {
+          const parsedBookings = JSON.parse(JSON.stringify(bookings));
+          const finalBookings = await this.bookingsPlusAttendees(
+            parsedBookings
+          );
+          return res.status(200).json(finalBookings);
         }
-      })
-      .then(async result => {
-        let parsedResult = JSON.parse(JSON.stringify(result, null, 2));
-        let bookings = parsedResult.map(async booking => {
-          let attendees = await getAttendees(booking.id);
-          booking["attendees"] = attendees.map(x => x["email"]);
-          return booking;
+      }
+
+      // Obtain booking from a date
+      else if (isValidDate(toDate)) {
+        const bookings = await this.model.findAll({
+          where: {
+            end: { [Op.gte]: toDate }
+          }
         });
-        bookings = await Promise.all(bookings);
-        res.status(200).json(bookings);
-      })
-      .catch(err => {
-        return Controller.serverError(res, err);
-      });
-  }
+        if (bookings) {
+          const parsedBookings = JSON.parse(JSON.stringify(bookings));
+          const finalBookings = await this.bookingsPlusAttendees(
+            parsedBookings
+          );
+          return res.status(200).json(finalBookings);
+        }
+      }
+
+      return Controller.badRequest(
+        res,
+        "Bad Request: fromDate must be a date in format YYYY-MM-DDTHH:MM."
+      );
+    } catch (err) {
+      return Controller.serverError(res, err);
+    }
+  };
 }
 
 const booking = new BookingController();
