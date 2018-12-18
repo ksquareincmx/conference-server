@@ -1,6 +1,7 @@
 import * as _ from "lodash";
 import { Op } from "sequelize";
 import { Controller } from "./../../libraries/Controller";
+import { isEmpty } from "./../../libraries/util";
 import { Booking } from "./../../models/Booking";
 import { Request, Response, Router } from "express";
 import {
@@ -180,10 +181,6 @@ export class BookingController extends Controller {
     return this.router;
   }
 
-  /**
-  Destroy a booking and send event cancelation email
-  @param {number} id - if of booking to delete
-  */
   destroyBooking = async (req: Request, res: Response) => {
     const bookingId = req.params.id;
 
@@ -196,28 +193,38 @@ export class BookingController extends Controller {
     }
   };
 
-  createBooking(req: Request, res: Response) {
-    let description = req.body.description;
-    let attendees = req.body.attendees;
-    let startTime = req.body.start;
-    let endTime = req.body.end;
-    let roomId = req.body.roomId;
-    attendees.push(req.session.user.email);
+  createBooking = async (req: Request, res: Response) => {
+    const description = req.body.description;
+    const startTime = req.body.start;
+    const endTime = req.body.end;
+    const roomId = req.body.roomId;
+    const attendees = req.body.attendees;
 
-    if (description == null)
+    if (isEmpty(description)) {
       return Controller.badRequest(
         res,
         "Bad Request: No description in request"
       );
-    if (startTime == null)
-      return Controller.badRequest(res, "Bad Request: No start in request.");
-    if (endTime == null)
-      return Controller.badRequest(res, "Bad Request: No end in request.");
-    if (roomId == null)
+    } else if (isEmpty(startTime)) {
+      return Controller.badRequest(
+        res,
+        "Bad Request: No start date in request."
+      );
+    } else if (isEmpty(endTime)) {
+      return Controller.badRequest(res, "Bad Request: No end date in request.");
+    } else if (isEmpty(roomId)) {
       return Controller.badRequest(res, "Bad Request: No roomId in request");
+    } else if (attendees.constructor !== Array) {
+      return Controller.badRequest(
+        res,
+        "Bad Request: No attendes as Array in request"
+      );
+    }
 
-    this.model
-      .findAndCountAll({
+    attendees.push(req.session.user.email);
+
+    try {
+      const booking = await this.model.findAndCountAll({
         where: {
           [Op.and]: {
             [Op.not]: {
@@ -235,53 +242,39 @@ export class BookingController extends Controller {
             }
           }
         }
-      })
-      .then(async result => {
-        if (result.count === 0) {
-          let eventCalendar = await calendarService.insertEvent(
-            startTime,
-            endTime,
-            description,
-            attendees
-          );
-
-          this.createBookingDB(req, res, eventCalendar.id, attendees);
-        } else {
-          Controller.noContent(res);
-          throw null;
-        }
-      })
-      .catch(err => {
-        if (err !== null) Controller.serverError(res);
       });
-  }
+      //if exist a booking that overlaps whit start and end
+      if (booking.count > 0) {
+        return Controller.noContent(res);
+      }
 
-  createBookingDB(
-    req: Request,
-    res: Response,
-    eventId: string,
-    attendees: Array<string>
-  ) {
-    let values: any = req.body;
-    values["eventId"] = eventId;
-    if (!_.isObject(values))
-      return Controller.serverError(res, new Error("Invalid data in body"));
-    this.model
-      .create(values)
-      .then(async result => {
-        attendees.forEach(async attendee => {
-          let attendeeId = await insertAttendee(attendee);
-          insertBookingAttendee(result.id, attendeeId);
-        });
-        result = JSON.parse(JSON.stringify(result, null, 2));
-        result["attendees"] = attendees;
+      // insert event in Google calendar and send invitations
+      const eventCalendar = await calendarService.insertEvent(
+        startTime,
+        endTime,
+        description,
+        attendees
+      );
 
-        res.status(201).json(result);
-      })
-      .catch(err => {
-        if (err) Controller.serverError(res, err);
+      // insert booking the DB
+      const bookingObj = { ...req.body, eventId: eventCalendar.id };
+      const createdBooking = await this.model.create(bookingObj);
+      const parsedCreatedBooking = JSON.parse(
+        JSON.stringify(createdBooking, null, 2)
+      );
+
+      // insert attendee in the DB
+      attendees.forEach(async attendee => {
+        const attendeeId = await insertAttendee(attendee);
+        await insertBookingAttendee(parsedCreatedBooking.id, attendeeId);
       });
-  }
+
+      const finalBooking = { ...parsedCreatedBooking, attendees };
+      res.status(201).json(finalBooking);
+    } catch (err) {
+      return Controller.serverError(res);
+    }
+  };
 
   updateBooking(req: Request, res: Response) {
     let description = req.body.description;
