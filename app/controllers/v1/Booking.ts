@@ -180,19 +180,21 @@ export class BookingController extends Controller {
     return this.router;
   }
 
-  destroyBooking(req: Request, res: Response) {
-    let bookingId = req.params.id;
+  /**
+  Destroy a booking and send event cancelation email
+  @param {number} id - if of booking to delete
+  */
+  destroyBooking = async (req: Request, res: Response) => {
+    const bookingId = req.params.id;
 
-    this.model
-      .findById(bookingId)
-      .then(async result => {
-        await calendarService.deleteEvent(result.eventId);
-        this.destroy(req, res);
-      })
-      .catch(err => {
-        return Controller.serverError(res);
-      });
-  }
+    try {
+      const booking = await this.model.findById(bookingId);
+      await calendarService.deleteEvent(booking.eventId);
+      this.destroy(req, res);
+    } catch (err) {
+      return Controller.serverError(res);
+    }
+  };
 
   createBooking(req: Request, res: Response) {
     let description = req.body.description;
