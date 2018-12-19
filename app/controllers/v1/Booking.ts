@@ -54,9 +54,7 @@ export class BookingController extends Controller {
     @apiSuccess {String[]} body.attendes    Emails from users who will attend the event
   */
 
-    this.router.get("/", validateJWT("access"), (req, res) =>
-      this.findAllBooking(req, res)
-    );
+    this.router.get("/", validateJWT("access"), this.findAllBooking);
 
     /**
     @api {get} /api/v1/Booking/:id Get a Booking
@@ -80,9 +78,7 @@ export class BookingController extends Controller {
     @apiSuccess {String[]} body.attendes    Emails from users who will attend the event
     */
 
-    this.router.get("/:id", validateJWT("access"), (req, res) =>
-      this.findOneBooking(req, res)
-    );
+    this.router.get("/:id", validateJWT("access"), this.findOneBooking);
 
     /**
       @api {post} /api/v1/Booking/ Create a new Booking
@@ -102,6 +98,7 @@ export class BookingController extends Controller {
 
       @apiSuccess {Object}  body                   Booking details
       @apiSuccess {Number}  body.id                Booking id
+      @apiSuccess {Number}  body.roomId            Booking room id
       @apiSuccess {string}  body.description       Booking description
       @apiSuccess {Date}    body.start             Booking date start
       @apiSuccess {Date}    body.end               Booking date end
@@ -119,7 +116,7 @@ export class BookingController extends Controller {
       stripNestedObjects(),
       filterOwner(),
       appendUser(),
-      (req, res) => this.createBooking(req, res)
+      this.createBooking
     );
 
     /**
@@ -140,6 +137,7 @@ export class BookingController extends Controller {
 
       @apiSuccess {Object}  body                   Booking details
       @apiSuccess {Number}  body.id                Booking id
+      @apiSuccess {Number}  body.roomId            Booking room id
       @apiSuccess {string}  body.description       Booking description
       @apiSuccess {Date}    body.start             Booking date start
       @apiSuccess {Date}    body.end               Booking date end
@@ -157,7 +155,7 @@ export class BookingController extends Controller {
       stripNestedObjects(),
       appendUser(),
       adminOrOwner(this.model),
-      (req, res) => this.updateBooking(req, res)
+      this.updateBooking
     );
 
     /**
@@ -175,12 +173,36 @@ export class BookingController extends Controller {
       "/:id",
       validateJWT("access"),
       adminOrOwner(this.model),
-      (req, res) => this.destroyBooking(req, res)
+      this.destroyBooking
     );
 
     return this.router;
   }
 
+  /**
+   * @typedef {Object} Booking
+   * @property {number} id - booking id
+   * @property {string} description - booking description
+   * @property {string} start - booking date start
+   * @property {string} end - booking date end
+   * @property {string} eventId - google calendar event id associate with booking
+   * @property {number} roomId - booking room id
+   * @property {number} userId - user who creates the booking
+   * @property {string} createdAt - booking creation date
+   * @property {string} updatedAt - booking update date
+   */
+
+  /**
+   * @typedef {Object} BookingAttende
+   * @property {Booking} booking - booking
+   * @property {Array<string>} - booking's attendees
+   */
+
+  /**
+   * Returns object with bookings propertys and his attendees
+   * @param {Array<Booking>} bookings - array of booking
+   * @return {Array<BookingAttende>}
+   */
   bookingsPlusAttendees = async bookings => {
     // Add attendees to booking
     try {
@@ -357,7 +379,7 @@ export class BookingController extends Controller {
 
       const booking = await this.model.findById(bookingId);
       if (!booking) {
-        res.status(404).end();
+        return res.status(404).end();
       }
 
       // update the event and send emails
@@ -396,7 +418,7 @@ export class BookingController extends Controller {
     try {
       const booking = await this.model.findById(bookingId);
       if (!booking) {
-        Controller.notFound(res);
+        return Controller.notFound(res);
       }
 
       const parsedBooking = JSON.parse(JSON.stringify(booking, null, 2));
@@ -432,7 +454,7 @@ export class BookingController extends Controller {
         }
       }
 
-      // Obtain booking from a date
+      // Obtain all bookings from a date
       else if (isValidDate(toDate)) {
         const bookings = await this.model.findAll({
           where: {
