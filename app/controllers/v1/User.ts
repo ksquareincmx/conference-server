@@ -22,7 +22,7 @@ export class UserController extends Controller {
         @apiHeader { String }   Authorization Bearer [jwt token]
 
         @apiSuccess  {Object}   body                 User details
-        @apiSuccess  {String}   body.googleId        User google id
+        @apiSuccess  {String}   body.authProviderId  Id of the authProvider db element associated with the user.
         @apiSuccess  {String}   body.picture         The URL of the user profile picture (provided by google)
         @apiSuccess  {String}   body.name            User name
         @apiSuccess  {String}   body.email           User email
@@ -46,7 +46,7 @@ export class UserController extends Controller {
         @apiHeader { String }   Authorization Bearer [jwt token]
 
         @apiParam    {Object}   body                 User details
-        @apiParam    {String}   body.googleId        User google id
+        @apiParam    {String}   body.authProviderId  Id of the authProvider db element associated with the user.
         @apiParam    {String}   body.picture         The URL of the user profile picture (provided by google)
         @apiParam    {String}   body.name            User name
         @apiParam    {String}   body.email           User email
@@ -54,7 +54,7 @@ export class UserController extends Controller {
         @apiParam    {String}   body.role            User role ("user", "admin")
 
         @apiSuccess  {Object}   body                 User details
-        @apiSuccess  {String}   body.googleId        User google id
+        @apiSuccess  {String}   body.authProviderId  Id of the authProvider db element associated with the user.
         @apiSuccess  {String}   body.picture         The URL of the user profile picture (provided by google)
         @apiSuccess  {String}   body.name            User name
         @apiSuccess  {String}   body.email           User email
