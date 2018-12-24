@@ -26,7 +26,7 @@ const UserService = (userUri, token) => {
         Authorization: 'Bearer ' + token,
       },
       body: {
-        googleId: user.googleId,
+        authProviderId: user.authProviderId,
         picture: user.picture,
         name: user.name,
         email: user.email,
