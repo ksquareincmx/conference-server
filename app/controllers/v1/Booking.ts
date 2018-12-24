@@ -1,6 +1,7 @@
 import * as _ from "lodash";
 import { Op } from "sequelize";
 import { Controller } from "./../../libraries/Controller";
+import { isEmpty } from "./../../libraries/util";
 import { Booking } from "./../../models/Booking";
 import { Request, Response, Router } from "express";
 import {
@@ -20,6 +21,14 @@ import {
   deleteAllBookingAttendee,
   updateBookingAttendee
 } from "./../../libraries/BookingAttendeeDB";
+import { bookingMapper } from "./../../mappers/BookingMapper";
+import {
+  IGetBooking,
+  IGetAllBooking,
+  IDeleteBooking,
+  ICreateBooking,
+  IUpdateBooking
+} from "./../../interfaces/BookingInterfaces";
 
 export class BookingController extends Controller {
   constructor() {
@@ -38,7 +47,7 @@ export class BookingController extends Controller {
     @apiHeader {String}   Content-Type Application/Json
     @apiHeader {String}   Authorization Bearer [jwt token]
 
-    @apiParam   {Boolean}   body.onlyFuture      Shows only the actual and futures booking
+    @apiParam   {Date}   body.fromDate      Shows all bookings from a date
 
     @apiSuccess {Object[]}  body                   Booking details
     @apiSuccess {Number}  body.id                Booking id
@@ -46,16 +55,14 @@ export class BookingController extends Controller {
     @apiSuccess {Date}    body.start             Booking date start
     @apiSuccess {Date}    body.end               Booking date end
     @apiSuccess {String}  body.eventId           Google calendar event's id
-    @apiSuccess {Numbe}   body.roomId            Booking room
+    @apiSuccess {Number}  body.roomId            Booking room
     @apiSuccess {Number}  body.userId            User's id who created the booking
     @apiSuccess {Date}    body.updatedAt         Booking creation date
     @apiSuccess {Date}    body.createdAt         Booking update date
     @apiSuccess {String[]} body.attendes    Emails from users who will attend the event
   */
 
-    this.router.get("/", validateJWT("access"), (req, res) =>
-      this.findAllBooking(req, res)
-    );
+    this.router.get("/", validateJWT("access"), this.findAllBooking);
 
     /**
     @api {get} /api/v1/Booking/:id Get a Booking
@@ -72,16 +79,14 @@ export class BookingController extends Controller {
     @apiSuccess {Date}    body.start             Booking date start
     @apiSuccess {Date}    body.end               Booking date end
     @apiSuccess {String}  body.eventId           Google calendar event's id
-    @apiSuccess {Numbe}   body.roomId            Booking room
+    @apiSuccess {Number}   body.roomId            Booking room
     @apiSuccess {Number}  body.userId            User's id who created the booking
     @apiSuccess {Date}    body.updatedAt         Booking creation date
     @apiSuccess {Date}    body.createdAt         Booking update date
     @apiSuccess {String[]} body.attendes    Emails from users who will attend the event
     */
 
-    this.router.get("/:id", validateJWT("access"), (req, res) =>
-      this.findOneBooking(req, res)
-    );
+    this.router.get("/:id", validateJWT("access"), this.findOneBooking);
 
     /**
       @api {post} /api/v1/Booking/ Create a new Booking
@@ -101,6 +106,7 @@ export class BookingController extends Controller {
 
       @apiSuccess {Object}  body                   Booking details
       @apiSuccess {Number}  body.id                Booking id
+      @apiSuccess {Number}  body.roomId            Booking room id
       @apiSuccess {string}  body.description       Booking description
       @apiSuccess {Date}    body.start             Booking date start
       @apiSuccess {Date}    body.end               Booking date end
@@ -118,7 +124,7 @@ export class BookingController extends Controller {
       stripNestedObjects(),
       filterOwner(),
       appendUser(),
-      (req, res) => this.createBooking(req, res)
+      this.createBooking
     );
 
     /**
@@ -139,6 +145,7 @@ export class BookingController extends Controller {
 
       @apiSuccess {Object}  body                   Booking details
       @apiSuccess {Number}  body.id                Booking id
+      @apiSuccess {Number}  body.roomId            Booking room id
       @apiSuccess {string}  body.description       Booking description
       @apiSuccess {Date}    body.start             Booking date start
       @apiSuccess {Date}    body.end               Booking date end
@@ -156,7 +163,7 @@ export class BookingController extends Controller {
       stripNestedObjects(),
       appendUser(),
       adminOrOwner(this.model),
-      (req, res) => this.updateBooking(req, res)
+      this.updateBooking
     );
 
     /**
@@ -174,248 +181,319 @@ export class BookingController extends Controller {
       "/:id",
       validateJWT("access"),
       adminOrOwner(this.model),
-      (req, res) => this.destroyBooking(req, res)
+      this.destroyBooking
     );
 
     return this.router;
   }
 
-  destroyBooking(req: Request, res: Response) {
-    let bookingId = req.params.id;
+  /**
+   * @typedef {Object} Booking
+   * @property {number} id - booking id
+   * @property {string} description - booking description
+   * @property {string} start - booking date start
+   * @property {string} end - booking date end
+   * @property {string} eventId - google calendar event id associate with booking
+   * @property {number} roomId - booking room id
+   * @property {number} userId - user who creates the booking
+   * @property {string} createdAt - booking creation date
+   * @property {string} updatedAt - booking update date
+   */
 
-    this.model
-      .findById(bookingId)
-      .then(async result => {
-        await calendarService.deleteEvent(result.eventId);
-        this.destroy(req, res);
-      })
-      .catch(err => {
-        return Controller.serverError(res);
+  /**
+   * @typedef {Object} BookingAttende
+   * @property {Booking} booking - booking
+   * @property {Array<string>} - booking's attendees
+   */
+
+  /**
+   * Returns object with bookings propertys and his attendees
+   * @param {Array<Booking>} bookings - array of booking
+   * @return {Array<BookingAttende>}
+   */
+  bookingsPlusAttendees = async bookings => {
+    // Add attendees to booking
+    try {
+      const bookingsWithAttendees = bookings.map(async booking => {
+        const attendees = await getAttendees(booking.id);
+        const bookingWithAttendees = {
+          ...booking,
+          attendes: attendees.map(attendee => attendee.email)
+        };
+        return bookingWithAttendees;
       });
-  }
 
-  createBooking(req: Request, res: Response) {
-    let description = req.body.description;
-    let attendees = req.body.attendees;
-    let startTime = req.body.start;
-    let endTime = req.body.end;
-    let roomId = req.body.roomId;
-    attendees.push(req.session.user.email);
+      const finalBookings = await Promise.all(bookingsWithAttendees);
+      return finalBookings;
+    } catch (err) {
+      throw err;
+    }
+  };
 
-    if (description == null)
+  destroyBooking = async (req: Request, res: Response) => {
+    const data = <IDeleteBooking>req.params;
+
+    try {
+      const booking = await this.model.findById(data.id);
+      await calendarService.deleteEvent(booking.eventId);
+      this.destroy(req, res);
+    } catch (err) {
+      return Controller.serverError(res);
+    }
+  };
+
+  createBooking = async (req: Request, res: Response) => {
+    const body = req.body;
+    const data = <ICreateBooking>bookingMapper.toEntity(body);
+
+    if (isEmpty(data.description)) {
       return Controller.badRequest(
         res,
         "Bad Request: No description in request"
       );
-    if (startTime == null)
-      return Controller.badRequest(res, "Bad Request: No start in request.");
-    if (endTime == null)
-      return Controller.badRequest(res, "Bad Request: No end in request.");
-    if (roomId == null)
+    } else if (isEmpty(data.start)) {
+      return Controller.badRequest(
+        res,
+        "Bad Request: No start date in request."
+      );
+    } else if (isEmpty(data.end)) {
+      return Controller.badRequest(res, "Bad Request: No end date in request.");
+    } else if (isEmpty(data.roomId)) {
       return Controller.badRequest(res, "Bad Request: No roomId in request");
+    } else if (data.attendees.constructor !== Array) {
+      return Controller.badRequest(
+        res,
+        "Bad Request: No attendes as Array in request"
+      );
+    }
 
-    this.model
-      .findAndCountAll({
+    // insert only if the author email don't exist in data
+    if (!data.attendees.some(email => email === req.session.user.email)) {
+      data.attendees.push(req.session.user.email);
+    }
+
+    try {
+      const booking = await this.model.findAndCountAll({
         where: {
           [Op.and]: {
             [Op.not]: {
               [Op.or]: {
                 end: {
-                  [Op.lte]: startTime
+                  [Op.lte]: data.start
                 },
                 start: {
-                  [Op.gte]: endTime
+                  [Op.gte]: data.end
                 }
               }
             },
             roomId: {
-              [Op.eq]: roomId
+              [Op.eq]: data.roomId
             }
           }
         }
-      })
-      .then(async result => {
-        if (result.count === 0) {
-          let eventCalendar = await calendarService.insertEvent(
-            startTime,
-            endTime,
-            description,
-            attendees
-          );
-
-          this.createBookingDB(req, res, eventCalendar.id, attendees);
-        } else {
-          Controller.noContent(res);
-          throw null;
-        }
-      })
-      .catch(err => {
-        if (err !== null) Controller.serverError(res);
       });
-  }
+      //if exist a booking that overlaps whit start and end
+      if (booking.count > 0) {
+        return Controller.noContent(res);
+      }
 
-  createBookingDB(
-    req: Request,
-    res: Response,
-    eventId: string,
-    attendees: Array<string>
-  ) {
-    let values: any = req.body;
-    values["eventId"] = eventId;
-    if (!_.isObject(values))
-      return Controller.serverError(res, new Error("Invalid data in body"));
-    this.model
-      .create(values)
-      .then(async result => {
-        attendees.forEach(async attendee => {
-          let attendeeId = await insertAttendee(attendee);
-          insertBookingAttendee(result.id, attendeeId);
-        });
-        result = JSON.parse(JSON.stringify(result, null, 2));
-        result["attendees"] = attendees;
+      // insert event in Google calendar and send invitations
+      const eventCalendar = await calendarService.insertEvent(
+        data.start,
+        data.end,
+        data.description,
+        data.attendees
+      );
 
-        res.status(201).json(result);
-      })
-      .catch(err => {
-        if (err) Controller.serverError(res, err);
+      // insert booking the DB
+      const bookingObj = { ...data, eventId: eventCalendar.id };
+      const createdBooking = await this.model.create(bookingObj);
+      const parsedCreatedBooking = JSON.parse(
+        JSON.stringify(createdBooking, null, 2)
+      );
+
+      // insert attendee in the DB
+      data.attendees.forEach(async attendee => {
+        const attendeeId = await insertAttendee(attendee);
+        await insertBookingAttendee(parsedCreatedBooking.id, attendeeId);
       });
-  }
 
-  updateBooking(req: Request, res: Response) {
-    let description = req.body.description;
-    let attendees = req.body.attendees;
-    let startTime = req.body.start;
-    let bookingId = req.params.id;
-    let endTime = req.body.end;
-    let room = req.body.roomId;
-    attendees.push(req.session.user.email);
+      const finalBooking = {
+        ...parsedCreatedBooking,
+        attendees: data.attendees
+      };
+      const JSONBooking = bookingMapper.toJSON(finalBooking);
+      res.status(201).json(JSONBooking);
+    } catch (err) {
+      return Controller.serverError(res);
+    }
+  };
 
-    let values: any = req.body;
-    values.id = bookingId;
+  updateBooking = async (req: Request, res: Response) => {
+    const requestContent = { ...req.body, ...req.params };
+    const data = <IUpdateBooking>bookingMapper.toEntity(requestContent);
 
-    if (startTime == null)
-      return Controller.badRequest(res, "Bad Request: No start in request.");
-    if (endTime == null)
-      return Controller.badRequest(res, "Bad Request: No end in request.");
-    if (room == null)
+    if (isEmpty(data.description)) {
+      return Controller.badRequest(
+        res,
+        "Bad Request: No description in request"
+      );
+    } else if (isEmpty(data.start)) {
+      return Controller.badRequest(
+        res,
+        "Bad Request: No start date in request."
+      );
+    } else if (isEmpty(data.end)) {
+      return Controller.badRequest(res, "Bad Request: No end date in request.");
+    } else if (isEmpty(data.roomId)) {
       return Controller.badRequest(res, "Bad Request: No roomId in request");
+    } else if (data.attendees.constructor !== Array) {
+      return Controller.badRequest(
+        res,
+        "Bad Request: No attendes as Array in request"
+      );
+    }
 
-    this.model
-      .findAndCountAll({
+    // insert only if the author email don't exist in the request
+    if (!data.attendees.some(email => email === req.session.user.email)) {
+      data.attendees.push(req.session.user.email);
+    }
+
+    try {
+      const bookings = await this.model.findAndCountAll({
         where: {
           [Op.and]: {
             [Op.not]: {
               [Op.or]: {
                 end: {
-                  [Op.lte]: startTime
+                  [Op.lte]: data.start
                 },
                 start: {
-                  [Op.gte]: endTime
+                  [Op.gte]: data.end
                 }
               }
             },
             id: {
-              [Op.ne]: bookingId
+              [Op.ne]: data.id
             },
             roomId: {
-              [Op.eq]: room
+              [Op.eq]: data.roomId
             }
           }
         }
-      })
-      .then(result => {
-        if (result.count === 0) {
-          return this.model.findById(bookingId);
-        } else {
-          Controller.noContent(res);
-          throw null;
-        }
-      })
-      .then(async result => {
-        if (!result) {
-          res.status(404).end();
-          throw null;
-        } else {
-          await calendarService.updateEvent(
-            result.eventId,
-            startTime,
-            endTime,
-            description,
-            attendees
-          );
-          let updatedAttendees = await updateBookingAttendee(
-            bookingId,
-            attendees
-          );
-
-          result.update(values).then(async updatedResult => {
-            let parsedResult = JSON.parse(
-              JSON.stringify(updatedResult, null, 2)
-            );
-            parsedResult["attendees"] = updatedAttendees;
-            res.status(200).json(parsedResult);
-          });
-        }
-      })
-      .catch(err => {
-        if (err) return Controller.serverError(res);
       });
-  }
+      //if exist a booking that overlaps whit start and end
+      if (bookings.count > 0) {
+        return Controller.noContent(res);
+      }
 
-  findOneBooking(req: Request, res: Response) {
-    let bookingId = req.params.id;
-    this.model
-      .findById(bookingId)
-      .then(async result => {
-        if (!result) {
-          res.status(404).end();
-        } else {
-          let parsedResult = JSON.parse(JSON.stringify(result, null, 2));
-          let attendees = await getAttendees(bookingId);
-          parsedResult["attendees"] = attendees.map(x => x["email"]);
+      const booking = await this.model.findById(data.id);
+      if (!booking) {
+        return res.status(404).end();
+      }
 
-          res.status(200).json(parsedResult);
-        }
-      })
-      .catch(err => {
-        return Controller.serverError(res, err);
-      });
-  }
+      // update the event and send emails
+      await calendarService.updateEvent(
+        booking.eventId,
+        data.start,
+        data.end,
+        data.description,
+        data.attendees
+      );
 
-  findAllBooking(req: Request, res: Response) {
-    let onlyFuture = req.query.onlyFuture == "true";
-    let filterDate: any = new Date("1999-01-01T00:00:00");
+      // update tables attende and bookingAttende
+      const updatedAttendees = await updateBookingAttendee(
+        data.id,
+        data.attendees
+      );
 
-    // only show the actual booking (if exist) and the futures bookings
-    // otherwise show all bookings
-    if (onlyFuture) {
-      let date = new Date();
-      filterDate = date.toLocaleString("es-MX", {
-        formatMatcher: "basic",
-        timeZone: "America/Mexico_City"
-      });
+      const updatedBooking = await booking.update(data);
+      const parsedUpdatedBooking = JSON.parse(
+        JSON.stringify(updatedBooking, null, 2)
+      );
+      const finalUpdatedBooking = {
+        ...parsedUpdatedBooking,
+        attendees: updatedAttendees
+      };
+      const JSONBooking = bookingMapper.toJSON(finalUpdatedBooking);
+      res.status(200).json(JSONBooking);
+    } catch (err) {
+      return Controller.serverError(res);
     }
+  };
 
-    this.model
-      .findAll({
-        where: {
-          end: { [Op.gte]: filterDate }
+  findOneBooking = async (req: Request, res: Response) => {
+    const data: IGetBooking = req.params;
+
+    try {
+      const booking = await this.model.findById(data.id);
+      if (!booking) {
+        return Controller.notFound(res);
+      }
+
+      const parsedBooking = JSON.parse(JSON.stringify(booking, null, 2));
+      const attendees = await getAttendees(data.id);
+
+      const finalBooking = {
+        ...parsedBooking,
+        attendees: attendees.map(attende => attende.email)
+      };
+
+      //interface
+      const JSONBooking = bookingMapper.toJSON(finalBooking);
+      res.status(200).json(JSONBooking);
+    } catch (err) {
+      Controller.serverError(res, err);
+    }
+  };
+
+  findAllBooking = async (req: Request, res: Response) => {
+    const data = <IGetAllBooking>req.query;
+    const toDate: Date = new Date(data.fromDate);
+    const isValidDate = date => date.toString() !== "Invalid Date";
+
+    try {
+      // TODO: Delete redundant code
+      // Obtain all bookings
+      if (isEmpty(data.fromDate)) {
+        const bookings = await this.model.findAll();
+
+        if (bookings) {
+          const parsedBookings = JSON.parse(JSON.stringify(bookings));
+          const finalBookings = await this.bookingsPlusAttendees(
+            parsedBookings
+          );
+          const JSONBookings = finalBookings.map(bookingMapper.toJSON);
+          return res.status(200).json(JSONBookings);
         }
-      })
-      .then(async result => {
-        let parsedResult = JSON.parse(JSON.stringify(result, null, 2));
-        let bookings = parsedResult.map(async booking => {
-          let attendees = await getAttendees(booking.id);
-          booking["attendees"] = attendees.map(x => x["email"]);
-          return booking;
+      }
+
+      // Obtain all bookings from a date
+      else if (isValidDate(toDate)) {
+        const bookings = await this.model.findAll({
+          where: {
+            end: { [Op.gte]: toDate }
+          }
         });
-        bookings = await Promise.all(bookings);
-        res.status(200).json(bookings);
-      })
-      .catch(err => {
-        return Controller.serverError(res, err);
-      });
-  }
+        if (bookings) {
+          const parsedBookings = JSON.parse(JSON.stringify(bookings));
+          const finalBookings = await this.bookingsPlusAttendees(
+            parsedBookings
+          );
+
+          const JSONBookings = finalBookings.map(bookingMapper.toJSON);
+          return res.status(200).json(JSONBookings);
+        }
+      }
+
+      return Controller.badRequest(
+        res,
+        "Bad Request: fromDate must be a date in format YYYY-MM-DDTHH:MM."
+      );
+    } catch (err) {
+      return Controller.serverError(res, err);
+    }
+  };
 }
 
 const booking = new BookingController();
