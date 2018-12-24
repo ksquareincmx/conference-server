@@ -30,19 +30,19 @@ export class RoomController extends Controller {
         @apiHeader { String }   Authorization Bearer [jwt token]
 
         @apiSuccess  {Object[]}   body                    Room details
+        @apiSuccess  {Number}     body.id                 Room id
         @apiSuccess  {String}     body.name               Room name
         @apiSuccess  {String}     body.color              The color to show in the UI for this room
         @apiSuccess  {Boolean}    body.presence           If there is someone in the room (For future sensor integration)
-        @apiSuccess  {Number}     body.bookingId          Booking id if not available, null if available
-        @apiSuccess  {Date}        body.updatedAt         Room creation date
-        @apiSuccess  {Date}        body.createdAt         Room update date
+        @apiSuccess  {Number}     body.bookingIdActual    Booking id that currently occupies the room, null if its not
+        @apiSuccess  {String}     body.status             Room avability ("Not Available", "Available")
+        @apiSuccess  {Date}       body.updatedAt          Room creation date
+        @apiSuccess  {Date}       body.createdAt          Room update date
 
 
     */
 
-    this.router.get("/", validateJWT("access"), (req, res) =>
-      this.findAllRoom(req, res)
-    );
+    this.router.get("/", validateJWT("access"), this.findAllRoom);
 
     /**
         @api {get} /api/v1/Room/:id Get a Room
@@ -53,19 +53,18 @@ export class RoomController extends Controller {
         @apiHeader { String }   Content-Type Application/Json
         @apiHeader { String }   Authorization Bearer [jwt token]
 
-        @apiSuccess  {Object}   body                Room details
-        @apiSuccess  {String}   body.name           Room name
-        @apiSuccess  {String}   body.color          The color to show in the UI for this room
-        @apiSuccess  {Boolean}  body.presence       If there is someone in the room
-        @apiSuccess  {Number}   body.bookingId      Booking id if not available, null if available
-        @apiSuccess  {Date}     body.updatedAt      Room creation date
-        @apiSuccess  {Date}     body.createdAt      Room update date
-
+        @apiSuccess  {Object}   body                      Room details
+        @apiSuccess  {Number}   body.id                   Room id
+        @apiSuccess  {String}   body.name                 Room name
+        @apiSuccess  {String}   body.color                The color to show in the UI for this room
+        @apiSuccess  {Boolean}  body.presence             If there is someone in the room
+        @apiSuccess  {Number}   body.bookingIdActual      Booking id that currently occupies the room, null if its not
+        @apiSuccess  {String}   body.status               Room avability ("Not Available", "Available")
+        @apiSuccess  {Date}     body.updatedAt            Room creation date
+        @apiSuccess  {Date}     body.createdAt            Room update date
     */
 
-    this.router.get("/:id", validateJWT("access"), (req, res) =>
-      this.findOneRoom(req, res)
-    );
+    this.router.get("/:id", validateJWT("access"), this.findOneRoom);
 
     /**
         @api {post} /api/v1/Room/ Create a Room
@@ -114,6 +113,7 @@ export class RoomController extends Controller {
         @apiParam    {Boolean}  body.presence       If there is someone in the room
 
         @apiSuccess  {Object}   body                Room details
+        @apiSuccess  {Number}   body.id             Room id
         @apiSuccess  {String}   body.name           Room name
         @apiSuccess  {String}   body.color          The color to show in the UI for this room
         @apiSuccess  {Boolean}  body.presence       If there is someone in the room
@@ -151,93 +151,101 @@ export class RoomController extends Controller {
     return this.router;
   }
 
-  findOneRoom(req: Request, res: Response) {
-    let roomId = req.params.id;
-    let actualDate = getActualDate();
+  /**
+   * @typedef {Object} RoomStatus
+   * @property {number} bookingIdActual - Booking id that currently occupies the room, null if its not.
+   * @property {string} roomAvability - Room avability ("Not Available", "Available")
+   */
 
-    this.model
-      .findById(roomId)
-      .then(async roomResult => {
-        if (!roomResult) res.status(404).end();
-        else {
-          let room = JSON.parse(JSON.stringify(roomResult, null, 2));
-
-          let bookingResult = await Booking.findOne({
-            attributes: ["id"],
-            where: {
-              [Op.and]: {
-                roomId: {
-                  [Op.eq]: roomId
-                },
-                start: {
-                  [Op.lte]: actualDate
-                },
-                end: {
-                  [Op.gte]: actualDate
-                }
-              }
+  /**
+   * Return the room status
+   * @param {number} roomId - Room id
+   * @return {RoomStatus}   - Room status
+   */
+  public roomStatus = async (roomId: number, actualDate = getActualDate()) => {
+    try {
+      const bookingId = await Booking.findOne({
+        attributes: ["id"],
+        where: {
+          [Op.and]: {
+            roomId: {
+              [Op.eq]: roomId
+            },
+            start: {
+              [Op.lte]: actualDate
+            },
+            end: {
+              [Op.gte]: actualDate
             }
-          });
-          let parsedBooking = JSON.parse(
-            JSON.stringify(bookingResult, null, 2)
-          );
-          if (parsedBooking) {
-            room["bookingId"] = bookingResult.id;
-          } else {
-            room["bookingId"] = null;
           }
-
-          res.status(200).json(room);
         }
-        return null;
-      })
-      .catch(err => {
-        if (err) Controller.serverError(res, err);
       });
-  }
 
-  findAllRoom(req: Request, res: Response) {
-    let actualDate = getActualDate();
+      const parsedBookingId = JSON.parse(JSON.stringify(bookingId));
+      const bookingIdActual = parsedBookingId ? parsedBookingId["id"] : null;
+      const status = bookingIdActual ? "Not Available" : "Available";
 
-    this.model
-      .findAll()
-      .then(async resultRooms => {
-        let parsedRooms = JSON.parse(JSON.stringify(resultRooms, null, 2));
+      return { bookingIdActual, status };
+    } catch (err) {
+      throw err;
+    }
+  };
 
-        let rooms = parsedRooms.map(async room => {
-          let bookingResult = await Booking.findOne({
-            attributes: ["id"],
-            where: {
-              [Op.and]: {
-                roomId: {
-                  [Op.eq]: room.id
-                },
-                start: {
-                  [Op.lte]: actualDate
-                },
-                end: {
-                  [Op.gte]: actualDate
-                }
-              }
-            }
-          });
-          let parsedBookings = JSON.parse(
-            JSON.stringify(bookingResult, null, 2)
-          );
-          if (parsedBookings) {
-            room["bookingId"] = bookingResult.id;
-          } else {
-            room["bookingId"] = null;
-          }
-          return room;
-        });
-        rooms = await Promise.all(rooms);
-        res.status(200).json(rooms);
-      })
-      .catch(err => {
-        return Controller.serverError(err);
+  /**
+   * @typedef {Room}
+   * @property {string} name - Room name
+   * @property {string} color - The color to show in the UI for this room
+   * @property {boolean} presence - If there is someone in the room (For future sensor integration)
+   * @property {number} bookingIdActual - Booking id that currently occupies the room, null if its not
+   * @property {string} status - Room avability ("Not Available", "Available")
+   * @property {string} updatedAt - Room creation date
+   * @property {string} createdAt - Room update date
+   */
+
+  /**
+   * Returns a Room object that match with the id
+   * @param {number} id - id of the room to recover
+   * @return {Room} Requested Room
+   */
+
+  findOneRoom = async (req: Request, res: Response) => {
+    const roomId = req.params.id;
+
+    try {
+      const room = await this.model.findById(roomId);
+
+      if (!room) {
+        return Controller.notFound(res);
+      }
+
+      const parsedRoom = JSON.parse(JSON.stringify(room));
+      const roomStatus = await this.roomStatus(parsedRoom["id"]);
+      const roomBooking = { ...parsedRoom, ...roomStatus };
+      res.status(200).json(roomBooking);
+    } catch (err) {
+      return Controller.serverError(res, err);
+    }
+  };
+
+  /**
+   * Returns all Rooms
+   * @return {Array<Room>} Rooms
+   */
+  findAllRoom = async (req: Request, res: Response) => {
+    try {
+      const rooms = await this.model.findAll();
+      const parsedRooms = JSON.parse(JSON.stringify(rooms, null, 2));
+
+      const roomsBooking = parsedRooms.map(async room => {
+        const roomStatus = await this.roomStatus(room["id"]);
+        return { ...room, ...roomStatus };
       });
-  }
+      const resolvedRooms = await Promise.all(roomsBooking);
+      res.status(200).json(resolvedRooms);
+    } catch (err) {
+      return Controller.serverError(res, err);
+    }
+  };
 }
 
 const room = new RoomController();
