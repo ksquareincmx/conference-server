@@ -95,7 +95,7 @@ export class RoomController extends Controller {
       "/",
       validateJWT("access"),
       stripNestedObjects(),
-      //filterRoles(["admin"]),
+      filterRoles(["admin"]),
       this.createRoom
     );
 
@@ -127,7 +127,7 @@ export class RoomController extends Controller {
       "/:id",
       validateJWT("access"),
       stripNestedObjects(),
-      //filterRoles(["admin"]),
+      filterRoles(["admin"]),
       this.updateRoom
     );
 
@@ -145,7 +145,7 @@ export class RoomController extends Controller {
     this.router.delete(
       "/:id",
       validateJWT("access"),
-      //filterRoles(["admin"]),
+      filterRoles(["admin"]),
       (req, res) => this.destroy(req, res)
     );
 
