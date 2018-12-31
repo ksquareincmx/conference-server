@@ -1,4 +1,4 @@
-//Response
+// Response
 export interface IBookingResponse {
   description: string;
   room_id: number;
@@ -12,7 +12,7 @@ export interface IBookingResponse {
   created_at: Date;
 }
 
-//Request
+// Request
 export interface IGetBooking {
   id: number;
 }
@@ -20,11 +20,12 @@ export interface IGetBooking {
 export interface IGetAllBooking {
   fromDate?: Date;
 }
+
 export interface IDeleteBooking {
   id: number;
 }
 
-// interface base for ICreateBooking & IUpdateBooking
+// Interface base for ICreateBooking & IUpdateBooking
 export interface IBookingRequest {
   description: string;
   roomId: number;
@@ -33,6 +34,7 @@ export interface IBookingRequest {
   attendees: string[];
   userId: number;
 }
+
 export interface ICreateBooking extends IBookingRequest {}
 
 export interface IUpdateBooking extends IBookingRequest {

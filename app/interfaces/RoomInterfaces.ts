@@ -26,4 +26,6 @@ export interface IRoomRequest {
 
 export interface ICreateRoom extends IRoomRequest {}
 
-export interface IUpdateRoom extends IRoomRequest {}
+export interface IUpdateRoom extends IRoomRequest {
+  id: number;
+}
