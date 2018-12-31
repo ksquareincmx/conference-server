@@ -13,7 +13,7 @@ module.exports = {
       type: Sequelize.INTEGER,
       defaultValue: null,
       allowNull: true,
-      // references: { model: 'authProvider', key: 'id' }
+      references: { model: 'authProvider', key: 'id' }
     });
   },
 

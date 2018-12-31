@@ -1,0 +1,26 @@
+{
+    "development": {
+        "database": "conference-booking",
+        "username": "confuser",
+        "password": "password",
+        "host": "localhost",
+        "dialect": "mysql",
+        "timezone": "utc"
+    },
+    "test": {
+        "database": "conference-booking",
+        "username": "confuser",
+        "password": "password",
+        "host": "localhost",
+        "dialect": "mysql",
+        "timezone": "utc"
+    },
+    "production": {
+        "database": "conference-booking",
+        "username": "confuser",
+        "password": "password",
+        "host": "localhost",
+        "dialect": "mysql",
+        "timezone": "utc"
+    }
+}
