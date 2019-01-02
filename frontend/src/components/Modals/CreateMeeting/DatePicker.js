@@ -16,10 +16,6 @@ const styles = theme => ({
   }
 });
 
-const changedDateHandler = (event, setDate) => {
-  setDate(event.target.value);
-};
-
 function DatePickers(props) {
   const { classes } = props;
 
@@ -35,7 +31,7 @@ function DatePickers(props) {
           shrink: true
         }}
         disabled={props.disabled}
-        onChange={event => changedDateHandler(event, props.setDate)}
+        onChange={props.setDate}
       />
     </form>
   );

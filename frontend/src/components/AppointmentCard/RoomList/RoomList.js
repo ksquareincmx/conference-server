@@ -1,6 +1,7 @@
 import React from "react";
 import RoomCard from "./RoomCard/";
 import GridList from "@material-ui/core/GridList";
+import "./RoomList.css";
 
 class RoomList extends React.Component {
   state = {
@@ -36,9 +37,7 @@ class RoomList extends React.Component {
         roomId={room.roomId}
       />
     ));
-    return (
-      <GridList style={{ maxHeight: 450, marginLeft: 20 }}>{rooms}</GridList>
-    );
+    return <GridList className="roomList">{rooms}</GridList>;
   }
 }
 

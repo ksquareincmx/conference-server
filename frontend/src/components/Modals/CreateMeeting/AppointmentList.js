@@ -86,46 +86,27 @@ class AppointmentList extends React.Component {
   };
 
   setDate = date => {
-    this.setState({ date: date }, () => this.enableStartTimeSelect());
+    this.setState({ date: date.target.value }, () =>
+      this.enableStartTimeSelect()
+    );
   };
 
-  clickedNextButtonHandler = () => {
-    const post = {
-      description: this.state.reasonAppoointmentText,
-      roomId: this.state.roomId,
-      start:
-        this.state.date +
-        "T" +
-        this.state.startTime.hour +
-        ":" +
-        this.state.startTime.minute +
-        ":" +
-        "00.000Z",
-      end:
-        this.state.date +
-        "T" +
-        this.state.endTime.hour +
-        ":" +
-        this.state.endTime.minute +
-        ":" +
-        "00.000Z",
-      attendees: [...this.state.attendees]
-    };
+  handleClickNext = async () => {
+    const post = postDto(this.state);
 
     if (this.state.bookingClicked) {
-      this.props.booking
-        .modifyBooking(post, this.props.bookingClickedObj.bookingId)
-        .then(res => {
-          window.location.href = "/calendar";
-          return 0;
-        });
-    }
-    this.props.booking.createNewBooking(post).then(res => {
+      const res = await this.props.booking.modifyBooking(
+        post,
+        this.props.bookingClickedObj.bookingId
+      );
       window.location.href = "/calendar";
-    });
+      return 0;
+    }
+    const res = await this.props.booking.createNewBooking(post);
+    window.location.href = "/calendar";
   };
 
-  reasonAppointmentChangedHanlder = event => {
+  handleChangeReason = event => {
     this.setState({ reasonAppoointmentText: event.target.value });
   };
 
@@ -138,8 +119,8 @@ class AppointmentList extends React.Component {
 
   getDate = () => {
     const date = new Date();
-    const day = this.addZeros(date.getDate());
-    const month = this.addZeros(date.getMonth() + 1);
+    const day = addZeros(date.getDate());
+    const month = addZeros(date.getMonth() + 1);
     const year = String(date.getFullYear());
 
     return year + "-" + month + "-" + day;
@@ -176,9 +157,9 @@ class AppointmentList extends React.Component {
         let date =
           startDate.getFullYear() +
           "-" +
-          this.addZeros(startDate.getMonth() + 1) +
+          addZeros(startDate.getMonth() + 1) +
           "-" +
-          this.addZeros(startDate.getDate());
+          addZeros(startDate.getDate());
 
         this.setState({
           room: this.props.bookingClickedObj.roomName,
@@ -186,13 +167,13 @@ class AppointmentList extends React.Component {
           bookingClicked: true,
           date: date,
           startTime: {
-            hour: this.addZeros(startDate.getHours()),
-            minute: this.addZeros(startDate.getMinutes())
+            hour: addZeros(startDate.getHours()),
+            minute: addZeros(startDate.getMinutes())
           },
 
           endTime: {
-            hour: this.addZeros(endDate.getHours()),
-            minute: this.addZeros(endDate.getMinutes())
+            hour: addZeros(endDate.getHours()),
+            minute: addZeros(endDate.getMinutes())
           },
           disabledStartTimeSelect: false,
           disabledEndTimeSelect: false,
@@ -215,7 +196,6 @@ class AppointmentList extends React.Component {
     if (this.state.bookingClicked) {
       room = this.props.bookingClickedObj.roomName;
     }
-
     return (
       <Grid
         container
@@ -264,7 +244,7 @@ class AppointmentList extends React.Component {
               placeholder="Reason"
               fullWidth
               margin="normal"
-              onChange={this.reasonAppointmentChangedHanlder}
+              onChange={this.handleChangeReason}
               InputLabelProps={{
                 shrink: true
               }}
@@ -290,7 +270,7 @@ class AppointmentList extends React.Component {
             <MaterialButton
               textButton="Next"
               colorButton="#5094E3"
-              onClick={this.clickedNextButtonHandler}
+              onClick={this.handleClickNext}
               disabled={this.state.disabledNextButton}
             />
           </div>
@@ -298,6 +278,37 @@ class AppointmentList extends React.Component {
       </Grid>
     );
   }
+}
+
+function addZeros(number) {
+  if (number < 10) {
+    return "0" + String(number);
+  }
+  return String(number);
+}
+
+function postDto(state) {
+  return {
+    description: state.reasonAppoointmentText,
+    roomId: state.roomId,
+    start:
+      state.date +
+      "T" +
+      state.startTime.hour +
+      ":" +
+      state.startTime.minute +
+      ":" +
+      "00.000Z",
+    end:
+      state.date +
+      "T" +
+      state.endTime.hour +
+      ":" +
+      state.endTime.minute +
+      ":" +
+      "00.000Z",
+    attendees: [...state.attendees]
+  };
 }
 
 export default AppointmentList;
