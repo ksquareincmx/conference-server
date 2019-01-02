@@ -1,9 +1,10 @@
 import React from 'react'
 import { BookingConsumer, BookingProvider } from '../../providers/Booking'
 import { RoomConsumer, RoomProvider } from '../../providers/Room'
+import { UserConsumer, UserProvider } from '../../providers/User'
 import { AuthConsumer } from '../../providers/Auth'
 import NavBar from '../../components/NavBar/NavBar'
-import AppointmentCard from '../AppointmentCard'
+import AppointmentCard from '../../components/AppointmentCard/'
 
 class DashboardPageLogic extends React.Component {
   render() {
@@ -14,16 +15,21 @@ class DashboardPageLogic extends React.Component {
             (<RoomProvider auth={this.props.auth}>
               <RoomConsumer>
                 {roomService => (
-                  < div >
-                    <NavBar
-                      userName={this.props.auth.user.name}
-                    />
-                    <AppointmentCard
-                      booking={booking}
-                      auth={this.props.auth}
-                      roomService={roomService}
-                    />
-                  </div>
+                  <UserProvider auth={this.props.auth}>
+                    <UserConsumer>{userService =>
+                      (< div >
+                        <NavBar
+                          userName={this.props.auth.user.name}
+                        />
+                        <AppointmentCard
+                          booking={booking}
+                          auth={this.props.auth}
+                          roomService={roomService}
+                          userService={userService}
+                        />
+                      </div>)}
+                    </UserConsumer>
+                  </UserProvider>
                 )
                 }
               </RoomConsumer>
