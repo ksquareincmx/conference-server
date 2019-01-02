@@ -2,31 +2,46 @@
 
 conference-booking Server, based on Flugzeug.
 
-## Install mysql
+## Install MySQL (Linux)
 
 ```
 $ sudo apt update
 $ sudo apt install mysql-server mysql-client
 ```
 
-## Configure mysql
+## Install MySQL (macOS)
+
+```
+# Install brew from https://brew.sh
+$ brew update
+$ brew install mysql
+```
+
+## Configure MySQL
 
 Create database and fix timezone utc error
 ```
-$ mysql -u root -p
-$ mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root -p mysql
+mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root -p mysql
+
+mysql -u root -p
 
 mysql> CREATE DATABASE `conference-booking`;
+mysql> CREATE USER 'conference-booking'@'localhost' IDENTIFIED WITH mysql_native_password BY '___YOUR_PASSWORD_HERE___';
+mysql> GRANT ALL PRIVILEGES ON `conference-booking`.* TO 'conference-booking'@'localhost';
+mysql> FLUSH PRIVILEGES;
+```
+
+## Update `.env` file with MySQL credentials
+
+```
+$ cp .env.example .env
+$ code .env
 ```
 
 ## Install dependencies
+
 ```
 $ npm install
-```
-
-On Mac OS also
-```
-$ npm install gulp@3.9.0
 ```
 
 ## Development
