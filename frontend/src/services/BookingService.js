@@ -7,6 +7,7 @@ const BookingService = (bookingUri, token) => {
         roomId: booking.roomId,
         start: booking.start,
         end: booking.end,
+        attendees: booking.attendees
       }),
       headers: {
         'Content-Type': 'application/json',
@@ -49,12 +50,13 @@ const BookingService = (bookingUri, token) => {
   const updateOne = (booking, id) => {
     return fetch(bookingUri + id, {
       method: 'PUT',
-      body: {
+      body: JSON.stringify({
         description: booking.description,
-        rommId: booking.roomId,
+        roomId: booking.roomId,
         start: booking.start,
         end: booking.end,
-      },
+        attendees: booking.attendees
+      }),
       headers: {
         'Content-Type': 'application/json',
         Authorization: 'Bearer ' + token,

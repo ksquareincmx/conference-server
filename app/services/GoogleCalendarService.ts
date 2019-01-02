@@ -40,9 +40,7 @@ class GoogleCalendarService {
       .then(result => {
         return result;
       })
-      .catch(err => {
-        Controller.serverError(err);
-      });
+      .catch(err => Controller.serverError(err, errz));
   }
 
   updateEvent(
