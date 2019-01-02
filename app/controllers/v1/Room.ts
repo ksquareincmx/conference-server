@@ -11,6 +11,8 @@ import {
   stripNestedObjects,
   filterRoles
 } from "./../../policies/General";
+import { IRoomResponse } from "./../../interfaces/RoomInterfaces";
+import { roomMapper } from "./../../mappers/RoomMapper";
 
 export class RoomController extends Controller {
   constructor() {
@@ -221,7 +223,8 @@ export class RoomController extends Controller {
       const parsedRoom = JSON.parse(JSON.stringify(room));
       const roomStatus = await this.roomStatus(parsedRoom["id"]);
       const roomBooking = { ...parsedRoom, ...roomStatus };
-      res.status(200).json(roomBooking);
+      const JSONRoom = roomMapper.toJSON(roomBooking);
+      res.status(200).json(JSONRoom);
     } catch (err) {
       return Controller.serverError(res, err);
     }
@@ -240,8 +243,10 @@ export class RoomController extends Controller {
         const roomStatus = await this.roomStatus(room["id"]);
         return { ...room, ...roomStatus };
       });
+
       const resolvedRooms = await Promise.all(roomsBooking);
-      res.status(200).json(resolvedRooms);
+      const JSONRooms = resolvedRooms.map(room => roomMapper.toJSON(room));
+      res.status(200).json(JSONRooms);
     } catch (err) {
       return Controller.serverError(res, err);
     }
