@@ -13,15 +13,15 @@ export interface IBookingResponse {
 }
 
 // Request
-export interface IGetBooking {
+export interface IGetBookingRequest {
   id: number;
 }
 
-export interface IGetAllBooking {
+export interface IGetAllBookingRequest {
   fromDate?: Date;
 }
 
-export interface IDeleteBooking {
+export interface IDeleteBookingRequest {
   id: number;
 }
 
@@ -35,8 +35,8 @@ export interface IBookingRequest {
   userId: number;
 }
 
-export interface ICreateBooking extends IBookingRequest {}
+export interface ICreateBookingRequest extends IBookingRequest {}
 
-export interface IUpdateBooking extends IBookingRequest {
+export interface IUpdateBookingRequest extends IBookingRequest {
   id: number;
 }

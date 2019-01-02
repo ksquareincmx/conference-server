@@ -23,11 +23,11 @@ import {
 } from "./../../libraries/BookingAttendeeDB";
 import { bookingMapper } from "./../../mappers/BookingMapper";
 import {
-  IGetBooking,
-  IGetAllBooking,
-  IDeleteBooking,
-  ICreateBooking,
-  IUpdateBooking
+  IGetBookingRequest,
+  IGetAllBookingRequest,
+  IDeleteBookingRequest,
+  ICreateBookingRequest,
+  IUpdateBookingRequest
 } from "./../../interfaces/BookingInterfaces";
 
 export class BookingController extends Controller {
@@ -231,7 +231,7 @@ export class BookingController extends Controller {
   };
 
   destroyBooking = async (req: Request, res: Response) => {
-    const data = <IDeleteBooking>req.params;
+    const data: IDeleteBookingRequest = req.params;
 
     try {
       const booking = await this.model.findById(data.id);
@@ -243,8 +243,7 @@ export class BookingController extends Controller {
   };
 
   createBooking = async (req: Request, res: Response) => {
-    const body = req.body;
-    const data = <ICreateBooking>bookingMapper.toEntity(body);
+    const data = <ICreateBookingRequest>bookingMapper.toEntity(req.body);
 
     if (isEmpty(data.description)) {
       return Controller.badRequest(
@@ -330,8 +329,9 @@ export class BookingController extends Controller {
   };
 
   updateBooking = async (req: Request, res: Response) => {
-    const requestContent = { ...req.body, ...req.params };
-    const data = <IUpdateBooking>bookingMapper.toEntity(requestContent);
+    const data = <IUpdateBookingRequest>(
+      bookingMapper.toEntity({ ...req.body, ...req.params })
+    );
 
     if (isEmpty(data.description)) {
       return Controller.badRequest(
@@ -423,7 +423,7 @@ export class BookingController extends Controller {
   };
 
   findOneBooking = async (req: Request, res: Response) => {
-    const data: IGetBooking = req.params;
+    const data: IGetBookingRequest = req.params;
 
     try {
       const booking = await this.model.findById(data.id);
@@ -448,7 +448,7 @@ export class BookingController extends Controller {
   };
 
   findAllBooking = async (req: Request, res: Response) => {
-    const data = <IGetAllBooking>req.query;
+    const data = <IGetAllBookingRequest>req.query;
     const toDate: Date = new Date(data.fromDate);
     const isValidDate = date => date.toString() !== "Invalid Date";
 
