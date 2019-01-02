@@ -1,10 +1,11 @@
 import React from "react";
 import { Card, Grid } from "@material-ui/core/";
-import Header from "components/AppointmentCard/Header";
-import Content from "components/AppointmentCard/Content";
+import Header from "./Header";
+import Content from "./Content";
+import "./AppointmentCard.css";
 
-class AppointmentCard extends React.Component {
-  styles = {
+function AppointmentCard(props) {
+  const styles = {
     card: {
       width: 1250,
       height: 700,
@@ -14,27 +15,28 @@ class AppointmentCard extends React.Component {
       justifyContent: "space-between",
       textAlign: "center",
       borderRadius: 25
+    },
+    cardGridContainer: {
+      height: "100%"
     }
   };
 
-  render() {
-    return (
-      <Grid container justify="center">
-        <Card style={this.styles.card}>
-          <Header />
+  return (
+    <Grid container justify="center">
+      <Card className="card">
+        <Header />
 
-          <Grid container style={{ height: "100%" }}>
-            <Content
-              booking={this.props.booking}
-              auth={this.props.auth}
-              roomService={this.props.roomService}
-              userService={this.props.userService}
-            />
-          </Grid>
-        </Card>
-      </Grid>
-    );
-  }
+        <Grid container className="card-grid-container">
+          <Content
+            booking={props.booking}
+            auth={props.auth}
+            roomService={props.roomService}
+            userService={props.userService}
+          />
+        </Grid>
+      </Card>
+    </Grid>
+  );
 }
 
 export default AppointmentCard;

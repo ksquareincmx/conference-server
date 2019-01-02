@@ -8,22 +8,27 @@ import {
   AfterCreate,
   BeforeUpdate,
   BeforeBulkUpdate,
-  BeforeDelete
+  BeforeDelete,
+  ForeignKey,
+  BelongsTo
 } from "sequelize-typescript";
 import { BaseModel } from "../libraries/BaseModel";
 import { Profile } from "./Profile";
 import * as bcrypt from "bcrypt";
-
+import { AuthProvider } from "./AuthProvider";
 @Table({
   tableName: "user"
 })
 export class User extends BaseModel<User> {
+  @ForeignKey(() => AuthProvider)
   @Column({
-    type: DataType.STRING,
     allowNull: true,
     defaultValue: null
   })
-  googleId: string;
+  authProviderId: number;
+
+  @BelongsTo(() => AuthProvider)
+  authProvider: AuthProvider;
 
   // The URL of the user profile picture (provided by google)
   @Column({

@@ -1,12 +1,21 @@
 import React from "react";
 import { Card, Grid, CardContent } from "@material-ui/core/";
 import Divider from "@material-ui/core/Divider";
+<<<<<<< HEAD
 import TimeSelect from "components/Modals/CreateMeeting/TimeSelect";
 import RoomSelect from "components/Modals/CreateMeeting/RoomSelect";
 import TextField from "@material-ui/core/TextField";
 import MaterialButton from "components/MaterialButton";
 import ChipList from "components/ChipList/";
 import DatePicker from "components/Modals/CreateMeeting/DatePicker";
+=======
+import TimeSelect from "./TimeSelect";
+import RoomSelect from "./RoomSelect";
+import TextField from "@material-ui/core/TextField";
+import MaterialButton from "../../../components/MaterialButton";
+import ChipList from "../../../components/ChipList";
+import DatePicker from "./DatePicker";
+>>>>>>> develop
 
 class AppointmentList extends React.Component {
   styles = {
@@ -50,6 +59,7 @@ class AppointmentList extends React.Component {
     attendees: []
   };
 
+<<<<<<< HEAD
   EnableStartTimeSelect = () => {
     this.setState({ disabledStartTimeSelect: false });
   };
@@ -131,16 +141,86 @@ class AppointmentList extends React.Component {
   };
 
   AddZeros = number => {
+=======
+  enableStartTimeSelect = () => {
+    this.setState({ disabledStartTimeSelect: false });
+  };
+
+  enableEndTimeSelect = () => {
+    this.setState({ disabledEndTimeSelect: false });
+  };
+
+  enableConferenceSelect = () => {
+    this.setState({ disabledConferenceSelect: false });
+  };
+
+  enableNextButton = () => {
+    this.setState({ disabledNextButton: false });
+  };
+
+  setBookingStartTime = startTime => {
+    this.setState({ startTime: startTime }, () => this.enableEndTimeSelect());
+  };
+
+  setBookingEndTime = endTime => {
+    this.setState({ endTime: endTime }, () => this.verifyQuickAppointment());
+  };
+
+  verifyQuickAppointment = () => {
+    if (this.props.quickAppointment) {
+      return this.enableNextButton();
+    }
+    this.enableConferenceSelect();
+  };
+
+  setRoom = room => {
+    this.setState({ roomId: room }, () => this.enableNextButton());
+  };
+
+  setDate = date => {
+    this.setState({ date: date.target.value }, () =>
+      this.enableStartTimeSelect()
+    );
+  };
+
+  handleClickNext = async () => {
+    const post = postDto(this.state);
+
+    if (this.state.bookingClicked) {
+      const res = await this.props.booking.modifyBooking(
+        post,
+        this.props.bookingClickedObj.bookingId
+      );
+      window.location.href = "/calendar";
+      return 0;
+    }
+    const res = await this.props.booking.createNewBooking(post);
+    window.location.href = "/calendar";
+  };
+
+  handleChangeReason = event => {
+    this.setState({ reasonAppoointmentText: event.target.value });
+  };
+
+  addZeros = number => {
+>>>>>>> develop
     if (number < 10) {
       return "0" + String(number);
     }
     return String(number);
   };
 
+<<<<<<< HEAD
   GetDate = () => {
     const date = new Date();
     const day = this.AddZeros(date.getDate());
     const month = this.AddZeros(date.getMonth() + 1);
+=======
+  getDate = () => {
+    const date = new Date();
+    const day = addZeros(date.getDate());
+    const month = addZeros(date.getMonth() + 1);
+>>>>>>> develop
     const year = String(date.getFullYear());
 
     return year + "-" + month + "-" + day;
@@ -150,7 +230,11 @@ class AppointmentList extends React.Component {
     let date = "";
 
     if (this.props.quickAppointment) {
+<<<<<<< HEAD
       date = this.GetDate();
+=======
+      date = this.getDate();
+>>>>>>> develop
       if (!this.state.quickAppointment) {
         this.setState({
           quickAppointment: true,
@@ -177,9 +261,15 @@ class AppointmentList extends React.Component {
         let date =
           startDate.getFullYear() +
           "-" +
+<<<<<<< HEAD
           this.AddZeros(startDate.getMonth() + 1) +
           "-" +
           this.AddZeros(startDate.getDate());
+=======
+          addZeros(startDate.getMonth() + 1) +
+          "-" +
+          addZeros(startDate.getDate());
+>>>>>>> develop
 
         this.setState({
           room: this.props.bookingClickedObj.roomName,
@@ -187,13 +277,13 @@ class AppointmentList extends React.Component {
           bookingClicked: true,
           date: date,
           startTime: {
-            hour: this.AddZeros(startDate.getHours()),
-            minute: this.AddZeros(startDate.getMinutes())
+            hour: addZeros(startDate.getHours()),
+            minute: addZeros(startDate.getMinutes())
           },
 
           endTime: {
-            hour: this.AddZeros(endDate.getHours()),
-            minute: this.AddZeros(endDate.getMinutes())
+            hour: addZeros(endDate.getHours()),
+            minute: addZeros(endDate.getMinutes())
           },
           disabledStartTimeSelect: false,
           disabledEndTimeSelect: false,
@@ -207,7 +297,7 @@ class AppointmentList extends React.Component {
   render() {
     let date = (
       <DatePicker
-        SetDate={this.SetDate}
+        setDate={this.setDate}
         disabled={this.state.disabledDate}
         date={this.state.date}
       />
@@ -216,7 +306,6 @@ class AppointmentList extends React.Component {
     if (this.state.bookingClicked) {
       room = this.props.bookingClickedObj.roomName;
     }
-
     return (
       <Grid
         container
@@ -240,12 +329,12 @@ class AppointmentList extends React.Component {
             <Grid container direction="row">
               <TimeSelect
                 disabledHour={this.state.disabledStartTimeSelect}
-                SetTime={this.SetBookingStartTime}
+                SetTime={this.setBookingStartTime}
                 startTime={this.state.startTime}
               />
               <TimeSelect
                 disabledHour={this.state.disabledEndTimeSelect}
-                SetTime={this.SetBookingEndTime}
+                SetTime={this.setBookingEndTime}
                 endTime={this.state.endTime}
               />
             </Grid>
@@ -253,7 +342,7 @@ class AppointmentList extends React.Component {
             <div style={{ fontWeight: "bold" }}> Conference Room </div>
             <RoomSelect
               disabled={this.state.disabledConferenceSelect}
-              SetRoom={this.SetRoom}
+              setRoom={this.setRoom}
               room={room}
               roomService={this.props.roomService}
             />
@@ -265,7 +354,7 @@ class AppointmentList extends React.Component {
               placeholder="Reason"
               fullWidth
               margin="normal"
-              onChange={this.ReasonAppointmentChangedHanlder}
+              onChange={this.handleChangeReason}
               InputLabelProps={{
                 shrink: true
               }}
@@ -291,7 +380,11 @@ class AppointmentList extends React.Component {
             <MaterialButton
               textButton="Next"
               colorButton="#5094E3"
+<<<<<<< HEAD
               onClick={this.ClickedNextButtonHandler}
+=======
+              onClick={this.handleClickNext}
+>>>>>>> develop
               disabled={this.state.disabledNextButton}
             />
           </div>
@@ -301,4 +394,38 @@ class AppointmentList extends React.Component {
   }
 }
 
+<<<<<<< HEAD
+=======
+function addZeros(number) {
+  if (number < 10) {
+    return "0" + String(number);
+  }
+  return String(number);
+}
+
+function postDto(state) {
+  return {
+    description: state.reasonAppoointmentText,
+    roomId: state.roomId,
+    start:
+      state.date +
+      "T" +
+      state.startTime.hour +
+      ":" +
+      state.startTime.minute +
+      ":" +
+      "00.000Z",
+    end:
+      state.date +
+      "T" +
+      state.endTime.hour +
+      ":" +
+      state.endTime.minute +
+      ":" +
+      "00.000Z",
+    attendees: [...state.attendees]
+  };
+}
+
+>>>>>>> develop
 export default AppointmentList;

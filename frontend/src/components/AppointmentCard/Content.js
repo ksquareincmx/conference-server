@@ -1,10 +1,10 @@
 import React from "react";
 import CardContent from "@material-ui/core/CardContent";
-import RoomList from "components/AppointmentCard/RoomList/";
-import Button from "components/MaterialButton";
-import BookingList from "components/AppointmentCard/BookingList/";
+import RoomList from "./RoomList/";
+import Button from "../../components/MaterialButton";
+import BookingList from "./BookingList/";
 import Modal from "@material-ui/core/Modal";
-import AppointmentList from "components/Modals/CreateMeeting/AppointmentList";
+import AppointmentList from "../Modals/CreateMeeting/";
 import { Grid } from "@material-ui/core/";
 
 class Content extends React.Component {
@@ -32,7 +32,7 @@ class Content extends React.Component {
     this.setState({ openModal: false });
   };
 
-  QuickAppointmentClickedHandler = (roomName, roomId) => event => {
+  handleClickQuickAppointment = (roomName, roomId) => event => {
     this.setState({
       openModal: true,
       room: roomName,
@@ -41,11 +41,11 @@ class Content extends React.Component {
     });
   };
 
-  GoCalendarClickedHandler = () => {
+  handleClickCalendar = () => {
     window.location.href = "/calendar";
   };
 
-  BookingClickedHandler = booking => event => {
+  handleClickBooking = booking => event => {
     this.setState({
       openModal: true,
       bookingClicked: true,
@@ -66,7 +66,7 @@ class Content extends React.Component {
               booking={this.props.booking}
               userService={this.props.userService}
               roomService={this.props.roomService}
-              clicked={this.BookingClickedHandler}
+              clicked={this.handleClickBooking}
               auth={this.props.auth}
             />
           </Grid>
@@ -101,14 +101,14 @@ class Content extends React.Component {
 
             <RoomList
               roomService={this.props.roomService}
-              onClick={this.QuickAppointmentClickedHandler}
+              onClick={this.handleClickQuickAppointment}
             />
 
             <div style={{ marginTop: 40 }}>
               <Button
                 textButton="Go to the calendar"
                 colorButton="#1F599D"
-                onClick={this.GoCalendarClickedHandler}
+                onClick={this.handleClickCalendar}
               />
 
               <Button

@@ -1,27 +1,20 @@
-
-import React from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
+import React from "react";
+import PropTypes from "prop-types";
+import { withStyles } from "@material-ui/core/styles";
+import TextField from "@material-ui/core/TextField";
 
 const styles = theme => ({
   container: {
-    display: 'flex',
-    flexWrap: 'wrap',
+    display: "flex",
+    flexWrap: "wrap"
   },
   textField: {
     marginLeft: theme.spacing.unit,
     marginRight: theme.spacing.unit,
     width: 200,
     marginBottom: 18
-  },
+  }
 });
-
-
-
-const changedDateHandler = (event, SetDate) => {
-  SetDate(event.target.value)
-}
 
 function DatePickers(props) {
   const { classes } = props;
@@ -32,20 +25,20 @@ function DatePickers(props) {
         id="date"
         label="date"
         type="date"
-        value={(props.date)}
+        value={props.date}
         className={classes.textField}
         InputLabelProps={{
-          shrink: true,
+          shrink: true
         }}
         disabled={props.disabled}
-        onChange={(event) => changedDateHandler(event, props.SetDate)}
+        onChange={props.setDate}
       />
     </form>
   );
 }
 
 DatePickers.propTypes = {
-  classes: PropTypes.object.isRequired,
+  classes: PropTypes.object.isRequired
 };
 
-export default withStyles(styles)(DatePickers); 
+export default withStyles(styles)(DatePickers);

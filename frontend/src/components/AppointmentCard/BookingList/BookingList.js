@@ -1,48 +1,41 @@
 import React from "react";
 import List from "@material-ui/core/List";
-import BookingItem from "components/AppointmentCard/BookingList/BookingItem";
+import BookingItem from "./BookingItem";
 import cuid from "cuid";
+import "./BookingList.css";
 
 class BookigList extends React.Component {
   state = {
     bookingItems: []
   };
 
-  GetUsers = () => {
-    let bookingItems = Promise.all(
-      this.state.bookingItems.map(async book => {
-        const user = await this.props.userService.getUser(book.userId);
-        const room = await this.props.roomService.getRoom(book.roomId);
+  getUsers = async () => {
+    let bookingItems = this.state.bookingItems.map(async book => {
+      const user = this.props.userService.getUser(book.userId);
+      const room = this.props.roomService.getRoom(book.roomId);
 
-        return {
-          ...book,
-          userName: user.name,
-          roomName: room.name
-        };
-      })
-    );
-
-    bookingItems.then(res => {
-      this.setState({ bookingItems: res });
+      const data = await Promise.all([user, room]);
+      return {
+        ...book,
+        userName: data[0].name,
+        roomName: data[1].name
+      };
     });
+
+    const items = await Promise.all(bookingItems);
+    this.setState({ bookingItems: items });
   };
 
-  componentDidMount() {
-    this.props.booking.getDetailedListOfBooking().then(data => {
-      this.setState({ bookingItems: data }, () => this.GetUsers());
+  async componentDidMount() {
+    const data = await this.props.booking.getDetailedListOfBooking();
+    data.map(item => {
+      this.setState({ bookingItems: data }, () => this.getUsers());
     });
   }
 
   render() {
     return (
-      <List
-        component="nav"
-        style={{
-          maxHeight: 450,
-          overflow: "auto",
-          maxWidth: 550
-        }}
-      >
+      <List component="nav" className="booking-list">
         {this.state.bookingItems.map(data => (
           <BookingItem
             key={cuid()}
