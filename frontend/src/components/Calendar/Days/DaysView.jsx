@@ -1,12 +1,14 @@
-import React from 'react';
-import BigCalendar from 'react-big-calendar';
-import './Days.css';
+import React from "react";
+import BigCalendar from "react-big-calendar";
+import "./Days.css";
 
 const dayGrid = props => idConference => {
   return (
     <div className="day-agenda" key={idConference}>
       <div className="day-header">
-        <h2 className="conference-room-name">Conference Room #{idConference + 1}</h2>
+        <h2 className="conference-room-name">
+          Conference Room #{idConference + 1}
+        </h2>
       </div>
       <BigCalendar
         selectable
@@ -16,7 +18,7 @@ const dayGrid = props => idConference => {
         defaultView={BigCalendar.Views.DAY}
         min={props.minDate}
         max={props.maxDate}
-        formats={{ timeGutterFormat: 'hh:mm A', dayFormat: 'ddd D' }}
+        formats={{ timeGutterFormat: "hh:mm A", dayFormat: "ddd D" }}
         localizer={props.localizer}
         onSelectEvent={event => alert(event.title)}
         onSelectSlot={props.handleSelect(idConference)}

@@ -1,18 +1,18 @@
-import React from 'react';
-import RoomService from '../../services/RoomService';
-import baseUri from '../../config/baseUri';
+import React from "react";
+import RoomService from "services/RoomService";
+import baseUri from "config/baseUri";
 
 const RoomContext = React.createContext({
-  createNewRoom: () => { },
-  getRoom: () => { },
-  getListOfRoom: () => { },
-  modifyRoom: () => { },
-  removeRoom: () => { },
+  createNewRoom: () => {},
+  getRoom: () => {},
+  getListOfRoom: () => {},
+  modifyRoom: () => {},
+  removeRoom: () => {}
 });
 
 export const RoomConsumer = RoomContext.Consumer;
 export class RoomProvider extends React.Component {
-  roomService = RoomService(baseUri + 'Room/', this.props.auth.jwt.token);
+  roomService = RoomService(baseUri + "Room/", this.props.auth.jwt.token);
   createNewRoom = room => {
     return this.roomService.createOne(room);
   };
@@ -35,15 +35,15 @@ export class RoomProvider extends React.Component {
 
   render() {
     return (
-
       <RoomContext.Provider
         value={{
           createNewRoom: this.createNewRoom,
           getRoom: this.getRoom,
           getListOfRoom: this.getsListOfRoom,
           modifyRoom: this.modifRoom,
-          removeRoom: this.removeRoom,
-        }}>
+          removeRoom: this.removeRoom
+        }}
+      >
         {this.props.children}
       </RoomContext.Provider>
     );

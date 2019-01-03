@@ -1,1 +1,1 @@
-export { default } from './Footer';
+export { default } from "components/Calendar/Footer/Footer";
