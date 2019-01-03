@@ -13,18 +13,19 @@ function MaterialButton(props) {
       marginBottom: 20,
     }
   };
-
-
+  if (props.disabled) {
+    styles.button.backgroundColor = '#bbb'
+  }
   return (
     <Button
       style={styles.button}
       variant="contained"
       onClick={props.onClick}
+      disabled={props.disabled}
     >
 
       {props.textButton}
     </Button>)
 };
-
 
 export default (MaterialButton);

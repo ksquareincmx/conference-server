@@ -1,5 +1,14 @@
-import React from 'react';
-import './Header.css';
+import React from "react";
+import "./Header.css";
+
+const styles = {
+  firstButton: {
+    borderRadius: "20px 0px 0px 20px"
+  },
+  secondButton: {
+    borderRadius: "0px 20px 20px 0px"
+  }
+};
 
 const HeaderView = props => {
   return (
@@ -8,20 +17,28 @@ const HeaderView = props => {
         <div className="veiew-buttons-container">
           <button
             className="view-selector-button"
-            onClick={props.onClickViewButton('day')}
-            style={{ borderRadius: '20px 0px 0px 20px' }}>
+            onClick={props.onClickViewButton("day")}
+            style={styles.firstButton}
+          >
             Day
           </button>
-          <button className="view-selector-button" onClick={props.onClickViewButton('work_week')}>
+          <button
+            className="view-selector-button"
+            onClick={props.onClickViewButton("work_week")}
+          >
             Week
           </button>
-          <button className="view-selector-button" onClick={props.onClickViewButton('month')}>
+          <button
+            className="view-selector-button"
+            onClick={props.onClickViewButton("month")}
+          >
             Month
           </button>
           <button
             className="view-selector-button"
-            onClick={props.onClickViewButton('year')}
-            style={{ borderRadius: '0px 20px 20px 0px' }}>
+            onClick={props.onClickViewButton("year")}
+            style={styles.secondButton}
+          >
             Year
           </button>
         </div>
