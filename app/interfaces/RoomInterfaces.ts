@@ -9,23 +9,23 @@ export interface IRoomResponse {
   status: string;
 }
 
-export interface IFindRoom {
-  id: number;
-}
-
-export interface IFindAllRoom {}
-
-export interface IDeleteRoom {
-  id: number;
-}
-
 export interface IRoomRequest {
   name: string;
   color: string;
 }
 
-export interface ICreateRoom extends IRoomRequest {}
+export interface IFindRoomRequest {
+  id: number;
+}
 
-export interface IUpdateRoom extends IRoomRequest {
+export interface IFindAllRoomRequest {}
+
+export interface IDeleteRoomRequest {
+  id: number;
+}
+
+export interface ICreateRoomRequest extends IRoomRequest {}
+
+export interface IUpdateRoomRequest extends IRoomRequest {
   id: number;
 }

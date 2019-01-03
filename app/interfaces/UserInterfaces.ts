@@ -1,17 +1,12 @@
 export interface IUserResponse {
   id: number;
-  googleId: string;
-  authProviderId: string;
+  auth_provider: number;
   picture: string;
   name: string;
   email: string;
-  password: string;
-  role: string;
-  create_time: Date;
-  updated_time: Date;
 }
 
-export interface IGetUser {
+export interface IGetUserRequest {
   id: number;
 }
 
@@ -20,13 +15,4 @@ export interface IUserRequest {
   name: string;
   email: string;
   password: string;
-  role: string;
-}
-
-export interface IUpdateUser extends IUserRequest {
-  id: number;
-}
-
-export interface IDeleteUser {
-  id: number;
 }

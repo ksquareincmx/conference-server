@@ -1,21 +1,19 @@
 export interface IProfileResponse {
+  id: number;
   time_zone: string;
   locale: string;
-  user_id: number;
+  userId: number;
+  created_at: string;
+  updated_at: string;
 }
 
-export interface IFindOneProfile {
+export interface IGetProfileRequest {
+  userId: number; //userId
+}
+
+export interface IUpdateProfileRequest {
   id: number;
-}
-
-export interface IFindAllProfile {}
-
-export interface IProfileRequest {
+  userId: number;
   time_zone: string;
   locale: string;
-  user_id: number;
-}
-
-export interface IUpdateProfile extends IProfileRequest {
-  id: number;
 }
