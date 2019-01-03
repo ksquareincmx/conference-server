@@ -5,25 +5,26 @@ import RoomLeftHeader from "components/AppointmentCard/RoomList/RoomCard/RoomLef
 import RoomRightHeader from "components/AppointmentCard/RoomList/RoomCard//RoomRightHeader";
 import Button from "components/MaterialButton";
 
+const styles = {
+  card: {
+    height: 150,
+    marginTop: 20,
+    borderRadius: 25,
+    padding: 3
+  },
+  cardContainer: {
+    height: "100%"
+  }
+};
+
 function RoomCard(props) {
-  const styles = {
-    card: {
-      height: 150,
-      marginTop: 20,
-      borderRadius: 25,
-      padding: 3
-    }
-  };
   styles.card.backgroundColor = props.backgroundColor;
 
-  let colorStatus = "green";
-  if (props.status) {
-    colorStatus = "red";
-  }
+  let colorStatus = props.status ? "red" : "green";
 
   return (
     <Card style={styles.card}>
-      <Grid container direction="row" style={{ height: "100%" }}>
+      <Grid container direction="row" style={styles.cardContainer}>
         <Grid item xs={12}>
           <RoomHeader>
             <RoomLeftHeader roomName={props.roomName} />

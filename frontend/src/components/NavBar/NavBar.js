@@ -1,11 +1,30 @@
 import React from "react";
-import NavLeftSide from "components/NavBar/LeftSide";
-import NavRightSide from "components/NavBar/RightSide";
-import NavBarContainer from "components/NavBar/NavBarContainer";
+import NavLeftSide from "./LeftSide";
+import NavRightSide from "./RightSide";
+import NavBarContainer from "./NavBarContainer";
 import MenuIcon from "@material-ui/icons/Menu";
 import { Typography, IconButton, Button } from "@material-ui/core/";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import { Link } from "react-router-dom";
+
+const styles = {
+  navLeftSideButton: {
+    backgroundColor: "#7CCE22"
+  },
+  menuIcon: {
+    fontSize: 40,
+    color: "#467611"
+  },
+  typography: {
+    color: "black",
+    fontFamily: "roboto",
+    fontSize: 20
+  },
+  accountCircle: {
+    fontSize: 40,
+    color: "#736D6D"
+  }
+};
 
 function NavBar(props) {
   return (
@@ -13,25 +32,21 @@ function NavBar(props) {
       <NavLeftSide>
         <Button
           variant="fab"
-          style={{ backgroundColor: "#7CCE22" }}
+          style={styles.navLeftSideButton}
           aria-label="Edit"
           mini
           component={Link}
           to="/dashboard"
         >
-          <MenuIcon style={{ fontSize: 40, color: "#467611" }} />
+          <MenuIcon style={styles.menuIcon} />
         </Button>
       </NavLeftSide>
 
       <NavRightSide>
-        <Typography
-          style={{ color: "black", fontFamily: "roboto", fontSize: 20 }}
-        >
-          {props.userName}
-        </Typography>
+        <Typography style={styles.typography}>{props.userName}</Typography>
 
         <IconButton color="secondary" aria-label="Menu">
-          <AccountCircle style={{ fontSize: 40, color: "#736D6D" }} />
+          <AccountCircle style={styles.accountCircle} />
         </IconButton>
       </NavRightSide>
     </NavBarContainer>

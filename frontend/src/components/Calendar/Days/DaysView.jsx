@@ -1,6 +1,6 @@
 import React from "react";
 import BigCalendar from "react-big-calendar";
-import "components/Calendar/Days/Days.css";
+import "./Days.css";
 
 const dayGrid = props => idConference => {
   return (

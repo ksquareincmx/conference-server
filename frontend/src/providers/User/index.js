@@ -1,1 +1,1 @@
-export * from "providers/User/User";
+export * from "./User";

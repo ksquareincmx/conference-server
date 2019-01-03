@@ -1,7 +1,7 @@
 import React from "react";
 
 import BigCalendar from "react-big-calendar";
-import "components/Calendar/Years/Years.css";
+import "./Years.css";
 
 const monthRow = props => idMonth => (
   <div className="column" key={idMonth}>

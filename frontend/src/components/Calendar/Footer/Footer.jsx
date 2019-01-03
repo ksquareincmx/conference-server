@@ -1,5 +1,5 @@
 import React from "react";
-import "components/Calendar/Footer/Footer.css";
+import "./Footer.css";
 
 const FooterView = props => {
   return (

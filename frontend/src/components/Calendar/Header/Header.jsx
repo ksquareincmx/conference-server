@@ -1,5 +1,14 @@
 import React from "react";
-import "components/Calendar/Header/Header.css";
+import "./Header.css";
+
+const styles = {
+  firstButton: {
+    borderRadius: "20px 0px 0px 20px"
+  },
+  secondButton: {
+    borderRadius: "0px 20px 20px 0px"
+  }
+};
 
 const HeaderView = props => {
   return (
@@ -9,7 +18,7 @@ const HeaderView = props => {
           <button
             className="view-selector-button"
             onClick={props.onClickViewButton("day")}
-            style={{ borderRadius: "20px 0px 0px 20px" }}
+            style={styles.firstButton}
           >
             Day
           </button>
@@ -28,7 +37,7 @@ const HeaderView = props => {
           <button
             className="view-selector-button"
             onClick={props.onClickViewButton("year")}
-            style={{ borderRadius: "0px 20px 20px 0px" }}
+            style={styles.secondButton}
           >
             Year
           </button>

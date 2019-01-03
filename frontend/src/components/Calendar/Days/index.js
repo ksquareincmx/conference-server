@@ -1,1 +1,1 @@
-export { default } from "components/Calendar/Days/DaysView";
+export { default } from "./DaysView";

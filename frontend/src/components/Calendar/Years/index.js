@@ -1,1 +1,1 @@
-export { default } from "components/Calendar/Years/YearsView";
+export { default } from "./YearsView";

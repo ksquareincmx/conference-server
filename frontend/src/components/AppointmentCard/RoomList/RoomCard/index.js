@@ -1,1 +1,1 @@
-export { default } from "components/AppointmentCard/RoomList/RoomCard/RoomCard";
+export { default } from "./RoomCard";
