@@ -8,7 +8,8 @@
     "apidoc": "apidoc -i app/controllers/ -o public/apidoc/",
     "build": "gulp",
     "start": "node --require source-map-support/register dist/main.js",
-    "test": "mocha"
+    "test": "mocha",
+    "migrate": "cd app/ && ../node_modules/.bin/sequelize db:migrate"
   },
   "apidoc": {
     "title": "conference booking",
@@ -79,6 +80,7 @@
     "require-dir-all": "0.4.15",
     "segfault-handler": "1.0.1",
     "sequelize": "4.38.0",
+    "sequelize-cli": "^5.4.0",
     "sequelize-typescript": "0.6.2",
     "serve-favicon": "2.5.0",
     "short-uuid": "3.0.0",
