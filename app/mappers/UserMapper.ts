@@ -3,7 +3,7 @@ import { toSyntax } from "./../libraries/util";
 
 import * as fp from "lodash/fp";
 
-const userMapper = {
+export const userMapper = {
   toEntity: userJSON => toSyntax(userJSON, fp.camelCase),
   toJSON: (userEntity): IUserResponse =>
     <IUserResponse>toSyntax(userEntity, fp.snakeCase)

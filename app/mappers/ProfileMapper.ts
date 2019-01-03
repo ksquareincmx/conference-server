@@ -1,6 +1,7 @@
 import { IProfileResponse } from "./../interfaces/ProfileInterfaces";
-import * as fp from "lodash/fp";
 import { toSyntax } from "./../libraries/util";
+
+import * as fp from "lodash/fp";
 
 export const profileMapper = {
   toEntity: profileJSON => toSyntax(profileJSON, fp.camelCase),
