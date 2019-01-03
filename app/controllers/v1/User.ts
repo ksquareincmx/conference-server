@@ -2,6 +2,9 @@ import { Controller } from "./../../libraries/Controller";
 import { User } from "./../../models/User";
 import { Request, Response, Router } from "express";
 import { validateJWT, isSelfUser, filterRoles } from "./../../policies/General";
+import { isEmpty } from "../../libraries/util";
+import { userMapper } from "./../../mappers/UserMapper";
+import { IGetUserRequest } from "./../../interfaces/UserInterfaces";
 
 export class UserController extends Controller {
   constructor() {
@@ -11,7 +14,6 @@ export class UserController extends Controller {
   }
 
   routes(): Router {
-
     /**
         @api {get} /api/v1/Users/:id Get an User
         @apiPermission access
@@ -30,11 +32,7 @@ export class UserController extends Controller {
         @apiSuccess  {String}   body.role            User role ("user", "admin")
     */
 
-    this.router.get(
-      "/:id",
-      validateJWT("access"),
-      (req, res) => this.findOne(req, res)
-    );
+    this.router.get("/:id", validateJWT("access"), this.findOneUser);
 
     /**
         @api {put} /api/v1/Users/:id Modify an User
@@ -88,6 +86,23 @@ export class UserController extends Controller {
 
     return this.router;
   }
+
+  findOneUser = async (req: Request, res: Response) => {
+    const data: IGetUserRequest = req.params;
+    try {
+      const user = await this.model.findById(data.id);
+
+      if (!user) {
+        return Controller.notFound(res);
+      }
+
+      const parsedUser = JSON.parse(JSON.stringify(user));
+      const JSONUser = userMapper.toJSON(parsedUser);
+      res.status(200).json(JSONUser);
+    } catch (err) {
+      return Controller.serverError(res, err);
+    }
+  };
 }
 
 const controller = new UserController();
