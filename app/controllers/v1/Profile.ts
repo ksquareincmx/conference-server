@@ -8,6 +8,11 @@ import {
   stripNestedObjects,
   filterRoles
 } from "./../../policies/General";
+import {
+  IGetProfileRequest,
+  IUpdateProfileRequest
+} from "./../../interfaces/ProfileInterfaces";
+import { profileMapper } from "./../../mappers/ProfileMapper";
 
 export class ProfileController extends Controller {
   constructor() {
@@ -17,8 +22,7 @@ export class ProfileController extends Controller {
   }
 
   routes(): Router {
-
-  /**
+    /**
       @api {get} /api/v1/Profile/ Get a list of Profile
       @apiPermission access (Enforces access only to owner)
       @apiName getAllProfiles
@@ -37,7 +41,7 @@ export class ProfileController extends Controller {
       "/",
       validateJWT("access"),
       filterOwner(),
-      (req, res) => this.find(req, res)
+      this.findAllProfile
     );
 
     /**
@@ -61,7 +65,7 @@ export class ProfileController extends Controller {
       "/:id",
       validateJWT("access"),
       filterOwner(),
-      (req, res) => this.findOne(req, res)
+      this.findProfile
     );
 
     /**
@@ -92,11 +96,82 @@ export class ProfileController extends Controller {
       stripNestedObjects(),
       filterOwner(),
       appendUser(),
-      (req, res) => this.update(req, res)
+      this.updateProfile
     );
 
     return this.router;
   }
+
+  findProfile = async (req: Request, res: Response) => {
+    const data: IGetProfileRequest = { userId: req.params.id };
+    try {
+      const profile = await this.model.findOne({
+        where: { userId: data.userId }
+      });
+
+      if (!profile) {
+        return Controller.notFound(res);
+      }
+
+      const parsedProfile = JSON.parse(JSON.stringify(profile));
+      const JSONProfile = profileMapper.toJSON(parsedProfile);
+
+      res.status(200).json(JSONProfile);
+    } catch (err) {
+      return Controller.serverError(res, err);
+    }
+  };
+
+  findAllProfile = async (req: Request, res: Response) => {
+    const data: IGetProfileRequest = req.session.where;
+
+    try {
+      const profiles = await this.model.findAll({
+        where: { userId: data.userId }
+      });
+
+      if (!profiles) {
+        return Controller.notFound(res);
+      }
+
+      const parsedProfiles = JSON.parse(JSON.stringify(profiles));
+      const JSONProfiles = parsedProfiles.map(profile =>
+        profileMapper.toJSON(profile)
+      );
+      res.status(200).json(JSONProfiles);
+    } catch (err) {
+      return Controller.serverError(res, err);
+    }
+  };
+
+  updateProfile = async (req: Request, res: Response) => {
+    const data: IUpdateProfileRequest = <IUpdateProfileRequest>(
+      profileMapper.toEntity({
+        id: req.params.id,
+        ...req.body
+      })
+    );
+
+    try {
+      const profile = await this.model.findOne({
+        where: {
+          userId: data.userId,
+          id: data.id
+        }
+      });
+
+      if (!profile) {
+        return Controller.notFound(res);
+      }
+
+      const updatedProfile = await profile.update(data);
+      const parsedProfile = JSON.parse(JSON.stringify(updatedProfile));
+      const JSONProfile = profileMapper.toJSON(parsedProfile);
+      res.status(200).json(JSONProfile);
+    } catch (err) {
+      return Controller.serverError(res, err);
+    }
+  };
 }
 
 const controller = new ProfileController();
