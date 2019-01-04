@@ -9,7 +9,7 @@
     "build": "gulp",
     "start": "node --require source-map-support/register dist/main.js",
     "test": "mocha",
-    "migrate": "cd app/ && ../node_modules/.bin/sequelize db:migrate"
+    "migrate": "node_modules/.bin/sequelize db:migrate"
   },
   "apidoc": {
     "title": "conference booking",
