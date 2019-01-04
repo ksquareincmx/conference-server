@@ -1,24 +1,24 @@
 {
     "development": {
-        "database": "conference-booking",
-        "username": "confuser",
-        "password": "password",
+        "database": "flugzeug-project",
+        "username": "conference",
+        "password": "123",
         "host": "localhost",
         "dialect": "mysql",
         "timezone": "utc"
     },
     "test": {
-        "database": "conference-booking",
-        "username": "confuser",
-        "password": "password",
+        "database": "flugzeug-project",
+        "username": "conference",
+        "password": "123",
         "host": "localhost",
         "dialect": "mysql",
         "timezone": "utc"
     },
     "production": {
-        "database": "conference-booking",
-        "username": "confuser",
-        "password": "password",
+        "database": "flugzeug-project",
+        "username": "conference",
+        "password": "123",
         "host": "localhost",
         "dialect": "mysql",
         "timezone": "utc"
