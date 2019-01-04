@@ -37,3 +37,21 @@ export function getRandomColor() {
   let index = Math.floor(Math.random() * colors.length);
   return colors[index];
 }
+
+export function getActualDate() {
+  let date = new Date();
+  let actualDate = date.toLocaleString("es-MX", {
+    formatMatcher: "basic",
+    timeZone: "America/Mexico_City"
+  });
+  return actualDate;
+}
+
+/**
+ * Checks if it's a falsy value. Don't includes 0.
+ * @param {*} Value to evaluate
+ * @return {boolean}
+ */
+export function isEmpty(attribute) {
+  return !attribute && attribute !== 0;
+}

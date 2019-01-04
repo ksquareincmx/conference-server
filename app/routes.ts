@@ -4,7 +4,9 @@ import { log } from "./libraries/Log";
 import { config } from "./config/config";
 
 const importedCtrls1 = require("require-dir-all")("controllers/v1");
-const controllers1 = Object.keys(importedCtrls1).map(k => importedCtrls1[k].default);
+const controllers1 = Object.keys(importedCtrls1).map(
+  k => importedCtrls1[k].default
+);
 
 export function routes(app: Application) {
   for (let controller of controllers1) {

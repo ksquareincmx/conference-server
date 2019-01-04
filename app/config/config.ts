@@ -7,7 +7,8 @@ export const config: any = {
   env: process.env.NODE_ENV || "development",
 
   jwt: {
-    secret: process.env.JWT_SECRET || "PAQSjpIvKEEI5k28Wip75cu7vD5qd03VjgANdnku3ik",
+    secret:
+      process.env.JWT_SECRET || "PAQSjpIvKEEI5k28Wip75cu7vD5qd03VjgANdnku3ik",
     access: {
       expiry: {
         unit: "months",
@@ -35,7 +36,8 @@ export const config: any = {
   },
 
   email: {
-    from_address: process.env.EMAIL_FROM_ADDRESS || "MyApp <no-reply@example.com>",
+    from_address:
+      process.env.EMAIL_FROM_ADDRESS || "MyApp <no-reply@example.com>",
     auth: {
       api_key: process.env.EMAIL_API_KEY || "(your mailgun api key)",
       domain: process.env.EMAIL_DOMAIN || "(your mailgun domain)"
@@ -70,8 +72,8 @@ export const config: any = {
 
   db: {
     database: process.env.DB_NAME || "flugzeug-project",
-    username: process.env.DB_USER || "root",
-    password: process.env.DB_PASSWORD || "",
+    username: process.env.DB_USER || "conference",
+    password: process.env.DB_PASSWORD || "123",
     host: "localhost",
     dialect: "mysql",
     logging: false,
@@ -84,13 +86,20 @@ export const config: any = {
       clientId:
         process.env.GOOGLE_CLIENT_ID ||
         "129092023456-82964pfqurangtddv4q9g4q62cbq6abm.apps.googleusercontent.com",
-      allowedDomains: ["prompto.io", "ksquareinc.com", "infolob.com", "scouting.org"]
+      allowedDomains: [
+        "prompto.io",
+        "ksquareinc.com",
+        "infolob.com",
+        "scouting.org",
+        "gmail.com"
+      ]
     }
   }
 };
 
 let portString = "";
-if (Number.isInteger(parseInt(config.urls.port))) portString = `:${config.urls.port}`;
+if (Number.isInteger(parseInt(config.urls.port)))
+  portString = `:${config.urls.port}`;
 
 config.urls.base = `${config.urls.protocol}://${config.urls.url}${portString}`;
 config.urls.baseApi = `${config.urls.base}${config.urls.apiRoot}`;

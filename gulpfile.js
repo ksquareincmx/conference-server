@@ -13,6 +13,8 @@ var node = null;
 
 var tsProject = tsc.createProject("tsconfig.json");
 
+gulp.task('apidoc', shell.task('npm run apidoc'));
+
 gulp.task("clean", function(cb) {
   return del("dist", cb);
 });

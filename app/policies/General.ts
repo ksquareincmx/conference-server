@@ -83,6 +83,22 @@ export function isOwner(model: Model<any, any>, key: string = "userId") {
 }
 
 /*
+  Enforces access only to owner and the admin
+*/
+export function adminOrOwner(model: Model<any, any>){
+
+  return (req: Request, res: Response, next: Function) => {
+
+    if (req.session == null) req.session = {};
+    let role = req.session.jwt.role;
+    if (role == null) return Controller.unauthorized(res);
+    if (role != 'admin') return isOwner(model)(req, res, next);
+
+    next();
+  };
+}
+
+/*
   Appends userId to body (useful for enforcing ownership when creating items)
     key: key to add/modify on body
 */
