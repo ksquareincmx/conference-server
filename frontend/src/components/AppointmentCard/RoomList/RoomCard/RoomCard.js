@@ -5,20 +5,21 @@ import RoomLeftHeader from "components/AppointmentCard/RoomList/RoomCard/RoomLef
 import RoomRightHeader from "components/AppointmentCard/RoomList/RoomCard//RoomRightHeader";
 import Button from "components/MaterialButton";
 
-const styles = {
+let getStyles = backgroundColor => ({
   card: {
     height: 150,
     marginTop: 20,
     borderRadius: 25,
-    padding: 3
+    padding: 3,
+    backgroundColor
   },
   cardContainer: {
     height: "100%"
   }
-};
+});
 
 function RoomCard(props) {
-  styles.card.backgroundColor = props.backgroundColor;
+  let styles = getStyles(props.backgroundColor);
 
   let colorStatus = props.status ? "red" : "green";
 

@@ -37,7 +37,13 @@ class RoomList extends React.Component {
         roomId={room.roomId}
       />
     ));
-    return <GridList className="roomList">{rooms}</GridList>;
+    return (
+      <div styles={{ marginLeft: 200 }}>
+        <GridList styles={{ marginLeft: 200 }} className="roomList">
+          {rooms}
+        </GridList>
+      </div>
+    );
   }
 }
 
