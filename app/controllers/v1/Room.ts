@@ -4,6 +4,7 @@ import { getActualDate } from "./../../libraries/util";
 import { Room } from "./../../models/Room";
 import { Booking } from "./../../models/Booking";
 import { Request, Response, Router } from "express";
+import { isEmpty } from "./../../libraries/util";
 import {
   validateJWT,
   filterOwner,
@@ -97,7 +98,7 @@ export class RoomController extends Controller {
       validateJWT("access"),
       stripNestedObjects(),
       filterRoles(["admin"]),
-      (req, res) => this.create(req, res)
+      this.createRoom
     );
 
     /**
@@ -129,7 +130,7 @@ export class RoomController extends Controller {
       validateJWT("access"),
       stripNestedObjects(),
       filterRoles(["admin"]),
-      (req, res) => this.update(req, res)
+      this.updateRoom
     );
 
     /**
@@ -247,6 +248,77 @@ export class RoomController extends Controller {
       const resolvedRooms = await Promise.all(roomsBooking);
       const JSONRooms = resolvedRooms.map(room => roomMapper.toJSON(room));
       res.status(200).json(JSONRooms);
+    } catch (err) {
+      return Controller.serverError(res, err);
+    }
+  };
+
+  createRoom = async (req: Request, res: Response) => {
+    const name = req.body.name;
+    const color = req.body.color;
+
+    if (isEmpty(name)) {
+      return Controller.badRequest(res, "Bad Request: No name in request");
+    }
+    if (isEmpty(color)) {
+      return Controller.badRequest(res, "Bad Request: No color in request");
+    }
+
+    const roomObj = { name, color };
+
+    try {
+      const room = await this.model.findOne({
+        where: {
+          [Op.or]: { name, color }
+        }
+      });
+
+      if (room) {
+        return Controller.badRequest(
+          res,
+          "Bad Request: name and color must be uniques"
+        );
+      }
+
+      const roomCreated = await this.model.create(roomObj);
+      return res.status(200).json(roomCreated);
+    } catch (err) {
+      return Controller.serverError(res);
+    }
+  };
+
+  updateRoom = async (req: Request, res: Response) => {
+    const name = req.body.name;
+    const color = req.body.color;
+    const roomId = req.params.id;
+
+    if (isEmpty(name)) {
+      return Controller.badRequest(res, "Bad Request: No name in request");
+    }
+    if (isEmpty(color)) {
+      return Controller.badRequest(res, "Bad Request: No color in request");
+    }
+
+    const roomObj = { name, color };
+
+    try {
+      const room = await this.model.findOne({
+        where: {
+          [Op.or]: { name, color },
+          id: { [Op.ne]: roomId }
+        }
+      });
+
+      if (room) {
+        return Controller.badRequest(
+          res,
+          "Bad Request: name and color must be uniques"
+        );
+      }
+
+      const actualBooking = await this.model.findById(roomId);
+      const roomUpdated = await actualBooking.update(roomObj);
+      return res.status(200).json(roomUpdated);
     } catch (err) {
       return Controller.serverError(res, err);
     }

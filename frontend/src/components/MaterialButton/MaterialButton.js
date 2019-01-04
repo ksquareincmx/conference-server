@@ -28,5 +28,4 @@ function MaterialButton(props) {
     </Button>)
 };
 
-
 export default (MaterialButton);

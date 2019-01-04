@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { GoogleLogin, GoogleLogout } from 'react-google-login';
 import './Login.css';
 import LoginCard from './LoginCard';
-import { AuthConsumer } from '../../providers/Auth';
+import { AuthConsumer } from 'providers/Auth';
 
 class LoginPageLogic extends Component {
   onFailure = res => {

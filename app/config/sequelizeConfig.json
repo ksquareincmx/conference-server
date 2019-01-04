@@ -1,0 +1,26 @@
+{
+    "development": {
+        "database": "flugzeug-project",
+        "username": "conference",
+        "password": "123",
+        "host": "localhost",
+        "dialect": "mysql",
+        "timezone": "utc"
+    },
+    "test": {
+        "database": "flugzeug-project",
+        "username": "conference",
+        "password": "123",
+        "host": "localhost",
+        "dialect": "mysql",
+        "timezone": "utc"
+    },
+    "production": {
+        "database": "flugzeug-project",
+        "username": "conference",
+        "password": "123",
+        "host": "localhost",
+        "dialect": "mysql",
+        "timezone": "utc"
+    }
+}

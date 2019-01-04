@@ -1,20 +1,23 @@
-import React from 'react';
-import BookingService from '../../services/BookingService';
-import baseUri from '../../config/baseUri';
+import React from "react";
+import BookingService from "services/BookingService";
+import baseUri from "config/baseUri";
 
 const BookingContext = React.createContext({
-  createNewBooking: () => { },
-  getBooking: () => { },
-  getListOfBooking: () => { },
-  modifyBooking: () => { },
-  removeBooking: () => { },
-  getDetailedListOfBooking: () => { },
+  createNewBooking: () => {},
+  getBooking: () => {},
+  getListOfBooking: () => {},
+  modifyBooking: () => {},
+  removeBooking: () => {},
+  getDetailedListOfBooking: () => {}
 });
 
 export const BookingConsumer = BookingContext.Consumer;
 
 export class BookingProvider extends React.Component {
-  bookingService = BookingService(baseUri + 'Booking/', this.props.auth.jwt.token);
+  bookingService = BookingService(
+    baseUri + "Booking/",
+    this.props.auth.jwt.token
+  );
   createNewBooking = booking => {
     return this.bookingService.createOne(booking);
   };
@@ -47,8 +50,9 @@ export class BookingProvider extends React.Component {
           getListOfBooking: this.getsListOfBooking,
           getDetailedListOfBooking: this.getDetailedListOfBooking,
           modifyBooking: this.modifyBooking,
-          removeBooking: this.removeBooking,
-        }}>
+          removeBooking: this.removeBooking
+        }}
+      >
         {this.props.children}
       </BookingContext.Provider>
     );
