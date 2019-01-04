@@ -21,14 +21,6 @@ class Content extends React.Component {
   };
 
   handleOnCloseModal = event => {
-    const bookObj = {
-      description: "prueba",
-      roomId: 1,
-      start: "2018-11-19T16:50:00.000Z",
-      end: "2018-11-20T17:01:00.000Z"
-    };
-
-    this.props.booking.createNewBooking(bookObj);
     this.setState({ openModal: false });
   };
 
@@ -54,13 +46,10 @@ class Content extends React.Component {
   };
 
   render() {
-    console.log(this.props.auth);
+    const styles = getStyles();
     return (
-      <CardContent style={{ height: "95%", width: "100%" }}>
-        <Grid
-          container
-          style={{ height: "100%", width: "100%", marginBottom: 16 }}
-        >
+      <CardContent style={styles.appointmentCardContainer}>
+        <Grid container style={styles.appointmentCardGrid}>
           <Grid item xs={6}>
             <BookingList
               booking={this.props.booking}
@@ -71,21 +60,12 @@ class Content extends React.Component {
             />
           </Grid>
 
-          <Grid
-            item
-            xs={6}
-            style={{
-              width: 500,
-              borderLeftWidth: 2,
-              borderLeftColor: "gray",
-              borderLeftStyle: "solid"
-            }}
-          >
+          <Grid item xs={6} style={styles.appointmentLeftGrid}>
             <Modal
               open={this.state.openModal}
               onClose={this.handleClose}
               disableAutoFocus={true}
-              style={{ width: "100%", height: "100%" }}
+              style={styles.modal}
             >
               <AppointmentList
                 handleOnCloseModal={this.handleOnCloseModal}
@@ -98,13 +78,14 @@ class Content extends React.Component {
                 quickAppointment={this.state.quickAppointment}
               />
             </Modal>
+            <div style={styles.roomList}>
+              <RoomList
+                roomService={this.props.roomService}
+                onClick={this.handleClickQuickAppointment}
+              />
+            </div>
 
-            <RoomList
-              roomService={this.props.roomService}
-              onClick={this.handleClickQuickAppointment}
-            />
-
-            <div style={{ marginTop: 40 }}>
+            <div style={styles.buttons}>
               <Button
                 textButton="Go to the calendar"
                 colorButton="#1F599D"
@@ -123,5 +104,33 @@ class Content extends React.Component {
     );
   }
 }
+
+const getStyles = () => ({
+  appointmentCardContainer: {
+    height: "95%",
+    width: "100%"
+  },
+  appointmentCardGrid: {
+    height: "100%",
+    width: "100%",
+    marginBottom: 16
+  },
+  appointmentLeftGrid: {
+    width: 500,
+    borderLeftWidth: 2,
+    borderLeftColor: "gray",
+    borderLeftStyle: "solid"
+  },
+  modal: {
+    width: "100%",
+    height: "100%"
+  },
+  roomList: {
+    marginLeft: 20
+  },
+  buttons: {
+    marginTop: 40
+  }
+});
 
 export default Content;
