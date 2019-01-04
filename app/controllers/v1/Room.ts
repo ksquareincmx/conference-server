@@ -292,24 +292,20 @@ export class RoomController extends Controller {
   };
 
   updateRoom = async (req: Request, res: Response) => {
-    const name = req.body.name;
-    const color = req.body.color;
-    const roomId = req.params.id;
+    const data: IUpdateRoomRequest = { ...req.body, ...req.params };
 
-    if (isEmpty(name)) {
+    if (isEmpty(data.name)) {
       return Controller.badRequest(res, "Bad Request: No name in request");
     }
-    if (isEmpty(color)) {
+    if (isEmpty(data.color)) {
       return Controller.badRequest(res, "Bad Request: No color in request");
     }
-
-    const roomObj = { name, color };
 
     try {
       const room = await this.model.findOne({
         where: {
-          [Op.or]: { name, color },
-          id: { [Op.ne]: roomId }
+          [Op.or]: { name: data.name, color: data.color },
+          id: { [Op.ne]: data.id }
         }
       });
 
@@ -320,9 +316,12 @@ export class RoomController extends Controller {
         );
       }
 
-      const actualBooking = await this.model.findById(roomId);
-      const roomUpdated = await actualBooking.update(roomObj);
-      return res.status(200).json(roomUpdated);
+      const actualBooking = await this.model.findById(data.id);
+      const roomUpdated = await actualBooking.update(data);
+      const parsedRoom = JSON.parse(JSON.stringify(roomUpdated));
+      const JSONRoom = roomMapper.toJSON(parsedRoom);
+
+      return res.status(200).json(JSONRoom);
     } catch (err) {
       return Controller.serverError(res, err);
     }
