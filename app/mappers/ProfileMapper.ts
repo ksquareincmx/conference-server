@@ -5,6 +5,6 @@ import * as fp from "lodash/fp";
 
 export const profileMapper = {
   toEntity: profileJSON => toSyntax(profileJSON, fp.camelCase),
-  toJSON: (profileEntity): IProfileResponse =>
+  toDTO: (profileEntity): IProfileResponse =>
     <IProfileResponse>toSyntax(profileEntity, fp.snakeCase)
 };

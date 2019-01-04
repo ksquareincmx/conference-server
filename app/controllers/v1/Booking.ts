@@ -321,8 +321,8 @@ export class BookingController extends Controller {
         ...parsedCreatedBooking,
         attendees: data.attendees
       };
-      const JSONBooking = bookingMapper.toJSON(finalBooking);
-      res.status(201).json(JSONBooking);
+      const DTOBooking = bookingMapper.toDTO(finalBooking);
+      res.status(201).json(DTOBooking);
     } catch (err) {
       return Controller.serverError(res);
     }
@@ -415,8 +415,8 @@ export class BookingController extends Controller {
         ...parsedUpdatedBooking,
         attendees: updatedAttendees
       };
-      const JSONBooking = bookingMapper.toJSON(finalUpdatedBooking);
-      res.status(200).json(JSONBooking);
+      const DTOBooking = bookingMapper.toDTO(finalUpdatedBooking);
+      res.status(200).json(DTOBooking);
     } catch (err) {
       return Controller.serverError(res);
     }
@@ -440,8 +440,8 @@ export class BookingController extends Controller {
       };
 
       //interface
-      const JSONBooking = bookingMapper.toJSON(finalBooking);
-      res.status(200).json(JSONBooking);
+      const DTOBooking = bookingMapper.toDTO(finalBooking);
+      res.status(200).json(DTOBooking);
     } catch (err) {
       Controller.serverError(res, err);
     }
@@ -463,8 +463,8 @@ export class BookingController extends Controller {
           const finalBookings = await this.bookingsPlusAttendees(
             parsedBookings
           );
-          const JSONBookings = finalBookings.map(bookingMapper.toJSON);
-          return res.status(200).json(JSONBookings);
+          const DTOBookings = finalBookings.map(bookingMapper.toDTO);
+          return res.status(200).json(DTOBookings);
         }
       }
 
@@ -481,8 +481,8 @@ export class BookingController extends Controller {
             parsedBookings
           );
 
-          const JSONBookings = finalBookings.map(bookingMapper.toJSON);
-          return res.status(200).json(JSONBookings);
+          const DTOBookings = finalBookings.map(bookingMapper.toDTO);
+          return res.status(200).json(DTOBookings);
         }
       }
 

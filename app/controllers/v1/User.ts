@@ -97,8 +97,8 @@ export class UserController extends Controller {
       }
 
       const parsedUser = JSON.parse(JSON.stringify(user));
-      const JSONUser = userMapper.toJSON(parsedUser);
-      res.status(200).json(JSONUser);
+      const DTOUser = userMapper.toDTO(parsedUser);
+      res.status(200).json(DTOUser);
     } catch (err) {
       return Controller.serverError(res, err);
     }

@@ -5,6 +5,6 @@ import * as fp from "lodash/fp";
 
 export const userMapper = {
   toEntity: userJSON => toSyntax(userJSON, fp.camelCase),
-  toJSON: (userEntity): IUserResponse =>
+  toDTO: (userEntity): IUserResponse =>
     <IUserResponse>toSyntax(userEntity, fp.snakeCase)
 };

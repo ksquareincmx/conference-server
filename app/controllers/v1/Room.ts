@@ -229,8 +229,8 @@ export class RoomController extends Controller {
       const parsedRoom = JSON.parse(JSON.stringify(room));
       const roomStatus = await this.roomStatus(parsedRoom["id"]);
       const roomBooking = { ...parsedRoom, ...roomStatus };
-      const JSONRoom = roomMapper.toJSON(roomBooking);
-      res.status(200).json(JSONRoom);
+      const DTORoom = roomMapper.toDTO(roomBooking);
+      res.status(200).json(DTORoom);
     } catch (err) {
       return Controller.serverError(res, err);
     }
@@ -251,8 +251,8 @@ export class RoomController extends Controller {
       });
 
       const resolvedRooms = await Promise.all(roomsBooking);
-      const JSONRooms = resolvedRooms.map(room => roomMapper.toJSON(room));
-      res.status(200).json(JSONRooms);
+      const DTORooms = resolvedRooms.map(roomMapper.toDTO);
+      res.status(200).json(DTORooms);
     } catch (err) {
       return Controller.serverError(res, err);
     }
@@ -284,8 +284,8 @@ export class RoomController extends Controller {
 
       const roomCreated = await this.model.create(data);
       const parsedRoom = JSON.parse(JSON.stringify(roomCreated));
-      const JSONRoom = roomMapper.toJSON(parsedRoom);
-      return res.status(200).json(JSONRoom);
+      const DTORoom = roomMapper.toDTO(parsedRoom);
+      return res.status(200).json(DTORoom);
     } catch (err) {
       return Controller.serverError(res);
     }
@@ -319,9 +319,9 @@ export class RoomController extends Controller {
       const actualBooking = await this.model.findById(data.id);
       const roomUpdated = await actualBooking.update(data);
       const parsedRoom = JSON.parse(JSON.stringify(roomUpdated));
-      const JSONRoom = roomMapper.toJSON(parsedRoom);
+      const DTORoom = roomMapper.toDTO(parsedRoom);
 
-      return res.status(200).json(JSONRoom);
+      return res.status(200).json(DTORoom);
     } catch (err) {
       return Controller.serverError(res, err);
     }

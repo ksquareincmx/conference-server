@@ -5,6 +5,6 @@ import * as fp from "lodash/fp";
 
 export const roomMapper = {
   toEntity: roomJSON => toSyntax(roomJSON, fp.camelCase),
-  toJSON: (roomEntity): IRoomResponse =>
+  toDTO: (roomEntity): IRoomResponse =>
     <IRoomResponse>toSyntax(roomEntity, fp.snakeCase)
 };
