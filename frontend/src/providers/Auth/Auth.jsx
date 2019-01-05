@@ -1,6 +1,6 @@
 import React from "react";
 import AuthService from "services/AuthService";
-import baseUri from "config/baseUri";
+import baseUri from "../../config/baseUri";
 
 const AuthContext = React.createContext({
   user: null,

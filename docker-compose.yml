@@ -1,0 +1,35 @@
+version: '3'
+services:
+  mysql:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: ksquare
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "3306:3306"
+    restart: always
+    volumes:
+      - database:/var/lib/mysql
+      - ./.docker/mysql/conf:/etc/mysql/conf.d
+      - ./.docker/mysql/init:/docker-entrypoint-initdb.d
+
+  backend:
+    build:
+      context: .
+      dockerfile: .docker/backend.dockerfile
+    depends_on:
+      - mysql
+    ports:
+      - "8888:8888"
+
+  frontend:
+    build:
+      context: .
+      dockerfile: .docker/frontend.dockerfile
+    ports:
+      - "3000:80"
+
+volumes:
+  database: {}
