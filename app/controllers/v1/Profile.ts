@@ -143,18 +143,16 @@ export class ProfileController extends Controller {
   };
 
   updateProfile = async (req: Request, res: Response) => {
-    const data: IUpdateProfileRequest = <IUpdateProfileRequest>(
-      profileMapper.toEntity({
-        id: req.params.id,
-        ...req.body
-      })
-    );
+    const data: IUpdateProfileRequest = <IUpdateProfileRequest>{
+      params: req.params,
+      body: profileMapper.toEntity(req.body)
+    };
 
     try {
       const profile = await this.model.findOne({
         where: {
-          userId: data.userId,
-          id: data.id
+          userId: data.body.userId,
+          id: data.params.id
         }
       });
 
@@ -162,7 +160,10 @@ export class ProfileController extends Controller {
         return Controller.notFound(res);
       }
 
-      const updatedProfile = await profile.update(data);
+      const updatedProfile = await profile.update({
+        ...data.params,
+        ...data.body
+      });
       const parsedProfile = JSON.parse(JSON.stringify(updatedProfile));
       const DTOProfiles = profileMapper.toDTO(parsedProfile);
       res.status(200).json(DTOProfiles);

@@ -11,9 +11,15 @@ export interface IGetProfileRequest {
   userId: number; //userId
 }
 
-export interface IUpdateProfileRequest {
-  id: number;
+export interface IProfileRequest {
   userId: number;
   time_zone: string;
   locale: string;
+}
+
+export interface IUpdateProfileRequest {
+  params: {
+    id: number;
+  };
+  body: IProfileRequest;
 }
