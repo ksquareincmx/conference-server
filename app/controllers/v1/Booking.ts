@@ -232,7 +232,7 @@ export class BookingController extends Controller {
 
   destroyBooking = async (req: Request, res: Response) => {
     const data: IDeleteBookingParams = {
-      params: { ...req.params }
+      params: req.params
     };
 
     try {
@@ -432,7 +432,7 @@ export class BookingController extends Controller {
 
   findOneBooking = async (req: Request, res: Response) => {
     const data: IGetBookingParams = {
-      params: { ...req.params }
+      params: req.params
     };
 
     try {
@@ -459,7 +459,7 @@ export class BookingController extends Controller {
 
   findAllBooking = async (req: Request, res: Response) => {
     const data: IGetAllBookingParams = {
-      query: { ...req.query }
+      query: req.query
     };
     const toDate: Date = new Date(data.query.fromDate);
     const isValidDate = date => date.toString() !== "Invalid Date";
