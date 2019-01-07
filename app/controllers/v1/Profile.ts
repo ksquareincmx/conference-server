@@ -9,7 +9,7 @@ import {
   filterRoles
 } from "./../../policies/General";
 import {
-  IGetProfileRequest,
+  IGetProfileParams,
   IUpdateProfileRequest
 } from "./../../interfaces/ProfileInterfaces";
 import { profileMapper } from "./../../mappers/ProfileMapper";
@@ -103,10 +103,10 @@ export class ProfileController extends Controller {
   }
 
   findProfile = async (req: Request, res: Response) => {
-    const data: IGetProfileRequest = { userId: req.params.id };
+    const data: IGetProfileParams = { params: req.params };
     try {
       const profile = await this.model.findOne({
-        where: { userId: data.userId }
+        where: { userId: data.params.id }
       });
 
       if (!profile) {
@@ -123,7 +123,7 @@ export class ProfileController extends Controller {
   };
 
   findAllProfile = async (req: Request, res: Response) => {
-    const data: IGetProfileRequest = req.session.where;
+    const data = req.session.where;
 
     try {
       const profiles = await this.model.findAll({

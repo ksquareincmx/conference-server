@@ -7,8 +7,10 @@ export interface IProfileResponse {
   updated_at: string;
 }
 
-export interface IGetProfileRequest {
-  userId: number; //userId
+export interface IGetProfileParams {
+  params: {
+    id: number;
+  };
 }
 
 export interface IProfileRequest {
