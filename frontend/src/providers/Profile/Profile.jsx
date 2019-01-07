@@ -1,6 +1,6 @@
 import React from "react";
 import ProfileService from "services/ProfileService";
-import baseUri from "config/baseUri";
+import baseUri from "../../config/baseUri";
 
 const ProfileContext = React.createContext({
   getProfile: () => {},

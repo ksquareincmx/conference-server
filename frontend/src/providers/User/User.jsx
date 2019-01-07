@@ -1,6 +1,6 @@
 import React from "react";
 import UserService from "services/UserService";
-import baseUri from "config/baseUri";
+import baseUri from "../../config/baseUri";
 
 const UserContext = React.createContext({
   getUser: () => {},
