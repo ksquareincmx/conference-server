@@ -14,8 +14,10 @@ export interface IRoomRequest {
   color: string;
 }
 
-export interface IFindRoomRequest {
-  id: number;
+export interface IFindRoomParams {
+  params: {
+    id: number;
+  };
 }
 
 export interface IFindAllRoomRequest {}

@@ -14,7 +14,7 @@ import {
 } from "./../../policies/General";
 import {
   IRoomResponse,
-  IFindRoomRequest,
+  IFindRoomParams,
   IUpdateRoomRequest,
   ICreateRoomRequest
 } from "./../../interfaces/RoomInterfaces";
@@ -217,10 +217,9 @@ export class RoomController extends Controller {
    */
 
   findOneRoom = async (req: Request, res: Response) => {
-    const roomId: IFindRoomRequest = req.params.id;
-
+    const data: IFindRoomParams = { params: { ...req.params } };
     try {
-      const room = await this.model.findById(roomId);
+      const room = await this.model.findById(data.params.id);
 
       if (!room) {
         return Controller.notFound(res);
