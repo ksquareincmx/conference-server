@@ -28,7 +28,9 @@ export interface IDeleteRoomParams {
   };
 }
 
-export interface ICreateRoomRequest extends IRoomRequest {}
+export interface ICreateRoomRequest {
+  body: IRoomRequest;
+}
 
 export interface IUpdateRoomRequest extends IRoomRequest {
   id: number;

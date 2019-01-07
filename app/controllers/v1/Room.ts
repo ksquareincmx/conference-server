@@ -102,7 +102,7 @@ export class RoomController extends Controller {
       "/",
       validateJWT("access"),
       stripNestedObjects(),
-      //filterRoles(["admin"]),
+      filterRoles(["admin"]),
       this.createRoom
     );
 
@@ -258,19 +258,21 @@ export class RoomController extends Controller {
   };
 
   createRoom = async (req: Request, res: Response) => {
-    const data: ICreateRoomRequest = req.body;
+    const data: ICreateRoomRequest = <ICreateRoomRequest>{
+      body: roomMapper.toEntity(req.body)
+    };
 
-    if (isEmpty(data.name)) {
+    if (isEmpty(data.body.name)) {
       return Controller.badRequest(res, "Bad Request: No name in request");
     }
-    if (isEmpty(data.color)) {
+    if (isEmpty(data.body.color)) {
       return Controller.badRequest(res, "Bad Request: No color in request");
     }
 
     try {
       const room = await this.model.findOne({
         where: {
-          [Op.or]: { name: data.name, color: data.color }
+          [Op.or]: { name: data.body.name, color: data.body.color }
         }
       });
 
@@ -281,7 +283,7 @@ export class RoomController extends Controller {
         );
       }
 
-      const roomCreated = await this.model.create(data);
+      const roomCreated = await this.model.create(data.body);
       const parsedRoom = JSON.parse(JSON.stringify(roomCreated));
       const DTORoom = roomMapper.toDTO(parsedRoom);
       return res.status(200).json(DTORoom);
