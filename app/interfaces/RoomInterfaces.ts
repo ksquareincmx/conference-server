@@ -32,6 +32,9 @@ export interface ICreateRoomRequest {
   body: IRoomRequest;
 }
 
-export interface IUpdateRoomRequest extends IRoomRequest {
-  id: number;
+export interface IUpdateRoomRequest {
+  params: {
+    id: number;
+  };
+  body: IRoomRequest;
 }
