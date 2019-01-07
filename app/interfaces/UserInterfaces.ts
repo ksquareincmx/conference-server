@@ -6,8 +6,10 @@ export interface IUserResponse {
   email: string;
 }
 
-export interface IGetUserRequest {
-  id: number;
+export interface IGetUserParams {
+  params: {
+    id: number;
+  };
 }
 
 export interface IUserRequest {

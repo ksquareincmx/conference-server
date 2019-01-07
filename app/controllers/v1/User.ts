@@ -4,7 +4,7 @@ import { Request, Response, Router } from "express";
 import { validateJWT, isSelfUser, filterRoles } from "./../../policies/General";
 import { isEmpty } from "../../libraries/util";
 import { userMapper } from "./../../mappers/UserMapper";
-import { IGetUserRequest } from "./../../interfaces/UserInterfaces";
+import { IGetUserParams } from "./../../interfaces/UserInterfaces";
 
 export class UserController extends Controller {
   constructor() {
@@ -88,9 +88,10 @@ export class UserController extends Controller {
   }
 
   findOneUser = async (req: Request, res: Response) => {
-    const data: IGetUserRequest = req.params;
+    const data: IGetUserParams = { params: req.params };
+
     try {
-      const user = await this.model.findById(data.id);
+      const user = await this.model.findById(data.params.id);
 
       if (!user) {
         return Controller.notFound(res);
