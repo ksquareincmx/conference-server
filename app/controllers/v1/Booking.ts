@@ -23,7 +23,7 @@ import {
 } from "./../../libraries/BookingAttendeeDB";
 import { bookingMapper } from "./../../mappers/BookingMapper";
 import {
-  IGetBookingRequest,
+  IGetBookingParams,
   IGetAllBookingRequest,
   IDeleteBookingRequest,
   ICreateBookingRequest,
@@ -429,16 +429,18 @@ export class BookingController extends Controller {
   };
 
   findOneBooking = async (req: Request, res: Response) => {
-    const data: IGetBookingRequest = req.params;
+    const data: IGetBookingParams = {
+      params: { ...req.params }
+    };
 
     try {
-      const booking = await this.model.findById(data.id);
+      const booking = await this.model.findById(data.params.id);
       if (!booking) {
         return Controller.notFound(res);
       }
 
       const parsedBooking = JSON.parse(JSON.stringify(booking, null, 2));
-      const attendees = await getAttendees(data.id);
+      const attendees = await getAttendees(data.params.id);
 
       const finalBooking = {
         ...parsedBooking,

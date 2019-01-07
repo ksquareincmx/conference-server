@@ -12,9 +12,10 @@ export interface IBookingResponse {
   created_at: Date;
 }
 
-// Request
-export interface IGetBookingRequest {
-  id: number;
+export interface IGetBookingParams {
+  params: {
+    id: number;
+  };
 }
 
 export interface IGetAllBookingRequest {
