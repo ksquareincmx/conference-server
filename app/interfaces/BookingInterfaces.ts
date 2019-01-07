@@ -18,8 +18,10 @@ export interface IGetBookingParams {
   };
 }
 
-export interface IGetAllBookingRequest {
-  fromDate?: Date;
+export interface IGetAllBookingParams {
+  query: {
+    fromDate?: Date;
+  };
 }
 
 export interface IDeleteBookingRequest {

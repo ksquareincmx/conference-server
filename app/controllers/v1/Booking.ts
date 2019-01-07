@@ -24,7 +24,7 @@ import {
 import { bookingMapper } from "./../../mappers/BookingMapper";
 import {
   IGetBookingParams,
-  IGetAllBookingRequest,
+  IGetAllBookingParams,
   IDeleteBookingRequest,
   ICreateBookingRequest,
   IUpdateBookingRequest
@@ -456,14 +456,16 @@ export class BookingController extends Controller {
   };
 
   findAllBooking = async (req: Request, res: Response) => {
-    const data = <IGetAllBookingRequest>req.query;
-    const toDate: Date = new Date(data.fromDate);
+    const data: IGetAllBookingParams = {
+      query: { ...req.query }
+    };
+    const toDate: Date = new Date(data.query.fromDate);
     const isValidDate = date => date.toString() !== "Invalid Date";
 
     try {
       // TODO: Delete redundant code
       // Obtain all bookings
-      if (isEmpty(data.fromDate)) {
+      if (isEmpty(data.query.fromDate)) {
         const bookings = await this.model.findAll();
 
         if (bookings) {
