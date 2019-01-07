@@ -20,10 +20,12 @@ export interface IFindRoomParams {
   };
 }
 
-export interface IFindAllRoomRequest {}
+export interface IFindAllRoomParams {}
 
-export interface IDeleteRoomRequest {
-  id: number;
+export interface IDeleteRoomParams {
+  params: {
+    id: number;
+  };
 }
 
 export interface ICreateRoomRequest extends IRoomRequest {}
