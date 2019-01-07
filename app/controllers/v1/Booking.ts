@@ -243,23 +243,25 @@ export class BookingController extends Controller {
   };
 
   createBooking = async (req: Request, res: Response) => {
-    const data = <ICreateBookingRequest>bookingMapper.toEntity(req.body);
+    const data: ICreateBookingRequest = <ICreateBookingRequest>{
+      body: bookingMapper.toEntity(req.body)
+    };
 
-    if (isEmpty(data.description)) {
+    if (isEmpty(data.body.description)) {
       return Controller.badRequest(
         res,
         "Bad Request: No description in request"
       );
-    } else if (isEmpty(data.start)) {
+    } else if (isEmpty(data.body.start)) {
       return Controller.badRequest(
         res,
         "Bad Request: No start date in request."
       );
-    } else if (isEmpty(data.end)) {
+    } else if (isEmpty(data.body.end)) {
       return Controller.badRequest(res, "Bad Request: No end date in request.");
-    } else if (isEmpty(data.roomId)) {
+    } else if (isEmpty(data.body.roomId)) {
       return Controller.badRequest(res, "Bad Request: No roomId in request");
-    } else if (data.attendees.constructor !== Array) {
+    } else if (data.body.attendees.constructor !== Array) {
       return Controller.badRequest(
         res,
         "Bad Request: No attendes as Array in request"
@@ -267,8 +269,8 @@ export class BookingController extends Controller {
     }
 
     // insert only if the author email don't exist in data
-    if (!data.attendees.some(email => email === req.session.user.email)) {
-      data.attendees.push(req.session.user.email);
+    if (!data.body.attendees.some(email => email === req.session.user.email)) {
+      data.body.attendees.push(req.session.user.email);
     }
 
     try {
@@ -278,15 +280,15 @@ export class BookingController extends Controller {
             [Op.not]: {
               [Op.or]: {
                 end: {
-                  [Op.lte]: data.start
+                  [Op.lte]: data.body.start
                 },
                 start: {
-                  [Op.gte]: data.end
+                  [Op.gte]: data.body.end
                 }
               }
             },
             roomId: {
-              [Op.eq]: data.roomId
+              [Op.eq]: data.body.roomId
             }
           }
         }
@@ -298,29 +300,30 @@ export class BookingController extends Controller {
 
       // insert event in Google calendar and send invitations
       const eventCalendar = await calendarService.insertEvent(
-        data.start,
-        data.end,
-        data.description,
-        data.attendees
+        data.body.start,
+        data.body.end,
+        data.body.description,
+        data.body.attendees
       );
 
       // insert booking the DB
-      const bookingObj = { ...data, eventId: eventCalendar.id };
+      const bookingObj = { ...data.body, eventId: eventCalendar.id };
       const createdBooking = await this.model.create(bookingObj);
       const parsedCreatedBooking = JSON.parse(
         JSON.stringify(createdBooking, null, 2)
       );
 
       // insert attendee in the DB
-      data.attendees.forEach(async attendee => {
+      data.body.attendees.forEach(async attendee => {
         const attendeeId = await insertAttendee(attendee);
         await insertBookingAttendee(parsedCreatedBooking.id, attendeeId);
       });
 
       const finalBooking = {
         ...parsedCreatedBooking,
-        attendees: data.attendees
+        attendees: data.body.attendees
       };
+
       const DTOBooking = bookingMapper.toDTO(finalBooking);
       res.status(201).json(DTOBooking);
     } catch (err) {

@@ -35,7 +35,9 @@ export interface IBookingRequest {
   userId: number;
 }
 
-export interface ICreateBookingRequest extends IBookingRequest {}
+export interface ICreateBookingRequest {
+  body: IBookingRequest;
+}
 
 export interface IUpdateBookingRequest extends IBookingRequest {
   id: number;
