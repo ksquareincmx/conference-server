@@ -39,6 +39,9 @@ export interface ICreateBookingRequest {
   body: IBookingRequest;
 }
 
-export interface IUpdateBookingRequest extends IBookingRequest {
-  id: number;
+export interface IUpdateBookingRequest {
+  params: {
+    id: number;
+  };
+  body: IBookingRequest;
 }

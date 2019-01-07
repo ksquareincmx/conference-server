@@ -332,25 +332,26 @@ export class BookingController extends Controller {
   };
 
   updateBooking = async (req: Request, res: Response) => {
-    const data = <IUpdateBookingRequest>(
-      bookingMapper.toEntity({ ...req.body, ...req.params })
-    );
+    const data: IUpdateBookingRequest = <IUpdateBookingRequest>{
+      params: req.params,
+      body: bookingMapper.toEntity(req.body)
+    };
 
-    if (isEmpty(data.description)) {
+    if (isEmpty(data.body.description)) {
       return Controller.badRequest(
         res,
         "Bad Request: No description in request"
       );
-    } else if (isEmpty(data.start)) {
+    } else if (isEmpty(data.body.start)) {
       return Controller.badRequest(
         res,
         "Bad Request: No start date in request."
       );
-    } else if (isEmpty(data.end)) {
+    } else if (isEmpty(data.body.end)) {
       return Controller.badRequest(res, "Bad Request: No end date in request.");
-    } else if (isEmpty(data.roomId)) {
+    } else if (isEmpty(data.body.roomId)) {
       return Controller.badRequest(res, "Bad Request: No roomId in request");
-    } else if (data.attendees.constructor !== Array) {
+    } else if (data.body.attendees.constructor !== Array) {
       return Controller.badRequest(
         res,
         "Bad Request: No attendes as Array in request"
@@ -358,8 +359,8 @@ export class BookingController extends Controller {
     }
 
     // insert only if the author email don't exist in the request
-    if (!data.attendees.some(email => email === req.session.user.email)) {
-      data.attendees.push(req.session.user.email);
+    if (!data.body.attendees.some(email => email === req.session.user.email)) {
+      data.body.attendees.push(req.session.user.email);
     }
 
     try {
@@ -369,18 +370,18 @@ export class BookingController extends Controller {
             [Op.not]: {
               [Op.or]: {
                 end: {
-                  [Op.lte]: data.start
+                  [Op.lte]: data.body.start
                 },
                 start: {
-                  [Op.gte]: data.end
+                  [Op.gte]: data.body.end
                 }
               }
             },
             id: {
-              [Op.ne]: data.id
+              [Op.ne]: data.params.id
             },
             roomId: {
-              [Op.eq]: data.roomId
+              [Op.eq]: data.body.roomId
             }
           }
         }
@@ -390,7 +391,7 @@ export class BookingController extends Controller {
         return Controller.noContent(res);
       }
 
-      const booking = await this.model.findById(data.id);
+      const booking = await this.model.findById(data.params.id);
       if (!booking) {
         return res.status(404).end();
       }
@@ -398,19 +399,21 @@ export class BookingController extends Controller {
       // update the event and send emails
       await calendarService.updateEvent(
         booking.eventId,
-        data.start,
-        data.end,
-        data.description,
-        data.attendees
+        data.body.start,
+        data.body.end,
+        data.body.description,
+        data.body.attendees
       );
 
-      // update tables attende and bookingAttende
+      // update tables: attende and bookingAttende
       const updatedAttendees = await updateBookingAttendee(
-        data.id,
-        data.attendees
+        data.params.id,
+        data.body.attendees
       );
-
-      const updatedBooking = await booking.update(data);
+      const updatedBooking = await booking.update({
+        ...data.params,
+        ...data.body
+      });
       const parsedUpdatedBooking = JSON.parse(
         JSON.stringify(updatedBooking, null, 2)
       );
@@ -421,7 +424,7 @@ export class BookingController extends Controller {
       const DTOBooking = bookingMapper.toDTO(finalUpdatedBooking);
       res.status(200).json(DTOBooking);
     } catch (err) {
-      return Controller.serverError(res);
+      return Controller.serverError(res, err);
     }
   };
 
