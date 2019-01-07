@@ -217,7 +217,7 @@ export class RoomController extends Controller {
    */
 
   findOneRoom = async (req: Request, res: Response) => {
-    const data: IFindRoomParams = { params: { ...req.params } };
+    const data: IFindRoomParams = { params: req.params };
     try {
       const room = await this.model.findById(data.params.id);
 
