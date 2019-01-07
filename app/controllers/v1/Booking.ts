@@ -25,7 +25,7 @@ import { bookingMapper } from "./../../mappers/BookingMapper";
 import {
   IGetBookingParams,
   IGetAllBookingParams,
-  IDeleteBookingRequest,
+  IDeleteBookingParams,
   ICreateBookingRequest,
   IUpdateBookingRequest
 } from "./../../interfaces/BookingInterfaces";
@@ -231,10 +231,12 @@ export class BookingController extends Controller {
   };
 
   destroyBooking = async (req: Request, res: Response) => {
-    const data: IDeleteBookingRequest = req.params;
+    const data: IDeleteBookingParams = {
+      params: { ...req.params }
+    };
 
     try {
-      const booking = await this.model.findById(data.id);
+      const booking = await this.model.findById(data.params.id);
       await calendarService.deleteEvent(booking.eventId);
       this.destroy(req, res);
     } catch (err) {

@@ -24,8 +24,10 @@ export interface IGetAllBookingParams {
   };
 }
 
-export interface IDeleteBookingRequest {
-  id: number;
+export interface IDeleteBookingParams {
+  params: {
+    id: number;
+  };
 }
 
 // Interface base for ICreateBooking & IUpdateBooking
