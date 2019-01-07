@@ -294,8 +294,8 @@ export class RoomController extends Controller {
 
   updateRoom = async (req: Request, res: Response) => {
     const data: IUpdateRoomRequest = <IUpdateRoomRequest>{
-      body: req.body,
-      params: roomMapper.toEntity(req.params)
+      params: req.params,
+      body: roomMapper.toEntity(req.body)
     };
 
     if (isEmpty(data.body.name)) {
