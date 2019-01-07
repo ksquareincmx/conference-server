@@ -13,6 +13,12 @@ export interface IGetProfileParams {
   };
 }
 
+export interface IGetAllProfileSession {
+  where: {
+    userId: number;
+  };
+}
+
 export interface IProfileRequest {
   userId: number;
   time_zone: string;

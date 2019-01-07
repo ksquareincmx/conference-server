@@ -10,6 +10,7 @@ import {
 } from "./../../policies/General";
 import {
   IGetProfileParams,
+  IGetAllProfileSession,
   IUpdateProfileRequest
 } from "./../../interfaces/ProfileInterfaces";
 import { profileMapper } from "./../../mappers/ProfileMapper";
@@ -123,11 +124,11 @@ export class ProfileController extends Controller {
   };
 
   findAllProfile = async (req: Request, res: Response) => {
-    const data = req.session.where;
+    const data: IGetAllProfileSession = { where: req.session.where };
 
     try {
       const profiles = await this.model.findAll({
-        where: { userId: data.userId }
+        where: { userId: data.where.userId }
       });
 
       if (!profiles) {
