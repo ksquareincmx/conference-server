@@ -1,5 +1,5 @@
 import React from "react";
-import getTimeStyles from "styles";
+import { getTimeStyles } from "./Styles";
 
 function Time(props) {
   const styles = getTimeStyles();

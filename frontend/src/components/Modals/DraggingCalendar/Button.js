@@ -1,5 +1,5 @@
 import React from "react";
-import getButtonStyles from "./Styles";
+import { getButtonStyles } from "./Styles";
 
 function Button(props) {
   let styles = getButtonStyles(props.color);
