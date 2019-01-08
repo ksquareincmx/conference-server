@@ -2,79 +2,65 @@
 
 conference-booking Server, based on Flugzeug.
 
-## Install MySQL (Linux)
+## Production
 
-```
-$ sudo apt update
-$ sudo apt install mysql-server mysql-client
-```
-
-## Install MySQL (macOS)
-
-```
-# Install brew from https://brew.sh
-$ brew update
-$ brew install mysql
-```
-
-## Configure MySQL
-
-Create database and fix timezone utc error
-```
-mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root -p mysql
-
-mysql -u root -p
-
-mysql> CREATE DATABASE `conference-booking`;
-mysql> CREATE USER 'conference-booking'@'localhost' IDENTIFIED WITH mysql_native_password BY '___YOUR_PASSWORD_HERE___';
-mysql> GRANT ALL PRIVILEGES ON `conference-booking`.* TO 'conference-booking'@'localhost';
-mysql> FLUSH PRIVILEGES;
-```
-
-## Update `.env` file with MySQL credentials
-
-```
-$ cp .env.example .env
-$ code .env
-```
-
-## Install dependencies
-
-```
-$ npm install
-```
+Check the `.env.example` file to set up the appropriate environment variables and run `docker-compose up --build`. 
 
 ## Development
 
+1. Install MySQL (Linux)
+    ```bash
+    # Linux
+    sudo apt update
+    sudo apt install mysql-server mysql-client
+    
+    # macOS
+    brew update
+    brew install mysql
+    ```
+
+2. Configure MySQL
+    ```bash
+    # Fix to ERROR 1298 (HY000): Unknown or incorrect time zone: 'UTC'
+    mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root -p mysql
+    
+    # Connect to MySQL server
+    mysql -u root -p
+    ```
+
+3. Create database
+    ```mysql
+    CREATE DATABASE `conference-booking`;
+    CREATE USER 'conference-booking'@'localhost' IDENTIFIED WITH mysql_native_password BY '___YOUR_PASSWORD_HERE___';
+    GRANT ALL PRIVILEGES ON `conference-booking`.* TO 'conference-booking'@'localhost';
+    FLUSH PRIVILEGES;
+    ```
+
+4. Create a `.env` file and update it with you MySQL credentials
+    ```bash
+    cp .env.example .env
+    code .env
+    ```
+
+5. Install dependencies
+    ```bash
+    npm install
+    ```
+
+6. Seed the database
+    ```bash
+    gulp seed
+    ```
+
+7. Start the development server
+    ```bash
+    gulp watch
+    ```
+
+## Documentation
+
 Read the documentation at ``docs/Framework.md``
 
-```
-gulp watch
-```
-
-## Prepare for production
-
-```
-gulp production
-```
-
-## Run in production
-
-```
-npm start
-```
-
-or
-
-```
-node dist/main.js
-```
-
-## Seed database (see app/seed.ts)
-
-```
-gulp seed
-```
 
 ## Print database creation SQL (Useful when writing migrations)
 
