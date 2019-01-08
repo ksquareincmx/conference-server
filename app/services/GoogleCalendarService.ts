@@ -22,8 +22,8 @@ class GoogleCalendarService {
   }
 
   insertEvent(
-    start: string,
-    end: string,
+    start: Date,
+    end: Date,
     description: string,
     attendees: Array<string>
   ) {
@@ -45,8 +45,8 @@ class GoogleCalendarService {
 
   updateEvent(
     eventId: number,
-    start: string,
-    end: string,
+    start: Date,
+    end: Date,
     description: string,
     attendees: Array<string>
   ) {
@@ -83,7 +83,7 @@ class GoogleCalendarService {
       });
   }
 
-  defineEvent(start: string, end: string, description: string) {
+  defineEvent(start: Date, end: Date, description: string) {
     let event = {
       start: {
         dateTime: start,

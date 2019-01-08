@@ -55,3 +55,13 @@ export function getActualDate() {
 export function isEmpty(attribute) {
   return !attribute && attribute !== 0;
 }
+
+// Returns a object with the same propertys but with the format keys eg.
+// a = { firstName: "John", lastName: "Doe" } =>
+// a = { first_name: "John", last_name: "Doe" }
+export function toSyntax(obj, syntaxConverter) {
+  return Object.keys(obj).reduce(
+    (acc, key) => ((acc[syntaxConverter(key)] = obj[key]), acc),
+    {}
+  );
+}

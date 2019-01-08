@@ -157,6 +157,48 @@ define({ "api": [
             "optional": false,
             "field": "body.profile",
             "description": "<p>User profile</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "body.profile.id",
+            "description": "<p>User id</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "body.profile.timezone",
+            "description": "<p>Profile timezon</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "body.profile.locale",
+            "description": "<p>Profile locale</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "body.profile.userId",
+            "description": "<p>User id</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "body.profile.createAt",
+            "description": "<p>User create date</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "body.profile.updateAt",
+            "description": "<p>User update date</p>"
           }
         ]
       }
@@ -820,7 +862,7 @@ define({ "api": [
           },
           {
             "group": "Success 200",
-            "type": "Numbe",
+            "type": "Number",
             "optional": false,
             "field": "body.roomId",
             "description": "<p>Booking room</p>"
@@ -896,10 +938,10 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Boolean",
+            "type": "Date",
             "optional": false,
-            "field": "body.onlyFuture",
-            "description": "<p>Shows only the actual and futures booking</p>"
+            "field": "body.fromDate",
+            "description": "<p>Shows all bookings from a date</p>"
           }
         ]
       }
@@ -951,7 +993,7 @@ define({ "api": [
           },
           {
             "group": "Success 200",
-            "type": "Numbe",
+            "type": "Number",
             "optional": false,
             "field": "body.roomId",
             "description": "<p>Booking room</p>"
@@ -1086,6 +1128,13 @@ define({ "api": [
             "optional": false,
             "field": "body.id",
             "description": "<p>Booking id</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "body.roomId",
+            "description": "<p>Booking room id</p>"
           },
           {
             "group": "Success 200",
@@ -1245,6 +1294,13 @@ define({ "api": [
             "optional": false,
             "field": "body.id",
             "description": "<p>Booking id</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "body.roomId",
+            "description": "<p>Booking room id</p>"
           },
           {
             "group": "Success 200",
@@ -1683,6 +1739,13 @@ define({ "api": [
           },
           {
             "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "body.id",
+            "description": "<p>Room id</p>"
+          },
+          {
+            "group": "Success 200",
             "type": "String",
             "optional": false,
             "field": "body.name",
@@ -1706,8 +1769,15 @@ define({ "api": [
             "group": "Success 200",
             "type": "Number",
             "optional": false,
-            "field": "body.bookingId",
-            "description": "<p>Booking id if not available, null if available</p>"
+            "field": "body.bookingIdActual",
+            "description": "<p>Booking id that currently occupies the room, null if its not</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "body.status",
+            "description": "<p>Room avability (&quot;Not Available&quot;, &quot;Available&quot;)</p>"
           },
           {
             "group": "Success 200",
@@ -1773,6 +1843,13 @@ define({ "api": [
           },
           {
             "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "body.id",
+            "description": "<p>Room id</p>"
+          },
+          {
+            "group": "Success 200",
             "type": "String",
             "optional": false,
             "field": "body.name",
@@ -1796,8 +1873,15 @@ define({ "api": [
             "group": "Success 200",
             "type": "Number",
             "optional": false,
-            "field": "body.bookingId",
-            "description": "<p>Booking id if not available, null if available</p>"
+            "field": "body.bookingIdActual",
+            "description": "<p>Booking id that currently occupies the room, null if its not</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "body.status",
+            "description": "<p>Room avability (&quot;Not Available&quot;, &quot;Available&quot;)</p>"
           },
           {
             "group": "Success 200",
@@ -2021,6 +2105,13 @@ define({ "api": [
           },
           {
             "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "body.id",
+            "description": "<p>Room id</p>"
+          },
+          {
+            "group": "Success 200",
             "type": "String",
             "optional": false,
             "field": "body.name",
@@ -2141,8 +2232,8 @@ define({ "api": [
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "body.googleId",
-            "description": "<p>User google id</p>"
+            "field": "body.authProviderId",
+            "description": "<p>Id of the authProvider db element associated with the user.</p>"
           },
           {
             "group": "Success 200",
@@ -2231,8 +2322,8 @@ define({ "api": [
             "group": "Parameter",
             "type": "String",
             "optional": false,
-            "field": "body.googleId",
-            "description": "<p>User google id</p>"
+            "field": "body.authProviderId",
+            "description": "<p>Id of the authProvider db element associated with the user.</p>"
           },
           {
             "group": "Parameter",
@@ -2286,8 +2377,8 @@ define({ "api": [
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "body.googleId",
-            "description": "<p>User google id</p>"
+            "field": "body.authProviderId",
+            "description": "<p>Id of the authProvider db element associated with the user.</p>"
           },
           {
             "group": "Success 200",
