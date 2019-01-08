@@ -21,6 +21,8 @@ services:
       dockerfile: .docker/backend.dockerfile
     depends_on:
       - mysql
+    environment:
+      - DB_HOST=mysql
     ports:
       - "8888:8888"
 
