@@ -1,3 +1,5 @@
+import * as moment from "moment-timezone";
+
 export const months = [
   { name: "January", val: 1 },
   { name: "February", val: 2 },
@@ -39,12 +41,9 @@ export function getRandomColor() {
 }
 
 export function getActualDate() {
-  let date = new Date();
-  let actualDate = date.toLocaleString("es-MX", {
-    formatMatcher: "basic",
-    timeZone: "America/Mexico_City"
-  });
-  return actualDate;
+  return moment()
+    .tz("America/Mexico_City")
+    .format();
 }
 
 /**
