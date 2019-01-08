@@ -1,5 +1,5 @@
 import React from "react";
-import getCardStyles from "./Styles";
+import { getCardStyles } from "./Styles";
 
 function CardContainer(props) {
   const styles = getCardStyles();

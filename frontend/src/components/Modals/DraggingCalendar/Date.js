@@ -1,5 +1,5 @@
 import React from "react";
-import getDateStyles from "./Styles";
+import { getDateStyles } from "./Styles";
 
 function Date(props) {
   const styles = getDateStyles();
