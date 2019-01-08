@@ -1,36 +1,16 @@
 import React from "react";
+import getDateStyles from "./Styles";
 
 function Date(props) {
+  const styles = getDateStyles();
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column"
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "space-between",
-          marginLeft: 10,
-          marginRight: 10
-        }}
-      >
-        <div style={{ fontWeight: "bold" }}>{"Day"}</div>
-        <div style={{ fontWeight: "bold" }}>{"Month"}</div>
-        <div style={{ fontWeight: "bold" }}>{"Year"}</div>
+    <div style={styles.dateContainer}>
+      <div style={styles.labels}>
+        <div style={styles.text}>{"Day"}</div>
+        <div style={styles.text}>{"Month"}</div>
+        <div style={styles.text}>{"Year"}</div>
       </div>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "space-between",
-          marginBottom: 10,
-          marginLeft: 10,
-          marginRight: 10
-        }}
-      >
+      <div style={styles.dateValuesContainer}>
         <div>{"10"}</div>
         <div>{"01"}</div>
         <div>{"1996"}</div>
@@ -38,5 +18,4 @@ function Date(props) {
     </div>
   );
 }
-
 export default Date;

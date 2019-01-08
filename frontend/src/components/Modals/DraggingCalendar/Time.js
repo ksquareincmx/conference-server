@@ -1,18 +1,14 @@
 import React from "react";
+import getTimeStyles from "styles";
 
 function Time(props) {
+  const styles = getTimeStyles();
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "row",
-        marginBottom: 10
-      }}
-    >
-      <p style={{ marginLeft: 10 }}>
-        <span style={{ fontWeight: "bold" }}>{"From "}</span>
+    <div style={styles.timeContainer}>
+      <p style={styles.p}>
+        <span style={styles.text}>{"From "}</span>
         <span>{props.from}</span>
-        <span style={{ fontWeight: "bold" }}>{" To "}</span>
+        <span style={styles.text}>{" To "}</span>
         <span>{props.to}</span>
       </p>
     </div>

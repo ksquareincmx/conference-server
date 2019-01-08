@@ -1,20 +1,9 @@
 import React from "react";
+import getCardStyles from "./Styles";
 
 function CardContainer(props) {
-  console.log(props);
-  return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        height: 300,
-        width: 230,
-        backgroundColor: "#EAE8E8"
-      }}
-    >
-      {props.children}
-    </div>
-  );
+  const styles = getCardStyles();
+  return <div style={styles.cardContainer}>{props.children}</div>;
 }
 
 export default CardContainer;

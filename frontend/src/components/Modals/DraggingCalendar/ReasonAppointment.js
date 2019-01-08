@@ -1,15 +1,10 @@
 import React from "react";
+import getReasonStyles from "./Styles";
 
 function ReasonAppointment(props) {
+  const styles = getReasonStyles();
   return (
-    <div
-      style={{
-        fontWeight: "bold",
-        marginLeft: 10
-      }}
-    >
-      {"Reason for the appointment"}
-    </div>
+    <div style={styles.reasonAppointment}>{"Reason for the appointment"}</div>
   );
 }
 
