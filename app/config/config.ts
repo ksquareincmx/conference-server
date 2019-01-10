@@ -94,6 +94,14 @@ export const config: any = {
         "gmail.com"
       ]
     }
+  },
+
+  serviceAccount: {
+    key: process.env.KEY_SERVICE_ACCOUNT || "The key must be in file .env",
+    serviceAcctId:
+      process.env.SERVICE_ACCOUNT ||
+      "coference-booking@esoteric-cab-228016.iam.gserviceaccount.com",
+    timezone: process.env.TIMEZONE || "UTC-05:00"
   }
 };
 
