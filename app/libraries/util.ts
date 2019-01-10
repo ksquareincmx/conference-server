@@ -1,4 +1,5 @@
 import * as moment from "moment-timezone";
+import * as EmailValidator from "email-validator";
 
 export const months = [
   { name: "January", val: 1 },
@@ -79,4 +80,8 @@ export function isAvailableDate(start, end) {
   };
 
   return isAvailableDay(startDate.getDay()) && isAvailableHour();
+}
+
+export function areValidsEmails(emails) {
+  return emails.every(email => EmailValidator.validate(email));
 }
