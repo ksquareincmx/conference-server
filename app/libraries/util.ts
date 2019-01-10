@@ -40,7 +40,7 @@ export function getRandomColor() {
   return colors[index];
 }
 
-export function getActualDate() {
+export function getActualDate(): Date {
   return moment()
     .tz("America/Mexico_City")
     .format();
@@ -63,4 +63,20 @@ export function toSyntax(obj, syntaxConverter) {
     (acc, key) => ((acc[syntaxConverter(key)] = obj[key]), acc),
     {}
   );
+}
+
+export function isAvailableDate(start, end) {
+  const startDate = new Date(start);
+  const endDate = new Date(end);
+
+  const isAvailableDay = day => !(day === 6 || day === 0);
+  const isAvailableHour = () => {
+    const officeHourStart = 8; // because horary change and sync with USA
+    const officeHourEnd = "1800";
+
+    const endHour = `${endDate.getHours()}${endDate.getMinutes()}`;
+    return startDate.getHours() >= officeHourStart && endHour <= officeHourEnd;
+  };
+
+  return isAvailableDay(startDate.getDay()) && isAvailableHour();
 }
