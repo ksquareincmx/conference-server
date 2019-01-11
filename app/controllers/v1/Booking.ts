@@ -259,26 +259,32 @@ export class BookingController extends Controller {
         res,
         "Bad Request: No description in request"
       );
-    } else if (isEmpty(data.body.start)) {
+    }
+    if (isEmpty(data.body.start)) {
       return Controller.badRequest(
         res,
         "Bad Request: No start date in request."
       );
-    } else if (isEmpty(data.body.end)) {
+    }
+    if (isEmpty(data.body.end)) {
       return Controller.badRequest(res, "Bad Request: No end date in request.");
-    } else if (isEmpty(data.body.roomId)) {
+    }
+    if (isEmpty(data.body.roomId)) {
       return Controller.badRequest(res, "Bad Request: No roomId in request");
-    } else if (data.body.attendees.constructor !== Array) {
+    }
+    if (data.body.attendees.constructor !== Array) {
       return Controller.badRequest(
         res,
         "Bad Request: No attendes as Array in request"
       );
-    } else if (getActualDate() > data.body.start) {
+    }
+    if (getActualDate() > data.body.start) {
       return Controller.badRequest(
         res,
         "bad Request: Bookings in past dates aren't allowed."
       );
-    } else if (!isAvailableDate(data.body.start, data.body.end)) {
+    }
+    if (!isAvailableDate(data.body.start, data.body.end)) {
       return Controller.badRequest(
         res,
         "bad Request: The booking only can have office hours (Monday-Friday, 8AM-6PM)."
@@ -361,26 +367,32 @@ export class BookingController extends Controller {
         res,
         "Bad Request: No description in request"
       );
-    } else if (isEmpty(data.body.start)) {
+    }
+    if (isEmpty(data.body.start)) {
       return Controller.badRequest(
         res,
         "Bad Request: No start date in request."
       );
-    } else if (isEmpty(data.body.end)) {
+    }
+    if (isEmpty(data.body.end)) {
       return Controller.badRequest(res, "Bad Request: No end date in request.");
-    } else if (isEmpty(data.body.roomId)) {
+    }
+    if (isEmpty(data.body.roomId)) {
       return Controller.badRequest(res, "Bad Request: No roomId in request");
-    } else if (data.body.attendees.constructor !== Array) {
+    }
+    if (data.body.attendees.constructor !== Array) {
       return Controller.badRequest(
         res,
         "Bad Request: No attendes as Array in request"
       );
-    } else if (getActualDate() > data.body.start) {
+    }
+    if (getActualDate() > data.body.start) {
       return Controller.badRequest(
         res,
         "bad Request: Bookings in past dates aren't allowed."
       );
-    } else if (!isAvailableDate(data.body.start, data.body.end)) {
+    }
+    if (!isAvailableDate(data.body.start, data.body.end)) {
       return Controller.badRequest(
         res,
         "bad Request: The booking only can have office hours (Monday-Friday, 8AM-6PM)."
