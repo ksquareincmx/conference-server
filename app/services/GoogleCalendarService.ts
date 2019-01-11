@@ -1,6 +1,6 @@
 import * as CalendarAPI from "node-google-calendar";
 import { Controller } from "./../libraries/Controller";
-import { config } from "./../config/configService";
+import { config } from "./../config/config";
 
 class GoogleCalendarService {
   params: any;
@@ -18,7 +18,7 @@ class GoogleCalendarService {
     };
     this.timeZone = timeZone;
     this.calendarId = calendarId;
-    this.calendar = new CalendarAPI(config);
+    this.calendar = new CalendarAPI(config.serviceAccount);
   }
 
   insertEvent(
