@@ -289,7 +289,8 @@ export class BookingController extends Controller {
         res,
         "bad Request: The booking only can have office hours (Monday-Friday, 8AM-6PM)."
       );
-    } else if (!areValidsEmails(data.body.attendees)) {
+    }
+    if (!areValidsEmails(data.body.attendees)) {
       return Controller.badRequest(res, "Bad Request: Invalid email");
     }
 
@@ -397,7 +398,8 @@ export class BookingController extends Controller {
         res,
         "bad Request: The booking only can have office hours (Monday-Friday, 8AM-6PM)."
       );
-    } else if (!areValidsEmails(data.body.attendees)) {
+    }
+    if (!areValidsEmails(data.body.attendees)) {
       return Controller.badRequest(res, "Bad Request: Invalid email");
     }
 
