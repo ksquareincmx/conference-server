@@ -4,7 +4,8 @@ import { Controller } from "./../../libraries/Controller";
 import {
   isEmpty,
   getActualDate,
-  isAvailableDate
+  isAvailableDate,
+  areValidsEmails
 } from "./../../libraries/util";
 import { Booking } from "./../../models/Booking";
 import { Request, Response, Router } from "express";
@@ -63,7 +64,7 @@ export class BookingController extends Controller {
     @apiSuccess {Number}  body.userId            User's id who created the booking
     @apiSuccess {Date}    body.updatedAt         Booking creation date
     @apiSuccess {Date}    body.createdAt         Booking update date
-    @apiSuccess {String[]} body.attendes    Emails from users who will attend the event
+    @apiSuccess {String[]} body.attendees    Emails from users who will attend the event
   */
 
     this.router.get("/", validateJWT("access"), this.findAllBooking);
@@ -87,7 +88,7 @@ export class BookingController extends Controller {
     @apiSuccess {Number}  body.userId            User's id who created the booking
     @apiSuccess {Date}    body.updatedAt         Booking creation date
     @apiSuccess {Date}    body.createdAt         Booking update date
-    @apiSuccess {String[]} body.attendes    Emails from users who will attend the event
+    @apiSuccess {String[]} body.attendees    Emails from users who will attend the event
     */
 
     this.router.get("/:id", validateJWT("access"), this.findOneBooking);
@@ -222,7 +223,7 @@ export class BookingController extends Controller {
         const attendees = await getAttendees(booking.id);
         const bookingWithAttendees = {
           ...booking,
-          attendes: attendees.map(attendee => attendee.email)
+          attendees: attendees.map(attendee => attendee.email)
         };
         return bookingWithAttendees;
       });
@@ -274,7 +275,7 @@ export class BookingController extends Controller {
     if (data.body.attendees.constructor !== Array) {
       return Controller.badRequest(
         res,
-        "Bad Request: No attendes as Array in request"
+        "Bad Request: No attendees as Array in request"
       );
     }
     if (getActualDate() > data.body.start) {
@@ -288,6 +289,9 @@ export class BookingController extends Controller {
         res,
         "bad Request: The booking only can have office hours (Monday-Friday, 8AM-6PM)."
       );
+    }
+    if (!areValidsEmails(data.body.attendees)) {
+      return Controller.badRequest(res, "Bad Request: Invalid email");
     }
 
     // insert only if the author email don't exist in data
@@ -380,7 +384,7 @@ export class BookingController extends Controller {
     if (data.body.attendees.constructor !== Array) {
       return Controller.badRequest(
         res,
-        "Bad Request: No attendes as Array in request"
+        "Bad Request: No attendees as Array in request"
       );
     }
     if (getActualDate() > data.body.start) {
@@ -394,6 +398,9 @@ export class BookingController extends Controller {
         res,
         "bad Request: The booking only can have office hours (Monday-Friday, 8AM-6PM)."
       );
+    }
+    if (!areValidsEmails(data.body.attendees)) {
+      return Controller.badRequest(res, "Bad Request: Invalid email");
     }
 
     // insert only if the author email don't exist in the request
