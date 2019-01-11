@@ -544,7 +544,7 @@ export class AuthController extends Controller {
         include: [{ model: Profile, as: "profile" }]
       });
 
-      if (isEmpty(user)) {
+      if (!isEmpty(user)) {
         const authenticate = await user.authenticate(password);
         if (authenticate) {
           const credentials: any = await this.getCredentials(user);
@@ -553,6 +553,7 @@ export class AuthController extends Controller {
           return Controller.unauthorized(res);
         }
       }
+      // Need to add response in case user does not exist
     } catch (err) {
       log.error(err);
       return Controller.badRequest(res);
