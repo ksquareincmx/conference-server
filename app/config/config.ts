@@ -72,9 +72,9 @@ export const config: any = {
 
   db: {
     database: process.env.DB_NAME || "flugzeug-project",
-    username: process.env.DB_USER || "conference",
-    password: process.env.DB_PASSWORD || "123",
-    host: "localhost",
+    username: process.env.DB_USER || "test_user",
+    password: process.env.DB_PASSWORD || "#P4ssw0rd",
+    host: process.env.DB_HOST || "localhost",
     dialect: "mysql",
     logging: false,
     //storage: 'db.sqlite',
@@ -94,6 +94,14 @@ export const config: any = {
         "gmail.com"
       ]
     }
+  },
+
+  serviceAccount: {
+    key: process.env.KEY_SERVICE_ACCOUNT || "The key must be in file .env",
+    serviceAcctId:
+      process.env.SERVICE_ACCOUNT ||
+      "coference-booking@esoteric-cab-228016.iam.gserviceaccount.com",
+    timezone: process.env.TIMEZONE || "UTC-05:00"
   }
 };
 

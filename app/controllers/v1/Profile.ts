@@ -8,6 +8,12 @@ import {
   stripNestedObjects,
   filterRoles
 } from "./../../policies/General";
+import {
+  IGetProfileParams,
+  IGetAllProfileSession,
+  IUpdateProfileRequest
+} from "./../../interfaces/ProfileInterfaces";
+import { profileMapper } from "./../../mappers/ProfileMapper";
 
 export class ProfileController extends Controller {
   constructor() {
@@ -17,8 +23,7 @@ export class ProfileController extends Controller {
   }
 
   routes(): Router {
-
-  /**
+    /**
       @api {get} /api/v1/Profile/ Get a list of Profile
       @apiPermission access (Enforces access only to owner)
       @apiName getAllProfiles
@@ -37,7 +42,7 @@ export class ProfileController extends Controller {
       "/",
       validateJWT("access"),
       filterOwner(),
-      (req, res) => this.find(req, res)
+      this.findAllProfile
     );
 
     /**
@@ -61,7 +66,7 @@ export class ProfileController extends Controller {
       "/:id",
       validateJWT("access"),
       filterOwner(),
-      (req, res) => this.findOne(req, res)
+      this.findProfile
     );
 
     /**
@@ -92,11 +97,81 @@ export class ProfileController extends Controller {
       stripNestedObjects(),
       filterOwner(),
       appendUser(),
-      (req, res) => this.update(req, res)
+      this.updateProfile
     );
 
     return this.router;
   }
+
+  findProfile = async (req: Request, res: Response) => {
+    const data: IGetProfileParams = { params: req.params };
+    try {
+      const profile = await this.model.findOne({
+        where: { userId: data.params.id }
+      });
+
+      if (!profile) {
+        return Controller.notFound(res);
+      }
+
+      const parsedProfile = JSON.parse(JSON.stringify(profile));
+      const DTOProfiles = profileMapper.toDTO(parsedProfile);
+
+      res.status(200).json(DTOProfiles);
+    } catch (err) {
+      return Controller.serverError(res, err);
+    }
+  };
+
+  findAllProfile = async (req: Request, res: Response) => {
+    const data: IGetAllProfileSession = { where: req.session.where };
+
+    try {
+      const profiles = await this.model.findAll({
+        where: { userId: data.where.userId }
+      });
+
+      if (!profiles) {
+        return Controller.notFound(res);
+      }
+
+      const parsedProfiles = JSON.parse(JSON.stringify(profiles));
+      const DTOProfile = parsedProfiles.map(profileMapper.toDTO);
+      res.status(200).json(DTOProfile);
+    } catch (err) {
+      return Controller.serverError(res, err);
+    }
+  };
+
+  updateProfile = async (req: Request, res: Response) => {
+    const data: IUpdateProfileRequest = <IUpdateProfileRequest>{
+      params: req.params,
+      body: profileMapper.toEntity(req.body)
+    };
+
+    try {
+      const profile = await this.model.findOne({
+        where: {
+          userId: data.body.userId,
+          id: data.params.id
+        }
+      });
+
+      if (!profile) {
+        return Controller.notFound(res);
+      }
+
+      const updatedProfile = await profile.update({
+        ...data.params,
+        ...data.body
+      });
+      const parsedProfile = JSON.parse(JSON.stringify(updatedProfile));
+      const DTOProfiles = profileMapper.toDTO(parsedProfile);
+      res.status(200).json(DTOProfiles);
+    } catch (err) {
+      return Controller.serverError(res, err);
+    }
+  };
 }
 
 const controller = new ProfileController();

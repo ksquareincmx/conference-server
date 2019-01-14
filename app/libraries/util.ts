@@ -1,3 +1,6 @@
+import * as moment from "moment-timezone";
+import * as EmailValidator from "email-validator";
+
 export const months = [
   { name: "January", val: 1 },
   { name: "February", val: 2 },
@@ -38,13 +41,11 @@ export function getRandomColor() {
   return colors[index];
 }
 
-export function getActualDate() {
-  let date = new Date();
-  let actualDate = date.toLocaleString("es-MX", {
-    formatMatcher: "basic",
-    timeZone: "America/Mexico_City"
-  });
-  return actualDate;
+export function getActualDate(): Date {
+  return moment()
+    .tz("America/Mexico_City")
+    .format()
+    .slice(0, 19);
 }
 
 /**
@@ -54,4 +55,34 @@ export function getActualDate() {
  */
 export function isEmpty(attribute) {
   return !attribute && attribute !== 0;
+}
+
+// Returns a object with the same propertys but with the format keys eg.
+// a = { firstName: "John", lastName: "Doe" } =>
+// a = { first_name: "John", last_name: "Doe" }
+export function toSyntax(obj, syntaxConverter) {
+  return Object.keys(obj).reduce(
+    (acc, key) => ((acc[syntaxConverter(key)] = obj[key]), acc),
+    {}
+  );
+}
+
+export function isAvailableDate(start, end) {
+  const startDate = new Date(start);
+  const endDate = new Date(end);
+
+  const isAvailableDay = day => !(day === 6 || day === 0);
+  const isAvailableHour = () => {
+    const officeHourStart = 8; // because horary change and sync with USA
+    const officeHourEnd = "1800";
+
+    const endHour = `${endDate.getHours()}${endDate.getMinutes()}`;
+    return startDate.getHours() >= officeHourStart && endHour <= officeHourEnd;
+  };
+
+  return isAvailableDay(startDate.getDay()) && isAvailableHour();
+}
+
+export function areValidsEmails(emails) {
+  return emails.every(email => EmailValidator.validate(email));
 }

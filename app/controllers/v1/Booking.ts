@@ -1,7 +1,12 @@
 import * as _ from "lodash";
 import { Op } from "sequelize";
 import { Controller } from "./../../libraries/Controller";
-import { isEmpty } from "./../../libraries/util";
+import {
+  isEmpty,
+  getActualDate,
+  isAvailableDate,
+  areValidsEmails
+} from "./../../libraries/util";
 import { Booking } from "./../../models/Booking";
 import { Request, Response, Router } from "express";
 import {
@@ -21,6 +26,14 @@ import {
   deleteAllBookingAttendee,
   updateBookingAttendee
 } from "./../../libraries/BookingAttendeeDB";
+import { bookingMapper } from "./../../mappers/BookingMapper";
+import {
+  IGetBookingParams,
+  IGetAllBookingParams,
+  IDeleteBookingParams,
+  ICreateBookingRequest,
+  IUpdateBookingRequest
+} from "./../../interfaces/BookingInterfaces";
 
 export class BookingController extends Controller {
   constructor() {
@@ -39,7 +52,7 @@ export class BookingController extends Controller {
     @apiHeader {String}   Content-Type Application/Json
     @apiHeader {String}   Authorization Bearer [jwt token]
 
-    @apiParam   {Boolean}   body.onlyFuture      Shows only the actual and futures booking
+    @apiParam   {Date}   body.fromDate      Shows all bookings from a date
 
     @apiSuccess {Object[]}  body                   Booking details
     @apiSuccess {Number}  body.id                Booking id
@@ -47,11 +60,11 @@ export class BookingController extends Controller {
     @apiSuccess {Date}    body.start             Booking date start
     @apiSuccess {Date}    body.end               Booking date end
     @apiSuccess {String}  body.eventId           Google calendar event's id
-    @apiSuccess {Numbe}   body.roomId            Booking room
+    @apiSuccess {Number}  body.roomId            Booking room
     @apiSuccess {Number}  body.userId            User's id who created the booking
     @apiSuccess {Date}    body.updatedAt         Booking creation date
     @apiSuccess {Date}    body.createdAt         Booking update date
-    @apiSuccess {String[]} body.attendes    Emails from users who will attend the event
+    @apiSuccess {String[]} body.attendees    Emails from users who will attend the event
   */
 
     this.router.get("/", validateJWT("access"), this.findAllBooking);
@@ -71,11 +84,11 @@ export class BookingController extends Controller {
     @apiSuccess {Date}    body.start             Booking date start
     @apiSuccess {Date}    body.end               Booking date end
     @apiSuccess {String}  body.eventId           Google calendar event's id
-    @apiSuccess {Numbe}   body.roomId            Booking room
+    @apiSuccess {Number}   body.roomId            Booking room
     @apiSuccess {Number}  body.userId            User's id who created the booking
     @apiSuccess {Date}    body.updatedAt         Booking creation date
     @apiSuccess {Date}    body.createdAt         Booking update date
-    @apiSuccess {String[]} body.attendes    Emails from users who will attend the event
+    @apiSuccess {String[]} body.attendees    Emails from users who will attend the event
     */
 
     this.router.get("/:id", validateJWT("access"), this.findOneBooking);
@@ -210,7 +223,7 @@ export class BookingController extends Controller {
         const attendees = await getAttendees(booking.id);
         const bookingWithAttendees = {
           ...booking,
-          attendes: attendees.map(attendee => attendee.email)
+          attendees: attendees.map(attendee => attendee.email)
         };
         return bookingWithAttendees;
       });
@@ -223,10 +236,12 @@ export class BookingController extends Controller {
   };
 
   destroyBooking = async (req: Request, res: Response) => {
-    const bookingId = req.params.id;
+    const data: IDeleteBookingParams = {
+      params: req.params
+    };
 
     try {
-      const booking = await this.model.findById(bookingId);
+      const booking = await this.model.findById(data.params.id);
       await calendarService.deleteEvent(booking.eventId);
       this.destroy(req, res);
     } catch (err) {
@@ -235,34 +250,54 @@ export class BookingController extends Controller {
   };
 
   createBooking = async (req: Request, res: Response) => {
-    const description = req.body.description;
-    const startTime = req.body.start;
-    const endTime = req.body.end;
-    const roomId = req.body.roomId;
-    const attendees = req.body.attendees;
+    const data: ICreateBookingRequest = <ICreateBookingRequest>{
+      body: bookingMapper.toEntity(req.body)
+    };
 
-    if (isEmpty(description)) {
+    if (isEmpty(data.body.description)) {
       return Controller.badRequest(
         res,
         "Bad Request: No description in request"
       );
-    } else if (isEmpty(startTime)) {
+    }
+    if (isEmpty(data.body.start)) {
       return Controller.badRequest(
         res,
         "Bad Request: No start date in request."
       );
-    } else if (isEmpty(endTime)) {
+    }
+    if (isEmpty(data.body.end)) {
       return Controller.badRequest(res, "Bad Request: No end date in request.");
-    } else if (isEmpty(roomId)) {
+    }
+    if (isEmpty(data.body.roomId)) {
       return Controller.badRequest(res, "Bad Request: No roomId in request");
-    } else if (attendees.constructor !== Array) {
+    }
+    if (data.body.attendees.constructor !== Array) {
       return Controller.badRequest(
         res,
-        "Bad Request: No attendes as Array in request"
+        "Bad Request: No attendees as Array in request"
       );
     }
+    if (getActualDate() > data.body.start) {
+      return Controller.badRequest(
+        res,
+        "bad Request: Bookings in past dates aren't allowed."
+      );
+    }
+    if (!isAvailableDate(data.body.start, data.body.end)) {
+      return Controller.badRequest(
+        res,
+        "bad Request: The booking only can have office hours (Monday-Friday, 8AM-6PM)."
+      );
+    }
+    if (!areValidsEmails(data.body.attendees)) {
+      return Controller.badRequest(res, "Bad Request: Invalid email");
+    }
 
-    attendees.push(req.session.user.email);
+    // insert only if the author email don't exist in data
+    if (!data.body.attendees.some(email => email === req.session.user.email)) {
+      data.body.attendees.push(req.session.user.email);
+    }
 
     try {
       const booking = await this.model.findAndCountAll({
@@ -271,15 +306,15 @@ export class BookingController extends Controller {
             [Op.not]: {
               [Op.or]: {
                 end: {
-                  [Op.lte]: startTime
+                  [Op.lte]: data.body.start
                 },
                 start: {
-                  [Op.gte]: endTime
+                  [Op.gte]: data.body.end
                 }
               }
             },
             roomId: {
-              [Op.eq]: roomId
+              [Op.eq]: data.body.roomId
             }
           }
         }
@@ -291,63 +326,87 @@ export class BookingController extends Controller {
 
       // insert event in Google calendar and send invitations
       const eventCalendar = await calendarService.insertEvent(
-        startTime,
-        endTime,
-        description,
-        attendees
+        data.body.start,
+        data.body.end,
+        data.body.description,
+        data.body.attendees
       );
 
       // insert booking the DB
-      const bookingObj = { ...req.body, eventId: eventCalendar.id };
+      const bookingObj = { ...data.body, eventId: eventCalendar.id };
       const createdBooking = await this.model.create(bookingObj);
       const parsedCreatedBooking = JSON.parse(
         JSON.stringify(createdBooking, null, 2)
       );
 
       // insert attendee in the DB
-      attendees.forEach(async attendee => {
+      data.body.attendees.forEach(async attendee => {
         const attendeeId = await insertAttendee(attendee);
         await insertBookingAttendee(parsedCreatedBooking.id, attendeeId);
       });
 
-      const finalBooking = { ...parsedCreatedBooking, attendees };
-      res.status(201).json(finalBooking);
+      const finalBooking = {
+        ...parsedCreatedBooking,
+        attendees: data.body.attendees
+      };
+
+      const DTOBooking = bookingMapper.toDTO(finalBooking);
+      res.status(201).json(DTOBooking);
     } catch (err) {
       return Controller.serverError(res);
     }
   };
 
   updateBooking = async (req: Request, res: Response) => {
-    const description = req.body.description;
-    const startTime = req.body.start;
-    const endTime = req.body.end;
-    const roomId = req.body.roomId;
-    const attendees = req.body.attendees;
-    const bookingId = req.params.id;
+    const data: IUpdateBookingRequest = <IUpdateBookingRequest>{
+      params: req.params,
+      body: bookingMapper.toEntity(req.body)
+    };
 
-    if (isEmpty(description)) {
+    if (isEmpty(data.body.description)) {
       return Controller.badRequest(
         res,
         "Bad Request: No description in request"
       );
-    } else if (isEmpty(startTime)) {
+    }
+    if (isEmpty(data.body.start)) {
       return Controller.badRequest(
         res,
         "Bad Request: No start date in request."
       );
-    } else if (isEmpty(endTime)) {
+    }
+    if (isEmpty(data.body.end)) {
       return Controller.badRequest(res, "Bad Request: No end date in request.");
-    } else if (isEmpty(roomId)) {
+    }
+    if (isEmpty(data.body.roomId)) {
       return Controller.badRequest(res, "Bad Request: No roomId in request");
-    } else if (attendees.constructor !== Array) {
+    }
+    if (data.body.attendees.constructor !== Array) {
       return Controller.badRequest(
         res,
-        "Bad Request: No attendes as Array in request"
+        "Bad Request: No attendees as Array in request"
       );
     }
+    if (getActualDate() > data.body.start) {
+      return Controller.badRequest(
+        res,
+        "bad Request: Bookings in past dates aren't allowed."
+      );
+    }
+    if (!isAvailableDate(data.body.start, data.body.end)) {
+      return Controller.badRequest(
+        res,
+        "bad Request: The booking only can have office hours (Monday-Friday, 8AM-6PM)."
+      );
+    }
+    if (!areValidsEmails(data.body.attendees)) {
+      return Controller.badRequest(res, "Bad Request: Invalid email");
+    }
 
-    attendees.push(req.session.user.email);
-    const bookingObj = { ...req.body, id: bookingId };
+    // insert only if the author email don't exist in the request
+    if (!data.body.attendees.some(email => email === req.session.user.email)) {
+      data.body.attendees.push(req.session.user.email);
+    }
 
     try {
       const bookings = await this.model.findAndCountAll({
@@ -356,18 +415,18 @@ export class BookingController extends Controller {
             [Op.not]: {
               [Op.or]: {
                 end: {
-                  [Op.lte]: startTime
+                  [Op.lte]: data.body.start
                 },
                 start: {
-                  [Op.gte]: endTime
+                  [Op.gte]: data.body.end
                 }
               }
             },
             id: {
-              [Op.ne]: bookingId
+              [Op.ne]: data.params.id
             },
             roomId: {
-              [Op.eq]: roomId
+              [Op.eq]: data.body.roomId
             }
           }
         }
@@ -377,7 +436,7 @@ export class BookingController extends Controller {
         return Controller.noContent(res);
       }
 
-      const booking = await this.model.findById(bookingId);
+      const booking = await this.model.findById(data.params.id);
       if (!booking) {
         return res.status(404).end();
       }
@@ -385,19 +444,21 @@ export class BookingController extends Controller {
       // update the event and send emails
       await calendarService.updateEvent(
         booking.eventId,
-        startTime,
-        endTime,
-        description,
-        attendees
+        data.body.start,
+        data.body.end,
+        data.body.description,
+        data.body.attendees
       );
 
-      // update tables attende and bookingAttende
+      // update tables: attende and bookingAttende
       const updatedAttendees = await updateBookingAttendee(
-        bookingId,
-        attendees
+        data.params.id,
+        data.body.attendees
       );
-
-      const updatedBooking = await booking.update(bookingObj);
+      const updatedBooking = await booking.update({
+        ...data.params,
+        ...data.body
+      });
       const parsedUpdatedBooking = JSON.parse(
         JSON.stringify(updatedBooking, null, 2)
       );
@@ -405,44 +466,51 @@ export class BookingController extends Controller {
         ...parsedUpdatedBooking,
         attendees: updatedAttendees
       };
-
-      res.status(200).json(finalUpdatedBooking);
+      const DTOBooking = bookingMapper.toDTO(finalUpdatedBooking);
+      res.status(200).json(DTOBooking);
     } catch (err) {
-      return Controller.serverError(res);
+      return Controller.serverError(res, err);
     }
   };
 
   findOneBooking = async (req: Request, res: Response) => {
-    const bookingId = req.params.id;
+    const data: IGetBookingParams = {
+      params: req.params
+    };
 
     try {
-      const booking = await this.model.findById(bookingId);
+      const booking = await this.model.findById(data.params.id);
       if (!booking) {
         return Controller.notFound(res);
       }
 
       const parsedBooking = JSON.parse(JSON.stringify(booking, null, 2));
-      const attendees = await getAttendees(bookingId);
+      const attendees = await getAttendees(data.params.id);
 
       const finalBooking = {
         ...parsedBooking,
         attendees: attendees.map(attende => attende.email)
       };
 
-      res.status(200).json(finalBooking);
+      //interface
+      const DTOBooking = bookingMapper.toDTO(finalBooking);
+      res.status(200).json(DTOBooking);
     } catch (err) {
       Controller.serverError(res, err);
     }
   };
 
   findAllBooking = async (req: Request, res: Response) => {
-    const fromDate: string = req.query.fromDate;
-    const toDate: Date = new Date(fromDate);
+    const data: IGetAllBookingParams = {
+      query: req.query
+    };
+    const toDate: Date = new Date(data.query.fromDate);
     const isValidDate = date => date.toString() !== "Invalid Date";
 
     try {
+      // TODO: Delete redundant code
       // Obtain all bookings
-      if (isEmpty(fromDate)) {
+      if (isEmpty(data.query.fromDate)) {
         const bookings = await this.model.findAll();
 
         if (bookings) {
@@ -450,7 +518,8 @@ export class BookingController extends Controller {
           const finalBookings = await this.bookingsPlusAttendees(
             parsedBookings
           );
-          return res.status(200).json(finalBookings);
+          const DTOBookings = finalBookings.map(bookingMapper.toDTO);
+          return res.status(200).json(DTOBookings);
         }
       }
 
@@ -466,7 +535,9 @@ export class BookingController extends Controller {
           const finalBookings = await this.bookingsPlusAttendees(
             parsedBookings
           );
-          return res.status(200).json(finalBookings);
+
+          const DTOBookings = finalBookings.map(bookingMapper.toDTO);
+          return res.status(200).json(DTOBookings);
         }
       }
 
