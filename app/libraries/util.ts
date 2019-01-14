@@ -44,7 +44,8 @@ export function getRandomColor() {
 export function getActualDate(): Date {
   return moment()
     .tz("America/Mexico_City")
-    .format();
+    .format()
+    .slice(0, 19);
 }
 
 /**
