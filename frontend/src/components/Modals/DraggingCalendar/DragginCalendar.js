@@ -6,19 +6,33 @@ import Button from "./Button";
 import ReasonAppointment from "./ReasonAppointment";
 
 class DragginCalendar extends React.Component {
+  state = {
+    start: {
+      hours: "0",
+      minutes: "0"
+    },
+    end: {
+      hours: "0",
+      minutes: "0"
+    },
+    roomId: 0,
+    date: {
+      day: 0,
+      month: 0,
+      year: 0
+    },
+    propsLoaded: false
+  };
   render() {
-    let start = { hours: "0", minutes: "0" };
-    let end = { hours: "0", minutes: "0" };
-
-    let room = { roomId: 0 };
-
-    let date = { day: "0", month: "0", year: "0" };
-
-    if (this.props.appointmentInfo) {
-      start = this.props.appointmentInfo.start;
-      end = this.props.appointmentInfo.end;
-      room = this.props.appointmentInfo.roomId;
-      date = this.props.appointmentInfo.date;
+    if (!this.state.propsLoaded) {
+      if (this.props.appointmentInfo) {
+        this.setState({
+          start: this.props.appointmentInfo.start,
+          end: this.props.appointmentInfo.end,
+          room: this.props.appointmentInfo.roomId,
+          date: this.props.appointmentInfo.date
+        });
+      }
     }
 
     return (
