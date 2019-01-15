@@ -8,7 +8,7 @@
     "apidoc": "apidoc -i app/controllers/ -o public/apidoc/",
     "build": "gulp",
     "start": "node --require source-map-support/register dist/main.js",
-    "test": "mocha",
+    "test": "mocha --require ts-node/register test/**/*.ts",
     "migrate": "sequelize db:migrate"
   },
   "apidoc": {
@@ -21,6 +21,7 @@
   "devDependencies": {
     "@types/bcrypt": "2.0.0",
     "@types/body-parser": "1.17.0",
+    "@types/chai": "^4.1.7",
     "@types/compression": "0.0.36",
     "@types/ejs": "2.6.0",
     "@types/express": "4.16.0",
@@ -30,6 +31,7 @@
     "@types/jsonwebtoken": "7.2.8",
     "@types/lodash": "4.14.116",
     "@types/method-override": "0.0.31",
+    "@types/mocha": "^5.2.5",
     "@types/morgan": "1.7.35",
     "@types/node": "10.5.6",
     "@types/nodemailer": "4.6.2",
@@ -37,18 +39,20 @@
     "@types/socket.io": "1.4.36",
     "@types/uuid": "3.4.3",
     "@types/winston": "2.3.9",
-    "chai": "4.1.2",
+    "chai": "^4.1.2",
+    "chai-http": "^4.2.1",
     "del": "3.0.0",
     "fs-jetpack": "2.1.0",
     "gulp": "^3.9.1",
     "gulp-shell": "0.6.5",
     "gulp-sourcemaps": "2.6.4",
     "gulp-typescript": "4.0.2",
-    "mocha": "5.2.0",
+    "mocha": "^5.2.0",
     "natives": "^1.1.6",
     "run-sequence": "2.2.1",
     "sqlite3": "4.0.2",
-    "typescript": "2.9.2"
+    "ts-node": "^7.0.1",
+    "typescript": "^2.9.2"
   },
   "dependencies": {
     "apidoc": "^0.17.6",
