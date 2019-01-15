@@ -7,7 +7,7 @@ const ReasonAppointment = props => {
   return (
     <div>
       <div style={styles.reasonAppointment}>Reason for the appointment</div>
-      <TextField />
+      <TextField onChange={props.onChange} />
     </div>
   );
 };

@@ -114,10 +114,34 @@ class CalendarPageLogic extends React.Component {
     this.state = {
       events: [[], []],
       selector: "day",
-      focusDate: new Date()
+      focusDate: new Date(),
+      appointmentInfo: {
+        start: {
+          hours: "0",
+          minutes: "0"
+        },
+        end: {
+          hours: "0",
+          minutes: "0"
+        },
+        roomId: 0,
+        date: {
+          day: 0,
+          month: 0,
+          year: 0
+        },
+        reasonAppointment: ""
+      }
     };
   }
 
+  handleChangeReasonAppointment = event => {
+    const keyPressed = event.target.value;
+    this.setState(prevState => {
+      prevState.appointmentInfo.reasonAppointment = keyPressed;
+      return prevState;
+    });
+  };
   handleEventView = ({ event }) => {
     let color = "blue";
     if (event.roomId) {
@@ -150,7 +174,8 @@ class CalendarPageLogic extends React.Component {
         month: start.getMonth() + 1,
         year: start.getFullYear()
       },
-      roomId: conferenceRoomName + 1
+      roomId: conferenceRoomName + 1,
+      reasonAppointment: "p"
     };
     const title = 1;
 
@@ -270,6 +295,7 @@ class CalendarPageLogic extends React.Component {
                 coordinates={this.state.coordinates}
                 appointmentInfo={this.state.appointmentInfo}
                 bookingService={bookingService}
+                onChange={this.handleChangeReasonAppointment}
               />
             )}
           </BookingConsumer>
