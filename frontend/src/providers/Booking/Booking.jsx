@@ -1,6 +1,6 @@
 import React from "react";
 import BookingService from "services/BookingService";
-import baseUri from "config/baseUri";
+import baseUri from "../../config/baseUri";
 
 const BookingContext = React.createContext({
   createNewBooking: () => {},
