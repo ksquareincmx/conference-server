@@ -47,6 +47,9 @@ describe("Booking", () => {
         .send(booking)
         .set("Authorization", `Bearer ${token}`)
         .end((err, res) => {
+          if (err) {
+            throw err;
+          }
           res.should.have.status(201);
           res.body.should.be.an("object");
           res.body.should.have.property("id");
@@ -82,6 +85,10 @@ describe("Booking", () => {
         .send(booking)
         .set("Authorization", `Bearer ${token}`)
         .end((err, res) => {
+          if (err) {
+            throw err;
+          }
+
           res.should.have.status(201);
           res.body.should.be.an("object");
           res.body.should.have.property("id");
@@ -117,6 +124,10 @@ describe("Booking", () => {
         .send(booking)
         .set("Authorization", `Bearer ${token}`)
         .end((err, res) => {
+          if (err) {
+            throw err;
+          }
+
           res.should.have.status(201);
           res.body.should.be.an("object");
           res.body.should.have.property("id");
@@ -152,6 +163,10 @@ describe("Booking", () => {
         .send(booking)
         .set("Authorization", `Bearer ${token}`)
         .end((err, res) => {
+          if (err) {
+            throw err;
+          }
+
           res.should.have.status(204);
           done();
         });
@@ -171,6 +186,10 @@ describe("Booking", () => {
         .send(booking)
         .set("Authorization", `Bearer ${token}`)
         .end((err, res) => {
+          if (err) {
+            throw err;
+          }
+
           res.should.have.status(400);
           res.body.should.equal(
             "bad Request: The booking only can have office hours (Monday-Friday, 8AM-6PM)."
@@ -193,6 +212,10 @@ describe("Booking", () => {
         .send(booking)
         .set("Authorization", `Bearer ${token}`)
         .end((err, res) => {
+          if (err) {
+            throw err;
+          }
+
           res.should.have.status(400);
           res.body.should.equal(
             "bad Request: The booking only can have office hours (Monday-Friday, 8AM-6PM)."
@@ -215,6 +238,10 @@ describe("Booking", () => {
         .send(booking)
         .set("Authorization", `Bearer ${token}`)
         .end((err, res) => {
+          if (err) {
+            throw err;
+          }
+
           res.should.have.status(400);
           res.body.should.equal(
             "bad Request: Bookings in past dates aren't allowed."
@@ -237,6 +264,10 @@ describe("Booking", () => {
         .send(booking)
         .set("Authorization", `Bearer ${token}`)
         .end((err, res) => {
+          if (err) {
+            throw err;
+          }
+
           res.should.have.status(400);
           res.body.should.equal("Bad Request: Invalid email.");
           done();
@@ -257,6 +288,10 @@ describe("Booking", () => {
         .send(booking)
         .set("Authorization", `Bearer ${token}`)
         .end((err, res) => {
+          if (err) {
+            throw err;
+          }
+
           res.should.have.status(400);
           res.body.should.equal("Bad Request: No start date in request.");
           done();
@@ -277,6 +312,10 @@ describe("Booking", () => {
         .send(booking)
         .set("Authorization", `Bearer ${token}`)
         .end((err, res) => {
+          if (err) {
+            throw err;
+          }
+
           res.should.have.status(400);
           res.body.should.equal("Bad Request: No end date in request.");
           done();
@@ -297,6 +336,10 @@ describe("Booking", () => {
         .send(booking)
         .set("Authorization", `Bearer ${token}`)
         .end((err, res) => {
+          if (err) {
+            throw err;
+          }
+
           res.should.have.status(400);
           res.body.should.equal("Bad Request: No description in request.");
           done();
@@ -316,6 +359,10 @@ describe("Booking", () => {
         .send(booking)
         .set("Authorization", `Bearer ${token}`)
         .end((err, res) => {
+          if (err) {
+            throw err;
+          }
+
           res.should.have.status(400);
           res.body.should.equal("Bad Request: No roomId in request.");
           done();
@@ -336,6 +383,10 @@ describe("Booking", () => {
         .send(booking)
         .set("Authorization", `Bearer ${token}`)
         .end((err, res) => {
+          if (err) {
+            throw err;
+          }
+
           res.should.have.status(400);
           res.body.should.equal(
             `Bad Request: room ${booking.roomId} not exist.`
@@ -526,6 +577,10 @@ describe("Booking", () => {
         .send(booking)
         .set("Authorization", `Bearer ${token}`)
         .end((err, res) => {
+          if (err) {
+            throw err;
+          }
+
           res.should.have.status(204);
           done();
         });
@@ -545,6 +600,10 @@ describe("Booking", () => {
         .send(booking)
         .set("Authorization", `Bearer ${token}`)
         .end((err, res) => {
+          if (err) {
+            throw err;
+          }
+
           res.should.have.status(400);
           res.body.should.deep.equal(
             "bad Request: The booking only can have office hours (Monday-Friday, 8AM-6PM)."
@@ -567,6 +626,10 @@ describe("Booking", () => {
         .send(booking)
         .set("Authorization", `Bearer ${token}`)
         .end((err, res) => {
+          if (err) {
+            throw err;
+          }
+
           res.should.have.status(400);
           res.body.should.deep.equal(
             "bad Request: The booking only can have office hours (Monday-Friday, 8AM-6PM)."
@@ -589,6 +652,10 @@ describe("Booking", () => {
         .send(booking)
         .set("Authorization", `Bearer ${token}`)
         .end((err, res) => {
+          if (err) {
+            throw err;
+          }
+
           res.should.have.status(400);
           res.body.should.equal(
             "bad Request: Bookings in past dates aren't allowed."
@@ -611,6 +678,10 @@ describe("Booking", () => {
         .send(booking)
         .set("Authorization", `Bearer ${token}`)
         .end((err, res) => {
+          if (err) {
+            throw err;
+          }
+
           res.should.have.status(400);
           res.body.should.deep.equal("Bad Request: Invalid email.");
           done();
@@ -631,6 +702,10 @@ describe("Booking", () => {
         .send(booking)
         .set("Authorization", `Bearer ${token}`)
         .end((err, res) => {
+          if (err) {
+            throw err;
+          }
+
           res.should.have.status(400);
           res.body.should.deep.equal("Bad Request: No start date in request.");
           done();
@@ -651,6 +726,10 @@ describe("Booking", () => {
         .send(booking)
         .set("Authorization", `Bearer ${token}`)
         .end((err, res) => {
+          if (err) {
+            throw err;
+          }
+
           res.should.have.status(400);
           res.body.should.deep.equal("Bad Request: No end date in request.");
           done();
@@ -671,6 +750,10 @@ describe("Booking", () => {
         .send(booking)
         .set("Authorization", `Bearer ${token}`)
         .end((err, res) => {
+          if (err) {
+            throw err;
+          }
+
           res.should.have.status(400);
           res.body.should.equal("Bad Request: No description in request.");
           done();
@@ -690,6 +773,10 @@ describe("Booking", () => {
         .send(booking)
         .set("Authorization", `Bearer ${token}`)
         .end((err, res) => {
+          if (err) {
+            throw err;
+          }
+
           res.should.have.status(400);
           res.body.should.equal("Bad Request: No roomId in request.");
           done();
@@ -710,6 +797,10 @@ describe("Booking", () => {
         .send(booking)
         .set("Authorization", `Bearer ${token}`)
         .end((err, res) => {
+          if (err) {
+            throw err;
+          }
+
           res.should.have.status(400);
           res.body.should.deep.equal(
             `Bad Request: room ${booking.roomId} not exist.`
@@ -749,6 +840,10 @@ describe("Booking", () => {
         .delete(apiPath + bookingsId[0])
         .set("Authorization", `Bearer ${token}`)
         .end((err, res) => {
+          if (err) {
+            throw err;
+          }
+
           res.should.have.status(204);
           done();
         });
@@ -759,6 +854,10 @@ describe("Booking", () => {
         .delete(apiPath + bookingsId[0])
         .set("Authorization", `Bearer ${token}`)
         .end((err, res) => {
+          if (err) {
+            throw err;
+          }
+
           res.should.have.status(404);
           res.body.should.deep.equal("Not Found");
           done();
@@ -766,12 +865,27 @@ describe("Booking", () => {
     });
   });
 
-  //describe("GET", () => {
-  //  it("Should get all bookings", done => {
-  //    done();
-  //  });
-  //  it("Should get all but not exist anything", done => {
-  //    done();
-  //  });
-  //});
+  describe("GET", () => {
+    describe.skip("when bookings exist", () => {
+      before(async () => {});
+      it("Should get all bookings", done => {});
+    });
+
+    it("Should get all but not exist anything", done => {
+      chai
+        .request(server)
+        .get(apiPath)
+        .set("Authorization", `Bearer ${token}`)
+        .end((err, res) => {
+          if (err) {
+            throw err;
+          }
+
+          res.should.have.status(200);
+          res.body.should.be.an("array");
+          res.body.should.have.length(0);
+          done();
+        });
+    });
+  });
 });
