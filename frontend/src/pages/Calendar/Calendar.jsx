@@ -12,6 +12,8 @@ import "react-big-calendar/lib/css/react-big-calendar.css";
 import "./Calendar.css";
 import NavBar from "components/NavBar/NavBar";
 import DraggingCalendar from "components/Modals/DraggingCalendar";
+import { BookingConsumer, BookingProvider } from "providers/Booking";
+import { AuthConsumer } from "providers/Auth";
 
 // Constants for HeaderStrategy
 const daysNames = [
@@ -106,7 +108,7 @@ const getWeekOfYear = date => {
   return Math.ceil(((d - new Date(d.getFullYear(), 0, 1)) / 8.64e7 + 1) / 7);
 };
 
-class CalendarPage extends React.Component {
+class CalendarPageLogic extends React.Component {
   constructor(...args) {
     super(...args);
     this.state = {
@@ -261,10 +263,17 @@ class CalendarPage extends React.Component {
           timeSlots={timeSlots}
           date={this.state.focusDate}
         />
-        <DraggingCalendar
-          coordinates={this.state.coordinates}
-          appointmentInfo={this.state.appointmentInfo}
-        />
+        <BookingProvider auth={this.props.auth}>
+          <BookingConsumer>
+            {bookingService => (
+              <DraggingCalendar
+                coordinates={this.state.coordinates}
+                appointmentInfo={this.state.appointmentInfo}
+                bookingService={bookingService}
+              />
+            )}
+          </BookingConsumer>
+        </BookingProvider>
         <FooterView
           {...this.FooterChangeButtonLabels(this.state.selector)}
           currentDateLabel={"Today"}
@@ -275,4 +284,13 @@ class CalendarPage extends React.Component {
   }
 }
 
+function VerifyAuth(auth) {
+  if (auth.jwt !== null) {
+    return <CalendarPageLogic auth={auth} />;
+  }
+}
+
+function CalendarPage() {
+  return <AuthConsumer>{auth => VerifyAuth(auth)}</AuthConsumer>;
+}
 export default CalendarPage;
