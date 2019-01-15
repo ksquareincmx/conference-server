@@ -63,6 +63,10 @@ describe("User", () => {
         .get(userId)
         .set("Authorization", token)
         .end((err, res) => {
+          if (err) {
+            throw err;
+          }
+
           res.should.have.status(200);
           res.body.should.be.an("object");
           res.body.should.have.property("id");
@@ -71,10 +75,6 @@ describe("User", () => {
           res.body.should.have.property("name");
           res.body.should.have.property("email");
           done();
-
-          if (err) {
-            throw err;
-          }
         });
     });
 
@@ -84,13 +84,13 @@ describe("User", () => {
         .get("100")
         .set("Authorization", token)
         .end((err, res) => {
-          res.should.have.status(404);
-          res.body.should.be.an("string").and.equal("Not Found");
-          done();
-
           if (err) {
             throw err;
           }
+
+          res.should.have.status(404);
+          res.body.should.be.an("string").and.equal("Not Found");
+          done();
         });
     });
 
@@ -100,16 +100,16 @@ describe("User", () => {
         .get(userId)
         .set("Authorization", "")
         .end((err, res) => {
+          if (err) {
+            throw err;
+          }
+
           res.should.have.status(401);
           res.body.should.be.an("object").and.deep.equal({
             message: "jwt must be provided",
             name: "JsonWebTokenError"
           });
           done();
-
-          if (err) {
-            throw err;
-          }
         });
     });
 
@@ -118,13 +118,13 @@ describe("User", () => {
         .request(apiPath)
         .get(userId)
         .end((err, res) => {
-          res.should.have.status(401);
-          res.body.should.be.an("string").and.equal("No Token Present");
-          done();
-
           if (err) {
             throw err;
           }
+
+          res.should.have.status(401);
+          res.body.should.be.an("string").and.equal("No Token Present");
+          done();
         });
     });
   });
@@ -147,6 +147,10 @@ describe("User", () => {
         })
         .set("Authorization", token)
         .end((err, res) => {
+          if (err) {
+            throw err;
+          }
+
           res.should.have.status(200);
           res.body.should.be.an("object");
           res.body.should.have.property("id");
@@ -155,10 +159,6 @@ describe("User", () => {
           res.body.should.have.property("name");
           res.body.should.have.property("email");
           done();
-
-          if (err) {
-            throw err;
-          }
         });
     });
 
@@ -176,13 +176,13 @@ describe("User", () => {
         })
         .set("Authorization", token)
         .end((err, res) => {
-          res.should.have.status(404);
-          res.body.should.be.an("object").and.deep.equal({});
-          done();
-
           if (err) {
             throw err;
           }
+
+          res.should.have.status(404);
+          res.body.should.be.an("object").and.deep.equal({});
+          done();
         });
     });
 
@@ -200,16 +200,16 @@ describe("User", () => {
         })
         .set("Authorization", "")
         .end((err, res) => {
+          if (err) {
+            throw err;
+          }
+
           res.should.have.status(401);
           res.body.should.be.an("object").and.deep.equal({
             message: "jwt must be provided",
             name: "JsonWebTokenError"
           });
           done();
-
-          if (err) {
-            throw err;
-          }
         });
     });
 
@@ -226,13 +226,13 @@ describe("User", () => {
           role: "admin"
         })
         .end((err, res) => {
-          res.should.have.status(401);
-          res.body.should.be.an("string").and.equal("No Token Present");
-          done();
-
           if (err) {
             throw err;
           }
+
+          res.should.have.status(401);
+          res.body.should.be.an("string").and.equal("No Token Present");
+          done();
         });
     });
   });
@@ -247,13 +247,13 @@ describe("User", () => {
         .delete(userId)
         .set("Authorization", token)
         .end((err, res) => {
-          res.should.have.status(204);
-          res.body.should.be.an("object");
-          done();
-
           if (err) {
             throw err;
           }
+
+          res.should.have.status(204);
+          res.body.should.be.an("object");
+          done();
         });
     });
 
@@ -263,13 +263,13 @@ describe("User", () => {
         .delete(userId)
         .set("Authorization", token)
         .end((err, res) => {
-          res.should.have.status(404);
-          res.body.should.be.an("object").and.deep.equal({});
-          done();
-
           if (err) {
             throw err;
           }
+
+          res.should.have.status(404);
+          res.body.should.be.an("object").and.deep.equal({});
+          done();
         });
     });
 
@@ -279,16 +279,16 @@ describe("User", () => {
         .delete(userId)
         .set("Authorization", "")
         .end((err, res) => {
+          if (err) {
+            throw err;
+          }
+
           res.should.have.status(401);
           res.body.should.be.an("object").and.deep.equal({
             message: "jwt must be provided",
             name: "JsonWebTokenError"
           });
           done();
-
-          if (err) {
-            throw err;
-          }
         });
     });
 
@@ -297,13 +297,13 @@ describe("User", () => {
         .request(apiPath)
         .delete(userId)
         .end((err, res) => {
-          res.should.have.status(401);
-          res.body.should.be.an("string").and.equal("No Token Present");
-          done();
-
           if (err) {
             throw err;
           }
+
+          res.should.have.status(401);
+          res.body.should.be.an("string").and.equal("No Token Present");
+          done();
         });
     });
   });
