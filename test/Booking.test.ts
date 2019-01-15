@@ -718,14 +718,60 @@ describe("Booking", () => {
         });
     });
   });
+
+  describe("DELETE", () => {
+    const bookingsId = [];
+    // Create a bookings useful for testing
+    before(async () => {
+      const booking = {
+        description: "This a booking useful for test cases",
+        room_id: 1,
+        start: "2019-02-11T10:30:00",
+        end: "2019-02-11T10:45:00",
+        attendees: []
+      };
+
+      // create a booking to edit
+      const createdBooking = await chai
+        .request(server)
+        .post(apiPath)
+        .send(booking)
+        .set("Authorization", `Bearer ${token}`);
+
+      const parsedBooking = JSON.parse(JSON.stringify(createdBooking));
+
+      bookingsId.push(JSON.parse(parsedBooking.text).id);
+    });
+
+    it("Should delete a booking", done => {
+      chai
+        .request(server)
+        .delete(apiPath + bookingsId[0])
+        .set("Authorization", `Bearer ${token}`)
+        .end((err, res) => {
+          res.should.have.status(204);
+          done();
+        });
+    });
+    it("Try to delete a non-exist booking", done => {
+      chai
+        .request(server)
+        .delete(apiPath + bookingsId[0])
+        .set("Authorization", `Bearer ${token}`)
+        .end((err, res) => {
+          res.should.have.status(404);
+          res.body.should.deep.equal("Not Found");
+          done();
+        });
+    });
+  });
+
   //describe("GET", () => {
-  //  it("Should get all bookings", done => {});
-  //  it("Should get all but not exist anaything", done => {});
-  //  it("Should get all but not exist anaything", done => {});
-  //});
-  //describe("DELETE", () => {
-  //  it("Should cancel a booking", done => {});
-  //  it("Try to cancel a past booking", done => {});
-  //  it("Try to cancel a innexist booking", done => {});
+  //  it("Should get all bookings", done => {
+  //    done();
+  //  });
+  //  it("Should get all but not exist anything", done => {
+  //    done();
+  //  });
   //});
 });
