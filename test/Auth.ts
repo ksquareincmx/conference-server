@@ -26,7 +26,8 @@ describe("Auth", () => {
 
   before(async function() {
     // Before testing it is convenient to create a new user..
-    await db.sync();
+    const isConnectionOpen = !!db.authenticate();
+    if (!isConnectionOpen) { await db.sync(); }
     const createdUser: any = await User.create({...testUser, role: "admin"});
     userId = createdUser.id.toString();
     const credentials = await chai

@@ -70,7 +70,7 @@ describe("User", () => {
     if (user) {
       await User.destroy({where: { id: userId }});
     }
-    await db.close();
+    // await db.close();
   });
 
   /*
