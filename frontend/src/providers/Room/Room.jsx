@@ -1,6 +1,6 @@
 import React from "react";
 import RoomService from "services/RoomService";
-import baseUri from "config/baseUri";
+import baseUri from "../../config/baseUri";
 
 const RoomContext = React.createContext({
   createNewRoom: () => {},
