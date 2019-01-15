@@ -8,6 +8,7 @@ import {
   areValidsEmails
 } from "./../../libraries/util";
 import { Booking } from "./../../models/Booking";
+import { Room } from "./../../models/Room";
 import { Request, Response, Router } from "express";
 import {
   validateJWT,
@@ -257,7 +258,7 @@ export class BookingController extends Controller {
     if (isEmpty(data.body.description)) {
       return Controller.badRequest(
         res,
-        "Bad Request: No description in request"
+        "Bad Request: No description in request."
       );
     }
     if (isEmpty(data.body.start)) {
@@ -270,12 +271,12 @@ export class BookingController extends Controller {
       return Controller.badRequest(res, "Bad Request: No end date in request.");
     }
     if (isEmpty(data.body.roomId)) {
-      return Controller.badRequest(res, "Bad Request: No roomId in request");
+      return Controller.badRequest(res, "Bad Request: No roomId in request.");
     }
     if (data.body.attendees.constructor !== Array) {
       return Controller.badRequest(
         res,
-        "Bad Request: No attendees as Array in request"
+        "Bad Request: No attendees as Array in request."
       );
     }
     if (getActualDate() > data.body.start) {
@@ -291,7 +292,7 @@ export class BookingController extends Controller {
       );
     }
     if (!areValidsEmails(data.body.attendees)) {
-      return Controller.badRequest(res, "Bad Request: Invalid email");
+      return Controller.badRequest(res, "Bad Request: Invalid email.");
     }
 
     // insert only if the author email don't exist in data
@@ -300,6 +301,18 @@ export class BookingController extends Controller {
     }
 
     try {
+      const roomId = await Room.findOne({
+        attributes: ["id"],
+        where: { id: data.body.roomId }
+      });
+
+      if (isEmpty(roomId)) {
+        return Controller.badRequest(
+          res,
+          `Bad Request: room ${data.body.roomId} not exist.`
+        );
+      }
+
       const booking = await this.model.findAndCountAll({
         where: {
           [Op.and]: {
