@@ -90,7 +90,7 @@ class GoogleCalendarService {
         timeZone: this.timeZone
       },
       end: {
-        dateTime: start,
+        dateTime: end,
         timeZone: this.timeZone
       },
       summary: description,
