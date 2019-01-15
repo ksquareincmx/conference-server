@@ -6,43 +6,60 @@ import Button from "./Button";
 import ReasonAppointment from "./ReasonAppointment";
 
 class DragginCalendar extends React.Component {
-  state = {
-    start: {
-      hours: "0",
-      minutes: "0"
-    },
-    end: {
-      hours: "0",
-      minutes: "0"
-    },
-    roomId: 0,
-    date: {
-      day: 0,
-      month: 0,
-      year: 0
-    },
-    propsLoaded: false
-  };
-  render() {
-    if (!this.state.propsLoaded) {
-      if (this.props.appointmentInfo) {
-        this.setState({
-          start: this.props.appointmentInfo.start,
-          end: this.props.appointmentInfo.end,
-          room: this.props.appointmentInfo.roomId,
-          date: this.props.appointmentInfo.date
-        });
+  constructor(props) {
+    super(props);
+    this.state = {
+      appointmentInfo: {
+        start: {
+          hours: "0",
+          minutes: "0"
+        },
+        end: {
+          hours: "0",
+          minutes: "0"
+        },
+        roomId: 0,
+        date: {
+          day: 0,
+          month: 0,
+          year: 0
+        },
+        reasonAppointment: "",
+        propsLoaded: false
       }
+    };
+  }
+  static getDerivedStateFromProps(props, state) {
+    if (props.appointmentInfo !== undefined) {
+      return { appointmentInfo: props.appointmentInfo };
     }
+    return null;
+  }
 
+  render() {
     return (
       <CardContainer coordinates={this.props.coordinates}>
-        <Button text={"Room #" + room} color="green" />
-        <Time
-          from={start.hours + ":" + start.minutes}
-          to={end.hours + ":" + end.minutes}
+        <Button
+          text={"Room #" + this.state.appointmentInfo.roomId}
+          color="green"
         />
-        <Date day={date.day} month={date.month} year={date.year} />
+        <Time
+          from={
+            this.state.appointmentInfo.start.hours +
+            ":" +
+            this.state.appointmentInfo.start.minutes
+          }
+          to={
+            this.state.appointmentInfo.end.hours +
+            ":" +
+            this.state.appointmentInfo.end.minutes
+          }
+        />
+        <Date
+          day={this.state.appointmentInfo.date.day}
+          month={this.state.appointmentInfo.date.month}
+          year={this.state.appointmentInfo.date.year}
+        />
         <ReasonAppointment />
         <Button text="Accept" color="blue" />
       </CardContainer>
@@ -50,10 +67,10 @@ class DragginCalendar extends React.Component {
   }
 }
 
-function postDto(state) {
+const postDto = state => {
   const dateFormat = state.date.year + state.date.month + state.date.day;
   return {
-    description: state.reasonAppoointmentText,
+    description: state.reasonAppointment,
     roomId: state.roomId,
     start:
       dateFormat +
@@ -73,6 +90,6 @@ function postDto(state) {
       "00.000Z",
     attendees: []
   };
-}
+};
 
 export default DragginCalendar;

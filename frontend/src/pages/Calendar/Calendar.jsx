@@ -153,11 +153,11 @@ class CalendarPage extends React.Component {
     const title = 1;
 
     if (title) {
-      // if (end < new Date()) {
-      //   return alert(
-      //     "La fecha de finalización no puede ser previa a la fecha actual"
-      //   );
-      // }
+      if (end < new Date()) {
+        return alert(
+          "La fecha de finalización no puede ser previa a la fecha actual"
+        );
+      }
 
       this.setState(prevState => {
         prevState.events[conferenceRoomName].push({
