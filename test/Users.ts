@@ -46,7 +46,6 @@ describe("User", () => {
     // Delete user if it still exists after the delete test.
     const user: any = await User.findOne({
       where: { id: userId }
-      // include: [{ model: Profile, as: "profile" }]
     });
     if (user) {
       await User.destroy({ where: { id: userId } });
@@ -72,6 +71,10 @@ describe("User", () => {
           res.body.should.have.property("name");
           res.body.should.have.property("email");
           done();
+
+          if (err) {
+            throw err;
+          }
         });
     });
 
@@ -84,6 +87,10 @@ describe("User", () => {
           res.should.have.status(404);
           res.body.should.be.an("string").and.equal("Not Found");
           done();
+
+          if (err) {
+            throw err;
+          }
         });
     });
 
@@ -99,6 +106,10 @@ describe("User", () => {
             name: "JsonWebTokenError"
           });
           done();
+
+          if (err) {
+            throw err;
+          }
         });
     });
 
@@ -110,6 +121,10 @@ describe("User", () => {
           res.should.have.status(401);
           res.body.should.be.an("string").and.equal("No Token Present");
           done();
+
+          if (err) {
+            throw err;
+          }
         });
     });
   });
@@ -139,9 +154,11 @@ describe("User", () => {
           res.body.should.have.property("picture");
           res.body.should.have.property("name");
           res.body.should.have.property("email");
-          // res.body.should.have.property("password");
-          // res.body.should.have.property("role");
           done();
+
+          if (err) {
+            throw err;
+          }
         });
     });
 
@@ -160,9 +177,12 @@ describe("User", () => {
         .set("Authorization", token)
         .end((err, res) => {
           res.should.have.status(404);
-          // res.body.should.be.an("string").and.equal("Not Found");
           res.body.should.be.an("object").and.deep.equal({});
           done();
+
+          if (err) {
+            throw err;
+          }
         });
     });
 
@@ -186,6 +206,10 @@ describe("User", () => {
             name: "JsonWebTokenError"
           });
           done();
+
+          if (err) {
+            throw err;
+          }
         });
     });
 
@@ -205,6 +229,10 @@ describe("User", () => {
           res.should.have.status(401);
           res.body.should.be.an("string").and.equal("No Token Present");
           done();
+
+          if (err) {
+            throw err;
+          }
         });
     });
   });
@@ -222,6 +250,10 @@ describe("User", () => {
           res.should.have.status(204);
           res.body.should.be.an("object");
           done();
+
+          if (err) {
+            throw err;
+          }
         });
     });
 
@@ -232,9 +264,12 @@ describe("User", () => {
         .set("Authorization", token)
         .end((err, res) => {
           res.should.have.status(404);
-          // res.body.should.be.an("string").and.equal("Not Found");
           res.body.should.be.an("object").and.deep.equal({});
           done();
+
+          if (err) {
+            throw err;
+          }
         });
     });
 
@@ -250,6 +285,10 @@ describe("User", () => {
             name: "JsonWebTokenError"
           });
           done();
+
+          if (err) {
+            throw err;
+          }
         });
     });
 
@@ -261,6 +300,10 @@ describe("User", () => {
           res.should.have.status(401);
           res.body.should.be.an("string").and.equal("No Token Present");
           done();
+
+          if (err) {
+            throw err;
+          }
         });
     });
   });
