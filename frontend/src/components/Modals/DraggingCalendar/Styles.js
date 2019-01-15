@@ -1,4 +1,4 @@
-export const getDateStyles = function() {
+export const getDateStyles = () => {
   return {
     dateContainer: {
       display: "flex",
@@ -25,7 +25,7 @@ export const getDateStyles = function() {
   };
 };
 
-export const getCardStyles = function(coordinates) {
+export const getCardStyles = coordinates => {
   let top = 0;
   let bottom = 0;
   let right = 0;
@@ -58,7 +58,7 @@ export const getCardStyles = function(coordinates) {
   };
 };
 
-export const getButtonStyles = function(color) {
+export const getButtonStyles = color => {
   return {
     button: {
       marginTop: 10,
@@ -75,7 +75,7 @@ export const getButtonStyles = function(color) {
   };
 };
 
-export const getReasonStyles = function() {
+export const getReasonStyles = () => {
   return {
     reasonAppointment: {
       fontWeight: "bold",
@@ -84,7 +84,7 @@ export const getReasonStyles = function() {
   };
 };
 
-export const getTimeStyles = function() {
+export const getTimeStyles = () => {
   return {
     timeContainer: {
       display: "flex",
