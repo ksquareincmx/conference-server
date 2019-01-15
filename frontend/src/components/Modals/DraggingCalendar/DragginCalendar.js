@@ -6,61 +6,31 @@ import Button from "./Button";
 import ReasonAppointment from "./ReasonAppointment";
 
 class DragginCalendar extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      appointmentInfo: {
-        start: {
-          hours: "0",
-          minutes: "0"
-        },
-        end: {
-          hours: "0",
-          minutes: "0"
-        },
-        roomId: 0,
-        date: {
-          day: 0,
-          month: 0,
-          year: 0
-        },
-        reasonAppointment: "",
-        propsLoaded: false
-      }
-    };
-  }
-  static getDerivedStateFromProps(props, state) {
-    if (props.appointmentInfo !== undefined) {
-      return { appointmentInfo: props.appointmentInfo };
-    }
-    return null;
-  }
-
   render() {
     return (
       <CardContainer coordinates={this.props.coordinates}>
         <Button
-          text={"Room #" + this.state.appointmentInfo.roomId}
+          text={"Room #" + this.props.appointmentInfo.roomId}
           color="green"
         />
         <Time
           from={
-            this.state.appointmentInfo.start.hours +
+            this.props.appointmentInfo.start.hours +
             ":" +
-            this.state.appointmentInfo.start.minutes
+            this.props.appointmentInfo.start.minutes
           }
           to={
-            this.state.appointmentInfo.end.hours +
+            this.props.appointmentInfo.end.hours +
             ":" +
-            this.state.appointmentInfo.end.minutes
+            this.props.appointmentInfo.end.minutes
           }
         />
         <Date
-          day={this.state.appointmentInfo.date.day}
-          month={this.state.appointmentInfo.date.month}
-          year={this.state.appointmentInfo.date.year}
+          day={this.props.appointmentInfo.date.day}
+          month={this.props.appointmentInfo.date.month}
+          year={this.props.appointmentInfo.date.year}
         />
-        <ReasonAppointment />
+        <ReasonAppointment onChange={this.props.onChange} />
         <Button text="Accept" color="blue" />
       </CardContainer>
     );
