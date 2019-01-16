@@ -8,6 +8,7 @@ import {
   areValidsEmails
 } from "./../../libraries/util";
 import { Booking } from "./../../models/Booking";
+import { Room } from "./../../models/Room";
 import { Request, Response, Router } from "express";
 import {
   validateJWT,
@@ -143,7 +144,7 @@ export class BookingController extends Controller {
 
       @apiParam {Object}    body                   Booking details
       @apiParam {Date}      body.start             Booking date start
-      @apiParam {Date}      body.end               Booking date end
+        @apiParam {Date}      body.end               Booking date end
       @apiParam {String}    body.description       Booking description
       @apiParam {Number}    body.roomId            Booking room id
       @apiParam {String[]}  body.attendees    Emails from users who will attend the event
@@ -242,13 +243,6 @@ export class BookingController extends Controller {
 
     try {
       const booking = await this.model.findById(data.params.id);
-      const parsedBooking = JSON.parse(JSON.stringify(booking));
-      if (parsedBooking.end < getActualDate()) {
-        return res
-          .status(409)
-          .send({ code: 409, message: "Cannot cancel a past meeting" });
-      }
-
       await calendarService.deleteEvent(booking.eventId);
       this.destroy(req, res);
     } catch (err) {
@@ -264,7 +258,7 @@ export class BookingController extends Controller {
     if (isEmpty(data.body.description)) {
       return Controller.badRequest(
         res,
-        "Bad Request: No description in request"
+        "Bad Request: No description in request."
       );
     }
     if (isEmpty(data.body.start)) {
@@ -277,12 +271,12 @@ export class BookingController extends Controller {
       return Controller.badRequest(res, "Bad Request: No end date in request.");
     }
     if (isEmpty(data.body.roomId)) {
-      return Controller.badRequest(res, "Bad Request: No roomId in request");
+      return Controller.badRequest(res, "Bad Request: No roomId in request.");
     }
     if (data.body.attendees.constructor !== Array) {
       return Controller.badRequest(
         res,
-        "Bad Request: No attendees as Array in request"
+        "Bad Request: No attendees as Array in request."
       );
     }
     if (getActualDate() > data.body.start) {
@@ -298,7 +292,7 @@ export class BookingController extends Controller {
       );
     }
     if (!areValidsEmails(data.body.attendees)) {
-      return Controller.badRequest(res, "Bad Request: Invalid email");
+      return Controller.badRequest(res, "Bad Request: Invalid email.");
     }
 
     // insert only if the author email don't exist in data
@@ -307,6 +301,18 @@ export class BookingController extends Controller {
     }
 
     try {
+      const roomId = await Room.findOne({
+        attributes: ["id"],
+        where: { id: data.body.roomId }
+      });
+
+      if (isEmpty(roomId)) {
+        return Controller.badRequest(
+          res,
+          `Bad Request: room ${data.body.roomId} not exist.`
+        );
+      }
+
       const booking = await this.model.findAndCountAll({
         where: {
           [Op.and]: {
@@ -373,7 +379,7 @@ export class BookingController extends Controller {
     if (isEmpty(data.body.description)) {
       return Controller.badRequest(
         res,
-        "Bad Request: No description in request"
+        "Bad Request: No description in request."
       );
     }
     if (isEmpty(data.body.start)) {
@@ -386,12 +392,12 @@ export class BookingController extends Controller {
       return Controller.badRequest(res, "Bad Request: No end date in request.");
     }
     if (isEmpty(data.body.roomId)) {
-      return Controller.badRequest(res, "Bad Request: No roomId in request");
+      return Controller.badRequest(res, "Bad Request: No roomId in request.");
     }
     if (data.body.attendees.constructor !== Array) {
       return Controller.badRequest(
         res,
-        "Bad Request: No attendees as Array in request"
+        "Bad Request: No attendees as Array in request."
       );
     }
     if (getActualDate() > data.body.start) {
@@ -407,7 +413,7 @@ export class BookingController extends Controller {
       );
     }
     if (!areValidsEmails(data.body.attendees)) {
-      return Controller.badRequest(res, "Bad Request: Invalid email");
+      return Controller.badRequest(res, "Bad Request: Invalid email.");
     }
 
     // insert only if the author email don't exist in the request
@@ -416,6 +422,18 @@ export class BookingController extends Controller {
     }
 
     try {
+      const roomId = await Room.findOne({
+        attributes: ["id"],
+        where: { id: data.body.roomId }
+      });
+
+      if (isEmpty(roomId)) {
+        return Controller.badRequest(
+          res,
+          `Bad Request: room ${data.body.roomId} not exist.`
+        );
+      }
+
       const bookings = await this.model.findAndCountAll({
         where: {
           [Op.and]: {
