@@ -1009,6 +1009,105 @@ describe("Booking", () => {
             done();
           });
       });
+      it("Should get bookings fromDate", done => {
+        chai
+          .request(server)
+          .get(apiPath + "?fromDate=2019-03-11")
+          .set("Authorization", `Bearer ${token}`)
+          .end((err, res) => {
+            if (err) {
+              throw err;
+            }
+            res.should.have.status(200);
+            res.body.should.be.an("array");
+            res.body.should.have.length(1);
+
+            res.body[0].should.be.an("object");
+            res.body[0].should.have.property("id");
+            res.body[0].should.have.property("description");
+            res.body[0].should.have.property("room_id");
+            res.body[0].should.have.property("start");
+            res.body[0].should.have.property("end");
+            res.body[0].should.have.property("user_id");
+            res.body[0].should.have.property("event_id");
+            res.body[0].should.have.property("updated_at");
+            res.body[0].should.have.property("created_at");
+
+            res.body[0].description.should.deep.equal("Call Varma x3");
+            res.body[0].room_id.should.deep.equal(1);
+            res.body[0].user_id.should.deep.equal(1);
+            res.body[0].start.should.deep.equal("2019-03-11T16:15:00.000Z");
+            res.body[0].end.should.deep.equal("2019-03-11T16:30:00.000Z");
+
+            done();
+          });
+      });
+      it("Should get bookings toDate", done => {
+        chai
+          .request(server)
+          .get(apiPath + "?toDate=2019-01-01T00:00")
+          .set("Authorization", `Bearer ${token}`)
+          .end((err, res) => {
+            if (err) {
+              throw err;
+            }
+            res.should.have.status(200);
+            res.body.should.be.an("array");
+            res.body.should.have.length(1);
+
+            res.body[0].should.be.an("object");
+            res.body[0].should.have.property("id");
+            res.body[0].should.have.property("description");
+            res.body[0].should.have.property("room_id");
+            res.body[0].should.have.property("start");
+            res.body[0].should.have.property("end");
+            res.body[0].should.have.property("user_id");
+            res.body[0].should.have.property("event_id");
+            res.body[0].should.have.property("updated_at");
+            res.body[0].should.have.property("created_at");
+
+            res.body[0].description.should.deep.equal("Call Varma x2");
+            res.body[0].room_id.should.deep.equal(1);
+            res.body[0].user_id.should.deep.equal(1);
+            res.body[0].start.should.deep.equal("2019-02-11T18:10:00.000Z");
+            res.body[0].end.should.deep.equal("2019-02-11T18:30:00.000Z");
+
+            done();
+          });
+      });
+      it("Should get bookings fromDate to toDate", done => {
+        chai
+          .request(server)
+          .get(apiPath + "?fromDate=2019-02-11T17:00&toDate=2019-03-01T12:00")
+          .set("Authorization", `Bearer ${token}`)
+          .end((err, res) => {
+            if (err) {
+              throw err;
+            }
+            res.should.have.status(200);
+            res.body.should.be.an("array");
+            res.body.should.have.length(1);
+
+            res.body[0].should.be.an("object");
+            res.body[0].should.have.property("id");
+            res.body[0].should.have.property("description");
+            res.body[0].should.have.property("room_id");
+            res.body[0].should.have.property("start");
+            res.body[0].should.have.property("end");
+            res.body[0].should.have.property("user_id");
+            res.body[0].should.have.property("event_id");
+            res.body[0].should.have.property("updated_at");
+            res.body[0].should.have.property("created_at");
+
+            res.body[0].description.should.deep.equal("Call Varma");
+            res.body[0].room_id.should.deep.equal(1);
+            res.body[0].user_id.should.deep.equal(1);
+            res.body[0].start.should.deep.equal("2019-02-11T16:15:00.000Z");
+            res.body[0].end.should.deep.equal("2019-02-11T16:30:00.000Z");
+
+            done();
+          });
+      });
     });
   });
 });
