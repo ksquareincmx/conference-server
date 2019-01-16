@@ -18,6 +18,10 @@ const server = "http://localhost:8888";
 describe("Booking", () => {
   const token = process.env.JWT;
 
+  after(async () => {
+    await db.close();
+  });
+
   describe("POST", () => {
     const bookingsId = [];
 
@@ -447,7 +451,6 @@ describe("Booking", () => {
           await Booking.destroy({ where: { id } });
         }
       }
-      await db.close();
     });
 
     it("Should edit a booking.", done => {
@@ -866,11 +869,6 @@ describe("Booking", () => {
   });
 
   describe("GET", () => {
-    describe.skip("when bookings exist", () => {
-      before(async () => {});
-      it("Should get all bookings", done => {});
-    });
-
     it("Should get all but not exist anything", done => {
       chai
         .request(server)
@@ -886,6 +884,131 @@ describe("Booking", () => {
           res.body.should.have.length(0);
           done();
         });
+    });
+
+    describe("when bookings exist", () => {
+      const bookingsId = [];
+      const email = "conference.booking.test@gmail.com";
+
+      // insert bookings in the db
+      before(async () => {
+        const bookings = [
+          {
+            description: "Call Varma",
+            userId: 1,
+            roomId: 1,
+            start: "2019-02-11T10:15:00",
+            end: "2019-02-11T10:30:00"
+          },
+          {
+            description: "Call Varma x2",
+            userId: 1,
+            roomId: 1,
+            start: "2019-02-11T12:10:00",
+            end: "2019-02-11T12:30:00"
+          },
+          {
+            description: "Call Varma x3",
+            userId: 1,
+            roomId: 1,
+            start: "2019-03-11T10:15:00",
+            end: "2019-03-11T10:30:00"
+          }
+        ];
+
+        await db.sync();
+        for (let booking of bookings) {
+          const createdBooking: any = await Booking.create(booking);
+          bookingsId.push(createdBooking.id.toString());
+        }
+      });
+
+      // delete the booking from the db
+      after(async () => {
+        for (let id of bookingsId) {
+          const booking: any = await Booking.findById(id);
+          if (booking) {
+            await Booking.destroy({ where: { id } });
+          }
+        }
+      });
+
+      it("Should get all bookings", done => {
+        chai
+          .request(server)
+          .get(apiPath)
+          .set("Authorization", `Bearer ${token}`)
+          .end((err, res) => {
+            if (err) {
+              throw err;
+            }
+            res.should.have.status(200);
+            res.body.should.be.an("array");
+
+            res.body.forEach((booking, index) => {
+              res.body[index].should.have.property("id");
+              res.body[index].should.have.property("description");
+              res.body[index].should.have.property("room_id");
+              res.body[index].should.have.property("start");
+              res.body[index].should.have.property("end");
+              res.body[index].should.have.property("user_id");
+              res.body[index].should.have.property("event_id");
+              res.body[index].should.have.property("updated_at");
+              res.body[index].should.have.property("created_at");
+            });
+
+            //Six hours more. Because timezone format when insert in the db
+            // check body from booking[0]
+            res.body[0].description.should.deep.equal("Call Varma");
+            res.body[0].room_id.should.deep.equal(1);
+            res.body[0].user_id.should.deep.equal(1);
+            res.body[0].start.should.deep.equal("2019-02-11T16:15:00.000Z");
+            res.body[0].end.should.deep.equal("2019-02-11T16:30:00.000Z");
+
+            // check body from booking[1]
+            res.body[1].description.should.deep.equal("Call Varma x2");
+            res.body[1].room_id.should.deep.equal(1);
+            res.body[1].user_id.should.deep.equal(1);
+            res.body[1].start.should.deep.equal("2019-02-11T18:10:00.000Z");
+            res.body[1].end.should.deep.equal("2019-02-11T18:30:00.000Z");
+
+            // check body from booking[2]
+            res.body[2].description.should.deep.equal("Call Varma x3");
+            res.body[2].room_id.should.deep.equal(1);
+            res.body[2].user_id.should.deep.equal(1);
+            res.body[2].start.should.deep.equal("2019-03-11T16:15:00.000Z");
+            res.body[2].end.should.deep.equal("2019-03-11T16:30:00.000Z");
+
+            done();
+          });
+      });
+      it("Should get one booking", done => {
+        chai
+          .request(server)
+          .get(apiPath + bookingsId[0])
+          .set("Authorization", `Bearer ${token}`)
+          .end((err, res) => {
+            if (err) {
+              throw err;
+            }
+            res.body.should.have.property("id");
+            res.body.should.have.property("description");
+            res.body.should.have.property("room_id");
+            res.body.should.have.property("start");
+            res.body.should.have.property("end");
+            res.body.should.have.property("user_id");
+            res.body.should.have.property("event_id");
+            res.body.should.have.property("updated_at");
+            res.body.should.have.property("created_at");
+
+            res.body.description.should.deep.equal("Call Varma");
+            res.body.room_id.should.deep.equal(1);
+            res.body.user_id.should.deep.equal(1);
+            res.body.start.should.deep.equal("2019-02-11T16:15:00.000Z");
+            res.body.end.should.deep.equal("2019-02-11T16:30:00.000Z");
+            done();
+          });
+      });
     });
   });
 });
