@@ -31,35 +31,10 @@ class DragginCalendar extends React.Component {
           year={this.props.appointmentInfo.date.year}
         />
         <ReasonAppointment onChange={this.props.onChange} />
-        <Button text="Accept" color="blue" />
+        <Button text="Accept" color="blue" onClick={this.props.onClick} />
       </CardContainer>
     );
   }
 }
-
-const postDto = state => {
-  const dateFormat = state.date.year + state.date.month + state.date.day;
-  return {
-    description: state.reasonAppointment,
-    roomId: state.roomId,
-    start:
-      dateFormat +
-      "T" +
-      state.start.hours +
-      ":" +
-      state.start.minutes +
-      ":" +
-      "00.000Z",
-    end:
-      dateFormat +
-      "T" +
-      state.end.hour +
-      ":" +
-      state.end.minute +
-      ":" +
-      "00.000Z",
-    attendees: []
-  };
-};
 
 export default DragginCalendar;

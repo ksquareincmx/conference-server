@@ -135,6 +135,13 @@ class CalendarPageLogic extends React.Component {
     };
   }
 
+  handleClickCreateBookingDraggingCalendar = async () => {
+    const post = postDto(this.state.appointmentInfo);
+    console.log(post);
+    const res = await this.props.bookingService.createNewBooking(post);
+    window.location.href = "/calendar";
+  };
+
   handleChangeReasonAppointment = event => {
     const keyPressed = event.target.value;
     this.setState(prevState => {
@@ -175,16 +182,16 @@ class CalendarPageLogic extends React.Component {
         year: start.getFullYear()
       },
       roomId: conferenceRoomName + 1,
-      reasonAppointment: "p"
+      reasonAppointment: ""
     };
     const title = 1;
 
     if (title) {
-      if (end < new Date()) {
-        return alert(
-          "La fecha de finalización no puede ser previa a la fecha actual"
-        );
-      }
+      // if (end < new Date()) {
+      //   return alert(
+      //     "La fecha de finalización no puede ser previa a la fecha actual"
+      //   );
+      // }
 
       this.setState(prevState => {
         prevState.events[conferenceRoomName].push({
@@ -288,18 +295,14 @@ class CalendarPageLogic extends React.Component {
           timeSlots={timeSlots}
           date={this.state.focusDate}
         />
-        <BookingProvider auth={this.props.auth}>
-          <BookingConsumer>
-            {bookingService => (
-              <DraggingCalendar
-                coordinates={this.state.coordinates}
-                appointmentInfo={this.state.appointmentInfo}
-                bookingService={bookingService}
-                onChange={this.handleChangeReasonAppointment}
-              />
-            )}
-          </BookingConsumer>
-        </BookingProvider>
+
+        <DraggingCalendar
+          coordinates={this.state.coordinates}
+          appointmentInfo={this.state.appointmentInfo}
+          onChange={this.handleChangeReasonAppointment}
+          onClick={this.handleClickCreateBookingDraggingCalendar}
+        />
+
         <FooterView
           {...this.FooterChangeButtonLabels(this.state.selector)}
           currentDateLabel={"Today"}
@@ -310,9 +313,53 @@ class CalendarPageLogic extends React.Component {
   }
 }
 
+const addZeros = number => {
+  if (number < 10) {
+    return "0" + String(number);
+  }
+  return String(number);
+};
+const postDto = state => {
+  console.log(state.date.year);
+  const dateFormat =
+    addZeros(state.date.year) +
+    "-" +
+    addZeros(state.date.month) +
+    "-" +
+    addZeros(state.date.day);
+  return {
+    description: state.reasonAppointment,
+    roomId: state.roomId,
+    start:
+      dateFormat +
+      "T" +
+      addZeros(state.start.hours) +
+      ":" +
+      addZeros(state.start.minutes) +
+      ":" +
+      "00.000Z",
+    end:
+      dateFormat +
+      "T" +
+      addZeros(state.end.hours) +
+      ":" +
+      addZeros(state.end.minutes) +
+      ":" +
+      "00.000Z",
+    attendees: []
+  };
+};
 function VerifyAuth(auth) {
   if (auth.jwt !== null) {
-    return <CalendarPageLogic auth={auth} />;
+    return (
+      <BookingProvider auth={auth}>
+        <BookingConsumer>
+          {bookingService => (
+            <CalendarPageLogic bookingService={bookingService} />
+          )}
+        </BookingConsumer>
+      </BookingProvider>
+    );
   }
 }
 
