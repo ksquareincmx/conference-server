@@ -543,47 +543,49 @@ export class BookingController extends Controller {
     const isValidDate = date => date.toString() !== "Invalid Date";
 
     try {
-      const isEmptyFromDate = isEmpty(data.query.fromDate);
-      const isEmptyToDate = isEmpty(data.query.toDate);
-
-      if (!isEmptyFromDate && !isValidDate(fromDate)) {
+      if (!isEmpty(data.query.fromDate) && !isValidDate(fromDate)) {
         return Controller.badRequest(
           res,
           "Bad Request: fromDate must be a date in format YYYY-MM-DDTHH:MM."
         );
       }
 
-      if (!isEmptyToDate && !isValidDate(toDate)) {
+      if (!isEmpty(data.query.toDate) && !isValidDate(toDate)) {
         return Controller.badRequest(
           res,
           "Bad Request: toDate must be a date in format YYYY-MM-DDTHH:MM."
         );
       }
 
-      let bookings;
+      const dateRangeStrategy = async ({ fromDate, toDate }) => {
+        if (isEmpty(fromDate) && isEmpty(toDate)) {
+          return await this.model.findAll();
+        } else if (!isEmpty(fromDate) && isEmpty(toDate)) {
+          return await this.model.findAll({
+            where: {
+              end: { [Op.gte]: fromDate }
+            }
+          });
+        } else if (isEmpty(fromDate) && !isEmpty(toDate)) {
+          return await this.model.findAll({
+            where: {
+              start: { [Op.lte]: toDate }
+            }
+          });
+        } else {
+          return await this.model.findAll({
+            where: {
+              end: { [Op.gte]: fromDate },
+              start: { [Op.lte]: toDate }
+            }
+          });
+        } // Case where !isEmpty(fromDate) && !isEmpty(toDate)
+      };
 
-      if (isEmptyFromDate && isEmptyToDate) {
-        bookings = await this.model.findAll();
-      } else if (!isEmptyFromDate && !isEmptyToDate) {
-        bookings = await this.model.findAll({
-          where: {
-            end: { [Op.gte]: fromDate },
-            start: { [Op.lte]: toDate }
-          }
-        });
-      } else if (!isEmptyFromDate && isEmptyToDate) {
-        bookings = await this.model.findAll({
-          where: {
-            end: { [Op.gte]: fromDate }
-          }
-        });
-      } else if (isEmptyFromDate && !isEmptyToDate) {
-        bookings = await this.model.findAll({
-          where: {
-            start: { [Op.lte]: toDate }
-          }
-        });
-      }
+      const bookings = await dateRangeStrategy({
+        fromDate: data.query.fromDate,
+        toDate: data.query.toDate
+      });
 
       const parsedBookings = JSON.parse(JSON.stringify(bookings));
       const finalBookings = await this.bookingsPlusAttendees(parsedBookings);
