@@ -551,7 +551,6 @@ export class BookingController extends Controller {
           res,
           "Bad Request: fromDate must be a date in format YYYY-MM-DDTHH:MM."
         );
-<<<<<<< HEAD
       }
 
       if (!isEmptyToDate && !isValidDate(toDate)) {
@@ -561,17 +560,6 @@ export class BookingController extends Controller {
         );
       }
 
-=======
-      }
-
-      if (!isEmptyToDate && !isValidDate(toDate)) {
-        return Controller.badRequest(
-          res,
-          "Bad Request: toDate must be a date in format YYYY-MM-DDTHH:MM."
-        );
-      }
-
->>>>>>> 1b338696c33f641a5edd0224657153f38664ec68
       let bookings;
 
       if (isEmptyFromDate && isEmptyToDate) {
