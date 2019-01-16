@@ -529,7 +529,10 @@ export class BookingController extends Controller {
     const data: IGetAllBookingParams = {
       query: req.query
     };
-    const toDate: Date = new Date(data.query.fromDate);
+
+    const fromDate: Date = new Date(data.query.fromDate);
+    const toDate: Date = new Date(data.query.toDate);
+
     const isValidDate = date => date.toString() !== "Invalid Date";
 
     try {
@@ -548,11 +551,30 @@ export class BookingController extends Controller {
         }
       }
 
-      // Obtain all bookings from a date
-      else if (isValidDate(toDate)) {
+      // get bookings by period time
+      if (isValidDate(fromDate) && isValidDate(toDate)) {
         const bookings = await this.model.findAll({
           where: {
-            end: { [Op.gte]: toDate }
+            end: { [Op.gte]: fromDate },
+            start: { [Op.lte]: toDate }
+          }
+        });
+
+        if (bookings) {
+          const parsedBookings = JSON.parse(JSON.stringify(bookings));
+          const finalBookings = await this.bookingsPlusAttendees(
+            parsedBookings
+          );
+          const DTOBookings = finalBookings.map(bookingMapper.toDTO);
+          return res.status(200).json(DTOBookings);
+        }
+      }
+
+      // Obtain all bookings from a date
+      if (isValidDate(fromDate)) {
+        const bookings = await this.model.findAll({
+          where: {
+            end: { [Op.gte]: fromDate }
           }
         });
         if (bookings) {
