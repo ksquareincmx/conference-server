@@ -15,8 +15,9 @@ chai.use(chaiHttp);
 const apiPath = "http://localhost:8888/api/v1/User/";
 
 describe("User", () => {
-  let token = "Bearer ";
-  let  userId = "";
+  let token: string;
+  let blackListedToken: string;
+  let userId: string;
 
   before(async function() {
     // Before testing it is convenient to create a new user..
@@ -25,20 +26,39 @@ describe("User", () => {
       password: "12345678",
       role: "admin"
     };
-    await db.sync();
+    const isConnectionOpen = !!db.authenticate();
+    console.log('isConnectionOpen :', isConnectionOpen);
+    if (!isConnectionOpen) {
+    await db.sync(); }
     const createdUser: any = await User.create(testUser);
     userId = createdUser.id.toString();
 
     // Log in once as administrator
     // Could be any request library...
-    const credentials = await chai.request("http://localhost:8888/api/v1/auth/")
+    const expiredCredentials = await chai.request("http://localhost:8888/api/v1/auth/")
       .post("/login")
       .type("form")
       .send({
         email: "admin@example.com",
         password: "adminadmin"
       })
-    token = token.concat(credentials.body.token);
+    blackListedToken = `Bearer ${expiredCredentials.body.token}`;
+    await chai.request("http://localhost:8888/api/v1/auth/")
+    .post("/logout")
+    .type("form")
+    .set("Authorization", blackListedToken)
+    .send({
+      email: "admin@example.com",
+      password: "adminadmin"
+    })
+    const credentials = await chai.request("http://localhost:8888/api/v1/auth/")
+    .post("/login")
+    .type("form")
+    .send({
+      email: "admin@example.com",
+      password: "adminadmin"
+    })
+    token =  `Bearer ${credentials.body.token}`;
   });
 
   after(async function() {
@@ -50,7 +70,7 @@ describe("User", () => {
     if (user) {
       await User.destroy({where: { id: userId }});
     }
-    await db.close();
+    // await db.close();
   });
 
   /*
@@ -104,6 +124,20 @@ describe("User", () => {
           .end((err, res) => {
             res.should.have.status(401);
             res.body.should.be.an("string").and.equal("No Token Present");
+            done();
+          });
+    });
+
+    it("it should not get the user if token is blacklisted", (done) => {
+      chai.request(apiPath)
+          .get(userId)
+          .set("Authorization", blackListedToken)
+          .end((err, res) => {
+            res.should.have.status(401);
+            res.body.should.be.an("object").and.deep.equal({
+              "name": "Error",
+              "message": "This Token is blacklisted"
+            });
             done();
           });
     });
@@ -199,6 +233,28 @@ describe("User", () => {
             done();
           });
     });
+
+    it("it should not edit the user if token is blacklisted", (done) => {
+      chai.request(apiPath)
+          .put(userId)
+          .type("form")
+          .send({
+            email: "testEdited@test.com",
+            name: "testEdited",
+            password: "test1234",
+            picture: "newURL",
+            role: "admin"
+          })
+          .set("Authorization", blackListedToken)
+          .end((err, res) => {
+            res.should.have.status(401);
+            res.body.should.be.an("object").and.deep.equal({
+              "name": "Error",
+              "message": "This Token is blacklisted"
+            });
+            done();
+          });
+    });
   });
 
   /*
@@ -251,6 +307,19 @@ describe("User", () => {
             done();
           });
     });
-  });
 
+    it("it should not delete the user if token is blacklisted", (done) => {
+      chai.request(apiPath)
+          .delete(userId)
+          .set("Authorization", blackListedToken)
+          .end((err, res) => {
+            res.should.have.status(401);
+            res.body.should.be.an("object").and.deep.equal({
+              "name": "Error",
+              "message": "This Token is blacklisted"
+            });
+            done();
+          });
+    });
+  });
 });
