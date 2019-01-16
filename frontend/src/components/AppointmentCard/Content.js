@@ -5,7 +5,9 @@ import Button from "../../components/MaterialButton";
 import BookingList from "./BookingList/";
 import Modal from "@material-ui/core/Modal";
 import AppointmentList from "../Modals/CreateMeeting/";
+import "./AppointmentCard.css";
 import { Grid } from "@material-ui/core/";
+import { Link, Redirect } from "react-router-dom";
 
 class Content extends React.Component {
   state = {
@@ -13,7 +15,8 @@ class Content extends React.Component {
     room: undefined,
     quickAppointment: false,
     bookingClicked: false,
-    bookingClickedObj: ""
+    bookingClickedObj: "",
+    redirectCalendar: false
   };
 
   handleOnClickCreateMeeting = event => {
@@ -34,7 +37,7 @@ class Content extends React.Component {
   };
 
   handleClickCalendar = () => {
-    window.location.href = "/calendar";
+    this.setState({ redirectCalendar: true });
   };
 
   handleClickBooking = booking => event => {
@@ -45,10 +48,17 @@ class Content extends React.Component {
     });
   };
 
+  renderRedirectCalendar = () => {
+    if (this.state.redirectCalendar) {
+      return <Redirect to="/calendar" />;
+    }
+  };
+
   render() {
     const styles = getStyles();
     return (
       <CardContent style={styles.appointmentCardContainer}>
+        {this.renderRedirectCalendar()}
         <Grid container style={styles.appointmentCardGrid}>
           <Grid item xs={6}>
             <BookingList
@@ -130,6 +140,9 @@ const getStyles = () => ({
   },
   buttons: {
     marginTop: 40
+  },
+  link: {
+    textDecoration: "none"
   }
 });
 

@@ -14,7 +14,8 @@ import NavBar from "components/NavBar/NavBar";
 import DraggingCalendar from "components/Modals/DraggingCalendar";
 import { BookingConsumer, BookingProvider } from "providers/Booking";
 import { AuthConsumer } from "providers/Auth";
-
+import { Redirect } from "react-router-dom";
+import { addZeros, postDto } from "./Utils.js";
 // Constants for HeaderStrategy
 const daysNames = [
   "Sunday",
@@ -131,15 +132,15 @@ class CalendarPageLogic extends React.Component {
           year: 0
         },
         reasonAppointment: ""
-      }
+      },
+      redirectDashboard: false
     };
   }
 
   handleClickCreateBookingDraggingCalendar = async () => {
     const post = postDto(this.state.appointmentInfo);
-    console.log(post);
     const res = await this.props.bookingService.createNewBooking(post);
-    window.location.href = "/calendar";
+    this.setState({ redirectDashboard: true });
   };
 
   handleChangeReasonAppointment = event => {
@@ -187,11 +188,11 @@ class CalendarPageLogic extends React.Component {
     const title = 1;
 
     if (title) {
-      // if (end < new Date()) {
-      //   return alert(
-      //     "La fecha de finalización no puede ser previa a la fecha actual"
-      //   );
-      // }
+      if (end < new Date()) {
+        return alert(
+          "La fecha de finalización no puede ser previa a la fecha actual"
+        );
+      }
 
       this.setState(prevState => {
         prevState.events[conferenceRoomName].push({
@@ -265,9 +266,16 @@ class CalendarPageLogic extends React.Component {
     }
   };
 
+  renderRedirectDashboard = () => {
+    if (this.state.redirectDashboard) {
+      return <Redirect to="/dashboard" />;
+    }
+  };
+
   render() {
     return (
       <div className="calendar-container">
+        {this.renderRedirectDashboard()}
         <NavBar />
         <HeaderView
           onClickViewButton={this.handlerOnClickViewButton}
@@ -313,42 +321,6 @@ class CalendarPageLogic extends React.Component {
   }
 }
 
-const addZeros = number => {
-  if (number < 10) {
-    return "0" + String(number);
-  }
-  return String(number);
-};
-const postDto = state => {
-  console.log(state.date.year);
-  const dateFormat =
-    addZeros(state.date.year) +
-    "-" +
-    addZeros(state.date.month) +
-    "-" +
-    addZeros(state.date.day);
-  return {
-    description: state.reasonAppointment,
-    roomId: state.roomId,
-    start:
-      dateFormat +
-      "T" +
-      addZeros(state.start.hours) +
-      ":" +
-      addZeros(state.start.minutes) +
-      ":" +
-      "00.000Z",
-    end:
-      dateFormat +
-      "T" +
-      addZeros(state.end.hours) +
-      ":" +
-      addZeros(state.end.minutes) +
-      ":" +
-      "00.000Z",
-    attendees: []
-  };
-};
 function VerifyAuth(auth) {
   if (auth.jwt !== null) {
     return (
