@@ -536,62 +536,53 @@ export class BookingController extends Controller {
     const isValidDate = date => date.toString() !== "Invalid Date";
 
     try {
-      // TODO: Delete redundant code
-      // Obtain all bookings
-      if (isEmpty(data.query.fromDate)) {
-        const bookings = await this.model.findAll();
+      const isEmptyFromDate = isEmpty(data.query.fromDate);
+      const isEmptyToDate = isEmpty(data.query.toDate);
 
-        if (bookings) {
-          const parsedBookings = JSON.parse(JSON.stringify(bookings));
-          const finalBookings = await this.bookingsPlusAttendees(
-            parsedBookings
-          );
-          const DTOBookings = finalBookings.map(bookingMapper.toDTO);
-          return res.status(200).json(DTOBookings);
-        }
+      if (!isEmptyFromDate && !isValidDate(fromDate)) {
+        return Controller.badRequest(
+          res,
+          "Bad Request: fromDate must be a date in format YYYY-MM-DDTHH:MM."
+        );
       }
 
-      // get bookings by period time
-      if (isValidDate(fromDate) && isValidDate(toDate)) {
-        const bookings = await this.model.findAll({
+      if (!isEmptyToDate && !isValidDate(toDate)) {
+        return Controller.badRequest(
+          res,
+          "Bad Request: toDate must be a date in format YYYY-MM-DDTHH:MM."
+        );
+      }
+
+      let bookings;
+
+      if (isEmptyFromDate && isEmptyToDate) {
+        bookings = await this.model.findAll();
+      } else if (!isEmptyFromDate && !isEmptyToDate) {
+        bookings = await this.model.findAll({
           where: {
             end: { [Op.gte]: fromDate },
             start: { [Op.lte]: toDate }
           }
         });
-
-        if (bookings) {
-          const parsedBookings = JSON.parse(JSON.stringify(bookings));
-          const finalBookings = await this.bookingsPlusAttendees(
-            parsedBookings
-          );
-          const DTOBookings = finalBookings.map(bookingMapper.toDTO);
-          return res.status(200).json(DTOBookings);
-        }
-      }
-
-      // Obtain all bookings from a date
-      if (isValidDate(fromDate)) {
-        const bookings = await this.model.findAll({
+      } else if (!isEmptyFromDate && isEmptyToDate) {
+        bookings = await this.model.findAll({
           where: {
             end: { [Op.gte]: fromDate }
           }
         });
-        if (bookings) {
-          const parsedBookings = JSON.parse(JSON.stringify(bookings));
-          const finalBookings = await this.bookingsPlusAttendees(
-            parsedBookings
-          );
-
-          const DTOBookings = finalBookings.map(bookingMapper.toDTO);
-          return res.status(200).json(DTOBookings);
-        }
+      } else if (isEmptyFromDate && !isEmptyToDate) {
+        bookings = await this.model.findAll({
+          where: {
+            start: { [Op.lte]: toDate }
+          }
+        });
       }
 
-      return Controller.badRequest(
-        res,
-        "Bad Request: fromDate must be a date in format YYYY-MM-DDTHH:MM."
-      );
+      const parsedBookings = JSON.parse(JSON.stringify(bookings));
+      const finalBookings = await this.bookingsPlusAttendees(parsedBookings);
+
+      const DTOBookings = finalBookings.map(bookingMapper.toDTO);
+      return res.status(200).json(DTOBookings);
     } catch (err) {
       return Controller.serverError(res, err);
     }
