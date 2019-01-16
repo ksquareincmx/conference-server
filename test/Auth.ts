@@ -27,8 +27,10 @@ describe("Auth", () => {
   before(async function() {
     // Before testing it is convenient to create a new user..
     const isConnectionOpen = !!db.authenticate();
-    if (!isConnectionOpen) { await db.sync(); }
-    const createdUser: any = await User.create({...testUser, role: "admin"});
+    if (!isConnectionOpen) {
+      await db.sync();
+    }
+    const createdUser: any = await User.create({ ...testUser, role: "admin" });
     userId = createdUser.id.toString();
     const credentials = await chai
       .request(apiPath)
@@ -36,7 +38,7 @@ describe("Auth", () => {
       .type("form")
       .send(testUser);
     refresh_token = `Bearer ${credentials.body.refresh_token.token}`;
-    token =  `Bearer ${credentials.body.token}`;
+    token = `Bearer ${credentials.body.token}`;
   });
 
   after(async function() {
@@ -70,7 +72,7 @@ describe("Auth", () => {
       }
     });
 
-    it("it should register a new user user", (done) => {
+    it("it should register a new user user", done => {
       chai
         .request(apiPath)
         .post("/register")
@@ -88,7 +90,7 @@ describe("Auth", () => {
         });
     });
 
-    it("it should not register an email which is already in use", (done) => {
+    it("it should not register an email which is already in use", done => {
       chai
         .request(apiPath)
         .post("/register")
@@ -101,7 +103,7 @@ describe("Auth", () => {
         });
     });
 
-    it("it should not register a User if password length is less than 8", (done) => {
+    it("it should not register a User if password length is less than 8", done => {
       chai
         .request(apiPath)
         .post("/register")
@@ -121,7 +123,7 @@ describe("Auth", () => {
    * Test the /login route
    */
   describe("/login", () => {
-    it("it should login the user", (done) => {
+    it("it should login the user", done => {
       chai
         .request(apiPath)
         .post("/login")
@@ -154,7 +156,7 @@ describe("Auth", () => {
     //       });
     // });
 
-    it("it should not login if password is incorrect", (done) => {
+    it("it should not login if password is incorrect", done => {
       chai
         .request(apiPath)
         .post("/login")
@@ -190,7 +192,7 @@ describe("Auth", () => {
    * Test the /logout route
    */
   describe("/logout", () => {
-    it("it should logout the user", (done) => {
+    it("it should logout the user", done => {
       chai
         .request(apiPath)
         .post("/logout")
@@ -203,7 +205,7 @@ describe("Auth", () => {
         });
     });
 
-    it("it should not logout if token has already been blacklisted", (done) => {
+    it("it should not logout if token has already been blacklisted", done => {
       chai
         .request(apiPath)
         .post("/logout")
@@ -219,7 +221,7 @@ describe("Auth", () => {
         });
     });
 
-    it("it should not logout if token is not correct", (done) => {
+    it("it should not logout if token is not correct", done => {
       chai
         .request(apiPath)
         .post("/logout")
@@ -235,7 +237,7 @@ describe("Auth", () => {
         });
     });
 
-    it("it should not logout if token is not provided", (done) => {
+    it("it should not logout if token is not provided", done => {
       chai
         .request(apiPath)
         .post("/logout")
@@ -252,7 +254,6 @@ describe("Auth", () => {
    * Test the /change route
    */
   describe("/change", () => {
-
     before(async function() {
       // Redo Login in case of logout
       const credentials = await chai
@@ -264,7 +265,7 @@ describe("Auth", () => {
       token = `Bearer ${credentials.body.token}`;
     });
 
-    it("it should change the password", (done) => {
+    it("it should change the password", done => {
       chai
         .request(apiPath)
         .post("/change")
@@ -287,7 +288,7 @@ describe("Auth", () => {
         });
     });
 
-    it("it should not change the password if token is not correct", (done) => {
+    it("it should not change the password if token is not correct", done => {
       chai
         .request(apiPath)
         .post("/change")
@@ -308,7 +309,7 @@ describe("Auth", () => {
         });
     });
 
-    it("it should not change the password if token is not provided", (done) => {
+    it("it should not change the password if token is not provided", done => {
       chai
         .request(apiPath)
         .post("/change")
@@ -330,7 +331,7 @@ describe("Auth", () => {
    * Test the /refresh route
    */
   describe("/refresh", () => {
-    it("it should refresh the token", (done) => {
+    it("it should refresh the token", done => {
       chai
         .request(apiPath)
         .post("/refresh")
@@ -347,7 +348,7 @@ describe("Auth", () => {
         });
     });
 
-    it("it should not refresh the token if token is not refresh_token", (done) => {
+    it("it should not refresh the token if token is not refresh_token", done => {
       chai
         .request(apiPath)
         .post("/refresh")
@@ -363,7 +364,7 @@ describe("Auth", () => {
         });
     });
 
-    it("it should not refresh the token if token has already been blacklisted", (done) => {
+    it("it should not refresh the token if token has already been blacklisted", done => {
       chai
         .request(apiPath)
         .post("/refresh")
@@ -380,7 +381,7 @@ describe("Auth", () => {
         });
     });
 
-    it("it should not refresh the token if token is not correct", (done) => {
+    it("it should not refresh the token if token is not correct", done => {
       chai
         .request(apiPath)
         .post("/refresh")
@@ -396,7 +397,7 @@ describe("Auth", () => {
         });
     });
 
-    it("it should not refresh the token if token is not provided", (done) => {
+    it("it should not refresh the token if token is not provided", done => {
       chai
         .request(apiPath)
         .post("/refresh")
