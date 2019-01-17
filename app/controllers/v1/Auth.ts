@@ -789,7 +789,7 @@ export class AuthController extends Controller {
 
       // Check if user exists
       let user: User = await User.findOne({
-        where: { authProvider: {}, email },
+        where: { email },
         include: [
           { model: Profile, as: 'profile' },
           { model: AuthProvider, as: 'authProvider' }
