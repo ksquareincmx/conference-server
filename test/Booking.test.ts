@@ -29,7 +29,6 @@ describe("Booking", () => {
 
   after(async () => {
     await Room.destroy({ where: { id: roomId } });
-    await db.close();
   });
 
   describe("POST", () => {
@@ -43,7 +42,6 @@ describe("Booking", () => {
           await Booking.destroy({ where: { id } });
         }
       }
-      console.log(bookingsId);
     });
 
     it("Should post a booking", done => {
