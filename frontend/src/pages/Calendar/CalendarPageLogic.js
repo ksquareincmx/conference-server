@@ -1,111 +1,13 @@
 import React from "react";
-import BigCalendar from "react-big-calendar";
-import moment from "moment";
-import WeeksView from "components/Calendar/Weeks";
-import MonthsView from "components/Calendar/Months";
-import YearsView from "components/Calendar/Years";
-import HeaderView from "components/Calendar/Header";
-import FooterView from "components/Calendar/Footer";
 import dates from "react-big-calendar/lib/utils/dates";
+import { Redirect, withRouter } from "react-router-dom";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import NavBar from "components/NavBar/NavBar";
 import DraggingCalendar from "components/Modals/DraggingCalendar";
-import { Redirect, withRouter } from "react-router-dom";
-import { addZeros, postDto } from "./Utils.js";
-import DaysView from "../../components/Calendar/Days";
+import HeaderView from "components/Calendar/Header";
+import FooterView from "components/Calendar/Footer";
+import * as Utils from "./Utils.js";
 import "./Calendar.css";
-
-const daysNames = [
-  "Sunday",
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday"
-];
-const monthsNames = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December"
-];
-
-// Constants for CalendarStrategy
-const localizer = BigCalendar.momentLocalizer(moment);
-const minDate = dates.add(dates.startOf(new Date(), "day"), -16, "hours");
-const maxDate = dates.add(dates.endOf(new Date(), "day"), -5, "hours");
-const step = 15;
-const timeSlots = 4;
-
-const HeaderStrategy = props => {
-  switch (props.type) {
-    case "day":
-      return (
-        <div className="header-date-container">
-          <p className="top-date">{props.dayName}</p>
-          <p className="bottom-date">{`${props.monthName} ${
-            props.numberDayInMonth
-          } ${props.fullYear}`}</p>
-        </div>
-      );
-    case "work_week":
-      return (
-        <div className="header-date-container">
-          <p className="top-date">Week #{props.numberWeekInYear}</p>
-          <p className="bottom-date">{`${props.monthName} ${
-            props.numberDayInMonth
-          } ${props.fullYear}`}</p>
-        </div>
-      );
-    case "month":
-      return (
-        <div className="header-date-container">
-          <p className="top-date">{props.monthName}</p>
-          <p className="bottom-date">{props.fullYear}</p>
-        </div>
-      );
-    case "year":
-      return (
-        <div className="header-date-container">
-          <p className="top-date">{props.fullYear}</p>
-        </div>
-      );
-    default:
-      return {};
-  }
-};
-
-const CalendarStrategy = props => {
-  switch (props.type) {
-    case "day":
-      return <DaysView {...props} />;
-    case "work_week":
-      return <WeeksView {...props} />;
-    case "month":
-      return <MonthsView {...props} />;
-    case "year":
-      return <YearsView {...props} />;
-    default:
-      return <DaysView {...props} />;
-  }
-};
-const getNameDay = date => daysNames[date.getDay()];
-const getNameMonth = date => monthsNames[date.getMonth()];
-const getWeekOfYear = date => {
-  let d = new Date(+date);
-  d.setHours(0, 0, 0);
-  d.setDate(d.getDate() + 4 - (d.getDay() || 7));
-  return Math.ceil(((d - new Date(d.getFullYear(), 0, 1)) / 8.64e7 + 1) / 7);
-};
 
 class CalendarPageLogic extends React.Component {
   constructor(...args) {
@@ -135,9 +37,8 @@ class CalendarPageLogic extends React.Component {
   }
 
   handleClickCreateBookingDraggingCalendar = async () => {
-    const post = postDto(this.state.appointmentInfo);
+    const post = Utils.postDto(this.state.appointmentInfo);
     const res = await this.props.bookingService.createNewBooking(post);
-    console.log(this.props.history);
     this.props.history.push("/dashboard");
   };
 
@@ -149,13 +50,8 @@ class CalendarPageLogic extends React.Component {
     });
   };
   handleEventView = ({ event }) => {
-    let color = "blue";
-    if (event.roomId) {
-      color = "red";
-    }
-
     return (
-      <span style={{ color }}>
+      <span>
         <strong>{event.title}</strong>
         {event.desc && ":  " + event.desc}
       </span>
@@ -165,7 +61,6 @@ class CalendarPageLogic extends React.Component {
   handleSelect = conferenceRoomName => event => {
     const start = event.start;
     const end = event.end;
-    //  const title = window.prompt("New Event name");
     const appointmentInfo = {
       start: {
         hours: start.getHours(),
@@ -214,15 +109,12 @@ class CalendarPageLogic extends React.Component {
 
   handlerOnCLickTimeButton = buttonId => () => {
     let selector;
-    this.state.selector === "work_week"
-      ? (selector = "week")
-      : (selector = this.state.selector);
+    this.state.selector === "work_week" ? "week" : this.state.selector;
     switch (buttonId) {
       case "previous":
-        this.setState(prevState => ({
+        return this.setState(prevState => ({
           focusDate: dates.add(prevState.focusDate, -1, selector)
         }));
-        break;
       case "next":
         return this.setState(prevState => ({
           focusDate: dates.add(prevState.focusDate, 1, selector)
@@ -230,37 +122,7 @@ class CalendarPageLogic extends React.Component {
       case "today":
         return this.setState({ focusDate: new Date() });
       default:
-        return {};
-    }
-  };
-
-  FooterChangeButtonLabels = type => {
-    switch (type) {
-      case "day":
-        return {
-          previousButtonLabel: "Previus day",
-          nextButtonLabel: "Next day"
-        };
-      case "work_week":
-        return {
-          previousButtonLabel: "Previus week",
-          nextButtonLabel: "Next week"
-        };
-      case "month":
-        return {
-          previousButtonLabel: "Previus month",
-          nextButtonLabel: "Next month"
-        };
-      case "year":
-        return {
-          previousButtonLabel: "Previus year",
-          nextButtonLabel: "Next year"
-        };
-      default:
-        return {
-          previousButtonLabel: "",
-          nextButtonLabel: ""
-        };
+        return null;
     }
   };
 
@@ -271,27 +133,27 @@ class CalendarPageLogic extends React.Component {
         <HeaderView
           onClickViewButton={this.handlerOnClickViewButton}
           headerDateContainer={
-            <HeaderStrategy
+            <Utils.HeaderStrategy
               type={this.state.selector}
               numberDayInMonth={this.state.focusDate.getDate()}
               fullYear={this.state.focusDate.getFullYear()}
               date={this.state.focusDate}
-              dayName={getNameDay(this.state.focusDate)}
-              monthName={getNameMonth(this.state.focusDate)}
-              numberWeekInYear={getWeekOfYear(this.state.focusDate)}
+              dayName={Utils.getNameDay(this.state.focusDate)}
+              monthName={Utils.getNameMonth(this.state.focusDate)}
+              numberWeekInYear={Utils.getWeekOfYear(this.state.focusDate)}
             />
           }
         />
-        <CalendarStrategy
+        <Utils.CalendarStrategy
           type={this.state.selector}
           events={this.state.events}
           handleSelect={this.handleSelect}
           components={{ event: this.handleEventView }}
-          localizer={localizer}
-          minDate={minDate}
-          maxDate={maxDate}
-          step={step}
-          timeSlots={timeSlots}
+          localizer={Utils.localizer}
+          minDate={Utils.minDate}
+          maxDate={Utils.maxDate}
+          step={Utils.step}
+          timeSlots={Utils.timeSlots}
           date={this.state.focusDate}
         />
 
@@ -303,7 +165,7 @@ class CalendarPageLogic extends React.Component {
         />
 
         <FooterView
-          {...this.FooterChangeButtonLabels(this.state.selector)}
+          {...Utils.footerChangeButtonLabels(this.state.selector)}
           currentDateLabel={"Today"}
           onClickButton={this.handlerOnCLickTimeButton}
         />
