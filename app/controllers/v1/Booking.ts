@@ -587,8 +587,9 @@ export class BookingController extends Controller {
         toDate: data.query.toDate
       });
 
-      const parsedBookings = JSON.parse(JSON.stringify(bookings));
-      const finalBookings = await this.bookingsPlusAttendees(parsedBookings);
+      const finalBookings = await this.bookingsPlusAttendees(
+        bookings.map(booking => booking.toJSON())
+      );
 
       const DTOBookings = finalBookings.map(bookingMapper.toDTO);
       return res.status(200).json(DTOBookings);
