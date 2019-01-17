@@ -72,8 +72,8 @@ export const config: any = {
 
   db: {
     database: process.env.DB_NAME || "flugzeug-project",
-    username: process.env.DB_USER || "test_user",
-    password: process.env.DB_PASSWORD || "#P4ssw0rd",
+    username: process.env.DB_USER || "root",
+    password: process.env.DB_PASSWORD || "",
     host: process.env.DB_HOST || "localhost",
     dialect: "mysql",
     logging: false,
