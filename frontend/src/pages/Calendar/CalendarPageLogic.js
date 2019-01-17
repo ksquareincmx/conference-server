@@ -6,8 +6,11 @@ import NavBar from "components/NavBar/NavBar";
 import DraggingCalendar from "components/Modals/DraggingCalendar";
 import HeaderView from "components/Calendar/Header";
 import FooterView from "components/Calendar/Footer";
+import * as AppointmentMapper from "mappers/AppointmentMapper";
 import * as Utils from "./Utils.js";
 import "./Calendar.css";
+import HeaderStrategy from "./HeaderStrategy";
+import CalendarStrategy from "./CalendarStrategy";
 
 class CalendarPageLogic extends React.Component {
   constructor(...args) {
@@ -37,7 +40,7 @@ class CalendarPageLogic extends React.Component {
   }
 
   handleClickCreateBookingDraggingCalendar = async () => {
-    const post = Utils.postDto(this.state.appointmentInfo);
+    const post = AppointmentMapper.toDto(this.state.appointmentInfo);
     const res = await this.props.bookingService.createNewBooking(post);
     this.props.history.push("/dashboard");
   };
@@ -109,7 +112,11 @@ class CalendarPageLogic extends React.Component {
 
   handlerOnCLickTimeButton = buttonId => () => {
     let selector;
-    this.state.selector === "work_week" ? "week" : this.state.selector;
+
+    if (this.state.selector === "work_week") {
+      this.setState({ selector: "week" });
+    }
+
     switch (buttonId) {
       case "previous":
         return this.setState(prevState => ({
@@ -133,7 +140,7 @@ class CalendarPageLogic extends React.Component {
         <HeaderView
           onClickViewButton={this.handlerOnClickViewButton}
           headerDateContainer={
-            <Utils.HeaderStrategy
+            <HeaderStrategy
               type={this.state.selector}
               numberDayInMonth={this.state.focusDate.getDate()}
               fullYear={this.state.focusDate.getFullYear()}
@@ -144,7 +151,7 @@ class CalendarPageLogic extends React.Component {
             />
           }
         />
-        <Utils.CalendarStrategy
+        <CalendarStrategy
           type={this.state.selector}
           events={this.state.events}
           handleSelect={this.handleSelect}

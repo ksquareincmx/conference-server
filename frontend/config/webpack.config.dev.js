@@ -89,6 +89,7 @@ module.exports = {
       providers: path.resolve("src/providers"),
       services: path.resolve("src/services"),
       config: path.resolve("src/config"),
+      mappers: path.resolve("src/mappers"),
       "react-native": "react-native-web"
     },
     plugins: [
