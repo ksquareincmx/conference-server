@@ -54,12 +54,13 @@ export class BookingController extends Controller {
     @apiHeader {String}   Authorization Bearer [jwt token]
 
     @apiParam   {Date}   body.fromDate      Shows all bookings from a date
+    @apiParam   {Date}   body.toDate        Show all bookings until a date
 
     @apiSuccess {Object[]}  body                   Booking details
     @apiSuccess {Number}  body.id                Booking id
     @apiSuccess {string}  body.description       Booking description
-    @apiSuccess {Date}    body.start             Booking date start
-    @apiSuccess {Date}    body.end               Booking date end
+    @apiSuccess {Date}    body.start             Booking start date
+    @apiSuccess {Date}    body.end               Booking end date
     @apiSuccess {String}  body.eventId           Google calendar event's id
     @apiSuccess {Number}  body.roomId            Booking room
     @apiSuccess {Number}  body.userId            User's id who created the booking
@@ -82,8 +83,8 @@ export class BookingController extends Controller {
     @apiSuccess {Object}  body                   Booking details
     @apiSuccess {Number}  body.id                Booking id
     @apiSuccess {string}  body.description       Booking description
-    @apiSuccess {Date}    body.start             Booking date start
-    @apiSuccess {Date}    body.end               Booking date end
+    @apiSuccess {Date}    body.start             Booking start date
+    @apiSuccess {Date}    body.end               Booking end date
     @apiSuccess {String}  body.eventId           Google calendar event's id
     @apiSuccess {Number}   body.roomId            Booking room
     @apiSuccess {Number}  body.userId            User's id who created the booking
@@ -104,8 +105,8 @@ export class BookingController extends Controller {
       @apiHeader {String} Authorization Bearer [jwt token]
 
       @apiParam {Object}    body                   Booking details
-      @apiParam {Date}      body.start             Booking date start
-      @apiParam {Date}      body.end               Booking date end
+      @apiParam {Date}      body.start             Booking start date
+      @apiParam {Date}      body.end               Booking end date
       @apiParam {String}    body.description       Booking description
       @apiParam {Number}    body.roomId            Booking room id
       @apiParam {String[]}  body.attendees    Emails from users who will attend the event
@@ -114,8 +115,8 @@ export class BookingController extends Controller {
       @apiSuccess {Number}  body.id                Booking id
       @apiSuccess {Number}  body.roomId            Booking room id
       @apiSuccess {string}  body.description       Booking description
-      @apiSuccess {Date}    body.start             Booking date start
-      @apiSuccess {Date}    body.end               Booking date end
+      @apiSuccess {Date}    body.start             Booking start date
+      @apiSuccess {Date}    body.end               Booking end date
       @apiSuccess {Number}  body.userId            User's id who created the booking
       @apiSuccess {String}  body.eventId           Google calendar event's id
       @apiSuccess {Date}    body.updatedAt         Booking creation date
@@ -143,8 +144,8 @@ export class BookingController extends Controller {
       @apiHeader { String } Authorization Bearer [jwt token]
 
       @apiParam {Object}    body                   Booking details
-      @apiParam {Date}      body.start             Booking date start
-        @apiParam {Date}      body.end               Booking date end
+      @apiParam {Date}      body.start             Booking start date
+        @apiParam {Date}      body.end               Booking end date
       @apiParam {String}    body.description       Booking description
       @apiParam {Number}    body.roomId            Booking room id
       @apiParam {String[]}  body.attendees    Emails from users who will attend the event
@@ -153,8 +154,8 @@ export class BookingController extends Controller {
       @apiSuccess {Number}  body.id                Booking id
       @apiSuccess {Number}  body.roomId            Booking room id
       @apiSuccess {string}  body.description       Booking description
-      @apiSuccess {Date}    body.start             Booking date start
-      @apiSuccess {Date}    body.end               Booking date end
+      @apiSuccess {Date}    body.start             Booking start date
+      @apiSuccess {Date}    body.end               Booking end date
       @apiSuccess {Number}  body.userId            User's id who created the booking
       @apiSuccess {String}  body.eventId           Google calendar event's id
       @apiSuccess {Date}    body.updatedAt         Booking creation date
@@ -197,8 +198,8 @@ export class BookingController extends Controller {
    * @typedef {Object} Booking
    * @property {number} id - booking id
    * @property {string} description - booking description
-   * @property {string} start - booking date start
-   * @property {string} end - booking date end
+   * @property {string} start - booking start date
+   * @property {string} end - booking end date
    * @property {string} eventId - google calendar event id associate with booking
    * @property {number} roomId - booking room id
    * @property {number} userId - user who creates the booking
