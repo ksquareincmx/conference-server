@@ -20,11 +20,32 @@ describe("Booking", () => {
   const token = process.env.JWT;
   let roomId;
 
-  // create a room
+  // create a room and user that be used in the testing
   before(async () => {
+    // Create an room
     const testRoom = { name: "Conference 1", color: "Red" };
     const createdRoom: any = await Room.create(testRoom);
     roomId = createdRoom.id;
+
+    // Create an user
+    const testUser = {
+      email: "conference.booking.test@gmail.com",
+      password: "12345678"
+    };
+    const isConnectionOpen = !!db.authenticate();
+    if (!isConnectionOpen) {
+      await db.sync();
+    }
+    const createdUser: any = await User.create({ ...testUser, role: "admin" });
+    // const createdProfile: any = await Profile.create({
+    //   time_zone: "asdasd/asdfsdf",
+    //   locale: "en",
+    //   userId: 1
+    // });
+    // We need to do another query because before the profile wasn't ready
+    const user: any = await User.findOne({
+      where: { id: createdUser.id }
+    });
   });
 
   after(async () => {
@@ -75,9 +96,9 @@ describe("Booking", () => {
           res.body.should.have.property("created_at");
 
           res.body.description.should.equal("Call Varma");
-          res.body.room_id.should.equal(roomId);
-          res.body.start.should.equal("2019-02-11T10:15:00.000Z");
-          res.body.end.should.equal("2019-02-11T10:30:00.000Z");
+          res.body.room_id.should.deep.equal(roomId);
+          res.body.start.should.deep.equal("2019-02-11T10:15:00.000Z");
+          res.body.end.should.deep.equal("2019-02-11T10:30:00.000Z");
           bookingsId.push(res.body.id);
           done();
         });
@@ -114,9 +135,9 @@ describe("Booking", () => {
           res.body.should.have.property("created_at");
 
           res.body.description.should.equal("Call Varma");
-          res.body.room_id.should.equal(roomId);
-          res.body.start.should.equal("2019-02-11T10:30:00.000Z");
-          res.body.end.should.equal("2019-02-11T10:45:00.000Z");
+          res.body.room_id.should.deep.equal(roomId);
+          res.body.start.should.deep.equal("2019-02-11T10:30:00.000Z");
+          res.body.end.should.deep.equal("2019-02-11T10:45:00.000Z");
           bookingsId.push(res.body.id);
           done();
         });
@@ -153,9 +174,9 @@ describe("Booking", () => {
           res.body.should.have.property("created_at");
 
           res.body.description.should.equal("Call Varma");
-          res.body.room_id.should.equal(roomId);
-          res.body.start.should.equal("2019-02-11T10:00:00.000Z");
-          res.body.end.should.equal("2019-02-11T10:15:00.000Z");
+          res.body.room_id.should.deep.equal(roomId);
+          res.body.start.should.deep.equal("2019-02-11T10:00:00.000Z");
+          res.body.end.should.deep.equal("2019-02-11T10:15:00.000Z");
           bookingsId.push(res.body.id);
           done();
         });
@@ -903,24 +924,24 @@ describe("Booking", () => {
         const bookings = [
           {
             description: "Call Varma",
-            userId: 4,
+            userId: 1,
             roomId: roomId,
-            start: "2019-02-11T10:15:00",
-            end: "2019-02-11T10:30:00"
+            start: "2019-02-11T10:15:00", // 2019-02-11T16:15:00
+            end: "2019-02-11T10:30:00" // 2019-02-11T16:30:00
           },
           {
             description: "Call Varma x2",
-            userId: 4,
+            userId: 1,
             roomId: roomId,
-            start: "2019-02-11T12:10:00",
-            end: "2019-02-11T12:30:00"
+            start: "2019-02-11T12:10:00", // 2019-02-11T18:10:00
+            end: "2019-02-11T12:30:00" // 2019-02-11T18:30:00
           },
           {
             description: "Call Varma x3",
-            userId: 4,
+            userId: 1,
             roomId: roomId,
-            start: "2019-03-11T10:15:00",
-            end: "2019-03-11T10:30:00"
+            start: "2019-03-11T10:15:00", // 2019-03-11T16:15:00
+            end: "2019-03-11T10:30:00" // 2019-03-11T16:30:00
           }
         ];
 
@@ -969,21 +990,21 @@ describe("Booking", () => {
             // check body from booking[0]
             res.body[0].description.should.deep.equal("Call Varma");
             res.body[0].room_id.should.deep.equal(roomId);
-            res.body[0].user_id.should.deep.equal(4);
+            res.body[0].user_id.should.deep.equal(1);
             res.body[0].start.should.deep.equal("2019-02-11T16:15:00.000Z");
             res.body[0].end.should.deep.equal("2019-02-11T16:30:00.000Z");
 
             // check body from booking[1]
             res.body[1].description.should.deep.equal("Call Varma x2");
             res.body[1].room_id.should.deep.equal(roomId);
-            res.body[1].user_id.should.deep.equal(4);
+            res.body[1].user_id.should.deep.equal(1);
             res.body[1].start.should.deep.equal("2019-02-11T18:10:00.000Z");
             res.body[1].end.should.deep.equal("2019-02-11T18:30:00.000Z");
 
             // check body from booking[2]
             res.body[2].description.should.deep.equal("Call Varma x3");
             res.body[2].room_id.should.deep.equal(roomId);
-            res.body[2].user_id.should.deep.equal(4);
+            res.body[2].user_id.should.deep.equal(1);
             res.body[2].start.should.deep.equal("2019-03-11T16:15:00.000Z");
             res.body[2].end.should.deep.equal("2019-03-11T16:30:00.000Z");
 
@@ -1011,7 +1032,7 @@ describe("Booking", () => {
 
             res.body.description.should.deep.equal("Call Varma");
             res.body.room_id.should.deep.equal(roomId);
-            res.body.user_id.should.deep.equal(4);
+            res.body.user_id.should.deep.equal(1);
             res.body.start.should.deep.equal("2019-02-11T16:15:00.000Z");
             res.body.end.should.deep.equal("2019-02-11T16:30:00.000Z");
             done();
@@ -1043,51 +1064,17 @@ describe("Booking", () => {
 
             res.body[0].description.should.deep.equal("Call Varma x3");
             res.body[0].room_id.should.deep.equal(roomId);
-            res.body[0].user_id.should.deep.equal(4);
+            res.body[0].user_id.should.deep.equal(1);
             res.body[0].start.should.deep.equal("2019-03-11T16:15:00.000Z");
             res.body[0].end.should.deep.equal("2019-03-11T16:30:00.000Z");
 
             done();
           });
       });
-      /**
       it("Should get bookings toDate", done => {
         chai
           .request(server)
-          .get(apiPath + "?toDate=2019-01-01T00:00")
-          .set("Authorization", `Bearer ${token}`)
-          .end((err, res) => {
-            if (err) {
-              throw err;
-            }
-            res.should.have.status(200);
-            res.body.should.be.an("array");
-            res.body.should.have.length(1);
-
-            res.body[0].should.be.an("object");
-            res.body[0].should.have.property("id");
-            res.body[0].should.have.property("description");
-            res.body[0].should.have.property("room_id");
-            res.body[0].should.have.property("start");
-            res.body[0].should.have.property("end");
-            res.body[0].should.have.property("user_id");
-            res.body[0].should.have.property("event_id");
-            res.body[0].should.have.property("updated_at");
-            res.body[0].should.have.property("created_at");
-
-            res.body[0].description.should.deep.equal("Call Varma x2");
-            res.body[0].room_id.should.deep.equal(roomId);
-            res.body[0].user_id.should.deep.equal(1);
-            res.body[0].start.should.deep.equal("2019-02-11T18:10:00.000Z");
-            res.body[0].end.should.deep.equal("2019-02-11T18:30:00.000Z");
-
-            done();
-          });
-      });
-      it("Should get bookings fromDate to toDate", done => {
-        chai
-          .request(server)
-          .get(apiPath + "?fromDate=2019-02-11T17:00&toDate=2019-03-01T12:00")
+          .get(apiPath + "?toDate=2019-02-11T17:00")
           .set("Authorization", `Bearer ${token}`)
           .end((err, res) => {
             if (err) {
@@ -1117,6 +1104,39 @@ describe("Booking", () => {
             done();
           });
       });
+      it("Should get bookings fromDate to toDate", done => {
+        chai
+          .request(server)
+          .get(apiPath + "?fromDate=2019-02-11T16:31:00&toDate=2019-03-10")
+          .set("Authorization", `Bearer ${token}`)
+          .end((err, res) => {
+            if (err) {
+              throw err;
+            }
+            res.should.have.status(200);
+            res.body.should.be.an("array");
+            res.body.should.have.length(1);
+
+            res.body[0].should.be.an("object");
+            res.body[0].should.have.property("id");
+            res.body[0].should.have.property("description");
+            res.body[0].should.have.property("room_id");
+            res.body[0].should.have.property("start");
+            res.body[0].should.have.property("end");
+            res.body[0].should.have.property("user_id");
+            res.body[0].should.have.property("event_id");
+            res.body[0].should.have.property("updated_at");
+            res.body[0].should.have.property("created_at");
+
+            res.body[0].description.should.deep.equal("Call Varma x2");
+            res.body[0].room_id.should.deep.equal(roomId);
+            res.body[0].user_id.should.deep.equal(1);
+            res.body[0].start.should.deep.equal("2019-02-11T18:10:00.000Z");
+            res.body[0].end.should.deep.equal("2019-02-11T18:30:00.000Z");
+
+            done();
+          });
+      });
       it("Try to get bookings with incorrect fromDate", done => {
         chai
           .request(server)
@@ -1127,10 +1147,11 @@ describe("Booking", () => {
               throw err;
             }
 
-            res.should.have.status(404);
+            res.should.have.status(400);
             res.body.should.equal(
               "Bad Request: fromDate must be a date in format YYYY-MM-DDTHH:MM."
             );
+            done();
           });
       });
       it("Try to get bookigns with incorrect toDate", done => {
@@ -1143,13 +1164,13 @@ describe("Booking", () => {
               throw err;
             }
 
-            res.should.have.status(404);
+            res.should.have.status(400);
             res.body.should.equal(
               "Bad Request: toDate must be a date in format YYYY-MM-DDTHH:MM."
             );
+            done();
           });
       });
-      **/
     });
   });
 });
