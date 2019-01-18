@@ -1,12 +1,13 @@
-import React, { Component } from 'react';
-import { GoogleLogin, GoogleLogout } from 'react-google-login';
-import './Login.css';
-import LoginCard from './LoginCard';
-import { AuthConsumer } from 'providers/Auth';
+import React, { Component } from "react";
+import { GoogleLogin, GoogleLogout } from "react-google-login";
+import "./Login.css";
+import LoginCard from "./LoginCard";
+import { AuthConsumer } from "providers/Auth";
+import { Redirect } from "react-router-dom";
 
 class LoginPageLogic extends Component {
   onFailure = res => {
-    console.log('Error:', res);
+    console.log("Error:", res);
   };
 
   render() {
@@ -25,9 +26,17 @@ class LoginPageLogic extends Component {
 }
 
 function LoginPage(props) {
-
-  return <AuthConsumer>{auth => auth.jwt == null ? (<LoginPageLogic auth={auth} />) :
-    (props.history.replace('./dashboard'))}</AuthConsumer>
+  return (
+    <AuthConsumer>
+      {auth =>
+        auth.jwt == null ? (
+          <LoginPageLogic auth={auth} />
+        ) : (
+          <Redirect to="/calendar" />
+        )
+      }
+    </AuthConsumer>
+  );
 }
 
 export default LoginPage;
