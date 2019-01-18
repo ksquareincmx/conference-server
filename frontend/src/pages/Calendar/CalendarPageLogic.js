@@ -133,6 +133,44 @@ class CalendarPageLogic extends React.Component {
     }
   };
 
+  printAppointments = async () => {
+    const bookingsList = await this.props.bookingService.getDetailedListOfBooking();
+
+    let events = [[], []];
+
+    const bookingsDate = bookingsList.map(booking => {
+      const start = Utils.getDateFormat(booking.start);
+      const end = Utils.getDateFormat(booking.end);
+      const title = booking.description;
+      const roomId = booking.room_id - 1;
+
+      events[roomId].push({
+        start,
+        end,
+        title,
+        roomId
+      });
+
+      return {
+        start,
+        end,
+        title,
+        roomId
+      };
+    });
+
+    this.setState(prevState => {
+      prevState.events[0].push(...events[0]);
+      prevState.events[1].push(...events[1]);
+      return {
+        events: prevState.events
+      };
+    });
+  };
+  componentDidMount() {
+    this.printAppointments();
+  }
+
   render() {
     return (
       <div className="calendar-container">
