@@ -303,9 +303,8 @@ export class BookingController extends Controller {
     }
 
     // insert only if the author email don't exist in data
-    if (!data.body.attendees.some(email => email === req.session.user.email)) {
-      data.body.attendees.push(req.session.user.email);
-    }
+    data.body.attendees.push(req.session.user.email);
+    const uniqueEmails = [...new Set(data.body.attendees)];
 
     try {
       const roomId = await Room.findOne({
@@ -349,7 +348,7 @@ export class BookingController extends Controller {
         data.body.start,
         data.body.end,
         data.body.description,
-        data.body.attendees
+        uniqueEmails
       );
 
       // insert booking the DB
@@ -360,14 +359,14 @@ export class BookingController extends Controller {
       );
 
       // insert attendee in the DB
-      data.body.attendees.forEach(async attendee => {
+      uniqueEmails.forEach(async attendee => {
         const attendeeId = await insertAttendee(attendee);
         await insertBookingAttendee(parsedCreatedBooking.id, attendeeId);
       });
 
       const finalBooking = {
         ...parsedCreatedBooking,
-        attendees: data.body.attendees
+        attendees: uniqueEmails
       };
 
       const DTOBooking = bookingMapper.toDTO(finalBooking);
@@ -424,9 +423,8 @@ export class BookingController extends Controller {
     }
 
     // insert only if the author email don't exist in the request
-    if (!data.body.attendees.some(email => email === req.session.user.email)) {
-      data.body.attendees.push(req.session.user.email);
-    }
+    data.body.attendees.push(req.session.user.email);
+    const uniqueEmails = [...new Set(data.body.attendees)];
 
     try {
       const roomId = await Room.findOne({
@@ -479,13 +477,13 @@ export class BookingController extends Controller {
         data.body.start,
         data.body.end,
         data.body.description,
-        data.body.attendees
+        uniqueEmails
       );
 
       // update tables: attende and bookingAttende
       const updatedAttendees = await updateBookingAttendee(
         data.params.id,
-        data.body.attendees
+        uniqueEmails
       );
       const updatedBooking = await booking.update({
         ...data.params,
