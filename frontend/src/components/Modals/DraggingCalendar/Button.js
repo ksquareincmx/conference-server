@@ -7,7 +7,9 @@ function Button(props) {
 
   return (
     <div style={styles.buttonGrid}>
-      <ButtonMaterial style={styles.button}>{props.text}</ButtonMaterial>
+      <ButtonMaterial style={styles.button} onClick={props.onClick}>
+        {props.text}
+      </ButtonMaterial>
     </div>
   );
 }

@@ -92,6 +92,7 @@ module.exports = {
       pages: path.resolve("src/pages"),
       providers: path.resolve("src/providers"),
       services: path.resolve("src/services"),
+      mappers: path.resolve("src/mappers"),
       "react-native": "react-native-web"
     },
     plugins: [
