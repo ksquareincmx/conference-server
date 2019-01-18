@@ -65,7 +65,7 @@ export class RoomController extends Controller {
         @apiSuccess  {Number}   body.id                   Room id
         @apiSuccess  {String}   body.name                 Room name
         @apiSuccess  {String}   body.color                The color to show in the UI for this room
-        @apiSuccess  {Boolean}  body.presence             If there is someone in the room
+        @apiSuccess  {Boolean}  body.presence             If there is someone in the room (For future sensor integration)
         @apiSuccess  {Number}   body.bookingIdActual      Booking id that currently occupies the room, null if its not
         @apiSuccess  {String}   body.status               Room avability ("Not Available", "Available")
         @apiSuccess  {Date}     body.updatedAt            Room creation date
@@ -86,13 +86,14 @@ export class RoomController extends Controller {
         @apiParam    {Object}   body                Room details
         @apiParam    {String}   body.name           Room name
         @apiParam    {String}   body.color          The color to show in the UI for this room
-        @apiParam    {Boolean}  body.presence       If there is someone in the room
 
         @apiSuccess  {Object}   body                Room details
         @apiSuccess  {Number}   body.id             Room id
         @apiSuccess  {String}   body.name           Room name
         @apiSuccess  {String}   body.color          The color to show in the UI for this room
-        @apiSuccess  {Boolean}  body.presence       If there is someone in the room
+        @apiSuccess  {Boolean}  body.presence       If there is someone in the room (For future sensor integration)
+        @apiSuccess  {Number}   body.bookingIdActual      Booking id that currently occupies the room, null if its not
+        @apiSuccess  {String}   body.status               Room avability ("Not Available", "Available")
         @apiSuccess  {Date}     body.updatedAt      Room creation date
         @apiSuccess  {Date}     body.createdAt      Room update date
 
@@ -118,13 +119,14 @@ export class RoomController extends Controller {
         @apiParam    {Object}   body                Room details
         @apiParam    {String}   body.name           Room name
         @apiParam    {String}   body.color          The color to show in the UI for this room
-        @apiParam    {Boolean}  body.presence       If there is someone in the room
 
         @apiSuccess  {Object}   body                Room details
         @apiSuccess  {Number}   body.id             Room id
         @apiSuccess  {String}   body.name           Room name
         @apiSuccess  {String}   body.color          The color to show in the UI for this room
-        @apiSuccess  {Boolean}  body.presence       If there is someone in the room
+        @apiSuccess  {Boolean}  body.presence       If there is someone in the room (For future sensor integration)
+        @apiSuccess  {Number}   body.bookingIdActual      Booking id that currently occupies the room, null if its not
+        @apiSuccess  {String}   body.status               Room avability ("Not Available", "Available")
         @apiSuccess  {Date}     body.updatedAt      Room creation date
         @apiSuccess  {Date}     body.createdAt      Room update date
 

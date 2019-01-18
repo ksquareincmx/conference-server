@@ -170,7 +170,7 @@
             "type": "String",
             "optional": false,
             "field": "body.profile.timezone",
-            "description": "<p>Profile timezon</p>"
+            "description": "<p>Profile timezone</p>"
           },
           {
             "group": "Success 200",
@@ -357,7 +357,7 @@
             "type": "String",
             "optional": false,
             "field": "body.profile.timezone",
-            "description": "<p>Profile timezon</p>"
+            "description": "<p>Profile timezone</p>"
           },
           {
             "group": "Success 200",
@@ -566,7 +566,7 @@
             "type": "String",
             "optional": false,
             "field": "body.profile.timezone",
-            "description": "<p>Profile timezon</p>"
+            "description": "<p>Profile timezone</p>"
           },
           {
             "group": "Success 200",
@@ -747,7 +747,7 @@
             "type": "String",
             "optional": false,
             "field": "body.profile.timezone",
-            "description": "<p>Profile timezon</p>"
+            "description": "<p>Profile timezone</p>"
           },
           {
             "group": "Success 200",
@@ -844,14 +844,14 @@
             "type": "Date",
             "optional": false,
             "field": "body.start",
-            "description": "<p>Booking date start</p>"
+            "description": "<p>Booking start date</p>"
           },
           {
             "group": "Success 200",
             "type": "Date",
             "optional": false,
             "field": "body.end",
-            "description": "<p>Booking date end</p>"
+            "description": "<p>Booking end date</p>"
           },
           {
             "group": "Success 200",
@@ -892,7 +892,7 @@
             "group": "Success 200",
             "type": "String[]",
             "optional": false,
-            "field": "body.attendes",
+            "field": "body.attendees",
             "description": "<p>Emails from users who will attend the event</p>"
           }
         ]
@@ -942,6 +942,13 @@
             "optional": false,
             "field": "body.fromDate",
             "description": "<p>Shows all bookings from a date</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Date",
+            "optional": false,
+            "field": "body.toDate",
+            "description": "<p>Show all bookings until a date</p>"
           }
         ]
       }
@@ -975,14 +982,14 @@
             "type": "Date",
             "optional": false,
             "field": "body.start",
-            "description": "<p>Booking date start</p>"
+            "description": "<p>Booking start date</p>"
           },
           {
             "group": "Success 200",
             "type": "Date",
             "optional": false,
             "field": "body.end",
-            "description": "<p>Booking date end</p>"
+            "description": "<p>Booking end date</p>"
           },
           {
             "group": "Success 200",
@@ -1023,7 +1030,7 @@
             "group": "Success 200",
             "type": "String[]",
             "optional": false,
-            "field": "body.attendes",
+            "field": "body.attendees",
             "description": "<p>Emails from users who will attend the event</p>"
           }
         ]
@@ -1079,14 +1086,14 @@
             "type": "Date",
             "optional": false,
             "field": "body.start",
-            "description": "<p>Booking date start</p>"
+            "description": "<p>Booking start date</p>"
           },
           {
             "group": "Parameter",
             "type": "Date",
             "optional": false,
             "field": "body.end",
-            "description": "<p>Booking date end</p>"
+            "description": "<p>Booking end date</p>"
           },
           {
             "group": "Parameter",
@@ -1148,14 +1155,14 @@
             "type": "Date",
             "optional": false,
             "field": "body.start",
-            "description": "<p>Booking date start</p>"
+            "description": "<p>Booking start date</p>"
           },
           {
             "group": "Success 200",
             "type": "Date",
             "optional": false,
             "field": "body.end",
-            "description": "<p>Booking date end</p>"
+            "description": "<p>Booking end date</p>"
           },
           {
             "group": "Success 200",
@@ -1245,14 +1252,14 @@
             "type": "Date",
             "optional": false,
             "field": "body.start",
-            "description": "<p>Booking date start</p>"
+            "description": "<p>Booking start date</p>"
           },
           {
             "group": "Parameter",
             "type": "Date",
             "optional": false,
             "field": "body.end",
-            "description": "<p>Booking date end</p>"
+            "description": "<p>Booking end date</p>"
           },
           {
             "group": "Parameter",
@@ -1314,14 +1321,14 @@
             "type": "Date",
             "optional": false,
             "field": "body.start",
-            "description": "<p>Booking date start</p>"
+            "description": "<p>Booking start date</p>"
           },
           {
             "group": "Success 200",
             "type": "Date",
             "optional": false,
             "field": "body.end",
-            "description": "<p>Booking date end</p>"
+            "description": "<p>Booking end date</p>"
           },
           {
             "group": "Success 200",
@@ -2009,6 +2016,20 @@
           },
           {
             "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "body.bookingIdActual",
+            "description": "<p>Booking id that currently occupies the room, null if its not</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "body.status",
+            "description": "<p>Room avability (&quot;Not Available&quot;, &quot;Available&quot;)</p>"
+          },
+          {
+            "group": "Success 200",
             "type": "Date",
             "optional": false,
             "field": "body.updatedAt",
@@ -2130,6 +2151,20 @@
             "optional": false,
             "field": "body.presence",
             "description": "<p>If there is someone in the room</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "body.bookingIdActual",
+            "description": "<p>Booking id that currently occupies the room, null if its not</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "body.status",
+            "description": "<p>Room avability (&quot;Not Available&quot;, &quot;Available&quot;)</p>"
           },
           {
             "group": "Success 200",
