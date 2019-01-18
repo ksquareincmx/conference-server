@@ -6,6 +6,7 @@ require("dotenv").config();
 import { db } from "../app/db";
 import { Booking } from "../app/models/Booking";
 import { Room } from "../app/models/Room";
+import { User } from "../app/models/User";
 
 // Import the dev-dependencies
 import * as chai from "chai";
@@ -17,8 +18,9 @@ const apiPath = "/api/v1/booking/";
 const server = "http://localhost:8888";
 
 describe("Booking", () => {
-  const token = process.env.JWT;
+  let token;
   let roomId;
+  let userId;
 
   // create a room and user that be used in the testing
   before(async () => {
@@ -37,19 +39,30 @@ describe("Booking", () => {
       await db.sync();
     }
     const createdUser: any = await User.create({ ...testUser, role: "admin" });
-    // const createdProfile: any = await Profile.create({
-    //   time_zone: "asdasd/asdfsdf",
-    //   locale: "en",
-    //   userId: 1
-    // });
+
     // We need to do another query because before the profile wasn't ready
     const user: any = await User.findOne({
       where: { id: createdUser.id }
     });
+
+    userId = user.id;
+
+    // get credentials of the test user
+    const credentials = await chai
+      .request("http://localhost:8888/api/v1/auth/")
+      .post("/login")
+      .type("form")
+      .send({
+        email: "conference.booking.test@gmail.com",
+        password: "12345678"
+      });
+    token = credentials.body.token;
   });
 
+  // Delete room and user created for test
   after(async () => {
     await Room.destroy({ where: { id: roomId } });
+    await User.destroy({ where: { id: userId } });
   });
 
   describe("POST", () => {
@@ -97,9 +110,11 @@ describe("Booking", () => {
 
           res.body.description.should.equal("Call Varma");
           res.body.room_id.should.deep.equal(roomId);
+          res.body.user_id.should.deep.equal(userId);
           res.body.start.should.deep.equal("2019-02-11T10:15:00.000Z");
           res.body.end.should.deep.equal("2019-02-11T10:30:00.000Z");
           bookingsId.push(res.body.id);
+          console.log(res.body);
           done();
         });
     });
@@ -862,8 +877,9 @@ describe("Booking", () => {
         .set("Authorization", `Bearer ${token}`);
 
       const parsedBooking = JSON.parse(JSON.stringify(createdBooking));
-
+      console.log(parsedBooking);
       bookingsId.push(JSON.parse(parsedBooking.text).id);
+      console.log(bookingsId);
     });
 
     it("Should delete a booking", done => {
@@ -924,21 +940,21 @@ describe("Booking", () => {
         const bookings = [
           {
             description: "Call Varma",
-            userId: 1,
+            userId,
             roomId: roomId,
             start: "2019-02-11T10:15:00", // 2019-02-11T16:15:00
             end: "2019-02-11T10:30:00" // 2019-02-11T16:30:00
           },
           {
             description: "Call Varma x2",
-            userId: 1,
+            userId,
             roomId: roomId,
             start: "2019-02-11T12:10:00", // 2019-02-11T18:10:00
             end: "2019-02-11T12:30:00" // 2019-02-11T18:30:00
           },
           {
             description: "Call Varma x3",
-            userId: 1,
+            userId,
             roomId: roomId,
             start: "2019-03-11T10:15:00", // 2019-03-11T16:15:00
             end: "2019-03-11T10:30:00" // 2019-03-11T16:30:00
@@ -990,21 +1006,21 @@ describe("Booking", () => {
             // check body from booking[0]
             res.body[0].description.should.deep.equal("Call Varma");
             res.body[0].room_id.should.deep.equal(roomId);
-            res.body[0].user_id.should.deep.equal(1);
+            res.body[0].user_id.should.deep.equal(userId);
             res.body[0].start.should.deep.equal("2019-02-11T16:15:00.000Z");
             res.body[0].end.should.deep.equal("2019-02-11T16:30:00.000Z");
 
             // check body from booking[1]
             res.body[1].description.should.deep.equal("Call Varma x2");
             res.body[1].room_id.should.deep.equal(roomId);
-            res.body[1].user_id.should.deep.equal(1);
+            res.body[1].user_id.should.deep.equal(userId);
             res.body[1].start.should.deep.equal("2019-02-11T18:10:00.000Z");
             res.body[1].end.should.deep.equal("2019-02-11T18:30:00.000Z");
 
             // check body from booking[2]
             res.body[2].description.should.deep.equal("Call Varma x3");
             res.body[2].room_id.should.deep.equal(roomId);
-            res.body[2].user_id.should.deep.equal(1);
+            res.body[2].user_id.should.deep.equal(userId);
             res.body[2].start.should.deep.equal("2019-03-11T16:15:00.000Z");
             res.body[2].end.should.deep.equal("2019-03-11T16:30:00.000Z");
 
@@ -1032,7 +1048,7 @@ describe("Booking", () => {
 
             res.body.description.should.deep.equal("Call Varma");
             res.body.room_id.should.deep.equal(roomId);
-            res.body.user_id.should.deep.equal(1);
+            res.body.user_id.should.deep.equal(userId);
             res.body.start.should.deep.equal("2019-02-11T16:15:00.000Z");
             res.body.end.should.deep.equal("2019-02-11T16:30:00.000Z");
             done();
@@ -1064,7 +1080,7 @@ describe("Booking", () => {
 
             res.body[0].description.should.deep.equal("Call Varma x3");
             res.body[0].room_id.should.deep.equal(roomId);
-            res.body[0].user_id.should.deep.equal(1);
+            res.body[0].user_id.should.deep.equal(userId);
             res.body[0].start.should.deep.equal("2019-03-11T16:15:00.000Z");
             res.body[0].end.should.deep.equal("2019-03-11T16:30:00.000Z");
 
@@ -1097,7 +1113,7 @@ describe("Booking", () => {
 
             res.body[0].description.should.deep.equal("Call Varma");
             res.body[0].room_id.should.deep.equal(roomId);
-            res.body[0].user_id.should.deep.equal(1);
+            res.body[0].user_id.should.deep.equal(userId);
             res.body[0].start.should.deep.equal("2019-02-11T16:15:00.000Z");
             res.body[0].end.should.deep.equal("2019-02-11T16:30:00.000Z");
 
@@ -1130,7 +1146,7 @@ describe("Booking", () => {
 
             res.body[0].description.should.deep.equal("Call Varma x2");
             res.body[0].room_id.should.deep.equal(roomId);
-            res.body[0].user_id.should.deep.equal(1);
+            res.body[0].user_id.should.deep.equal(userId);
             res.body[0].start.should.deep.equal("2019-02-11T18:10:00.000Z");
             res.body[0].end.should.deep.equal("2019-02-11T18:30:00.000Z");
 
