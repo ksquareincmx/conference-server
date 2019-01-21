@@ -1,31 +1,58 @@
-import { addZeros } from "pages/Calendar/Utils";
+import * as Utils from "pages/Calendar/Utils";
 
 export const toDto = state => {
   const dateFormat =
-    addZeros(state.date.year) +
+    Utils.addZeros(state.date.year) +
     "-" +
-    addZeros(state.date.month) +
+    Utils.addZeros(state.date.month) +
     "-" +
-    addZeros(state.date.day);
+    Utils.addZeros(state.date.day);
   return {
     description: state.reasonAppointment,
     roomId: state.roomId,
     start:
       dateFormat +
       "T" +
-      addZeros(state.start.hours) +
+      Utils.addZeros(state.start.hours) +
       ":" +
-      addZeros(state.start.minutes) +
+      Utils.addZeros(state.start.minutes) +
       ":" +
       "00.000Z",
     end:
       dateFormat +
       "T" +
-      addZeros(state.end.hours) +
+      Utils.addZeros(state.end.hours) +
       ":" +
-      addZeros(state.end.minutes) +
+      Utils.addZeros(state.end.minutes) +
       ":" +
       "00.000Z",
     attendees: []
   };
+};
+
+export const toEvents = bookings => {
+  let events = [[], []];
+
+  const bookingsDate = bookings.map(booking => {
+    const start = Utils.getDateFormat(booking.start);
+    const end = Utils.getDateFormat(booking.end);
+    const title = booking.description;
+    const roomId = booking.room_id - 1;
+
+    events[roomId].push({
+      start,
+      end,
+      title,
+      roomId
+    });
+
+    return {
+      start,
+      end,
+      title,
+      roomId
+    };
+  });
+
+  return events;
 };
