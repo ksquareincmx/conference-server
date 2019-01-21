@@ -114,7 +114,6 @@ describe("Booking", () => {
           res.body.start.should.deep.equal("2019-02-11T10:15:00.000Z");
           res.body.end.should.deep.equal("2019-02-11T10:30:00.000Z");
           bookingsId.push(res.body.id);
-          console.log(res.body);
           done();
         });
     });
@@ -416,7 +415,7 @@ describe("Booking", () => {
           done();
         });
     });
-    it("Try to schedule a meeting with inexist roomId.", done => {
+    it("Try to schedule a meeting with non-exist roomId.", done => {
       const booking = {
         description: "Call Varma",
         roomId: 99,
@@ -877,9 +876,7 @@ describe("Booking", () => {
         .set("Authorization", `Bearer ${token}`);
 
       const parsedBooking = JSON.parse(JSON.stringify(createdBooking));
-      console.log(parsedBooking);
       bookingsId.push(JSON.parse(parsedBooking.text).id);
-      console.log(bookingsId);
     });
 
     it("Should delete a booking", done => {

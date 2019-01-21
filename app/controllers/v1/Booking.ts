@@ -244,17 +244,21 @@ export class BookingController extends Controller {
 
     try {
       const booking = await this.model.findById(data.params.id);
-      const parsedBooking = JSON.parse(JSON.stringify(booking));
+
+      if (!booking) {
+        return Controller.notFound(res);
+      }
+      const parsedBooking = booking.toJSON();
+
       if (parsedBooking.end < getActualDate()) {
         return res
           .status(409)
           .send({ code: 409, message: "Cannot cancel a past meeting" });
       }
-
       await calendarService.deleteEvent(booking.eventId);
       this.destroy(req, res);
     } catch (err) {
-      return Controller.serverError(res);
+      return Controller.serverError(res, err);
     }
   };
 
