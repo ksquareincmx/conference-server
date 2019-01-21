@@ -9,30 +9,32 @@ import { authTest } from "./v1/Auth";
 import { profileTest } from "./v1/Profile";
 import { roomTest } from "./v1/Room";
 import { userTest } from "./v1/User";
+import { bookingTest } from "./v1/Booking";
 
-describe("Main", function()  {
-
+describe("Main", function() {
   const userData: UserData = {
     userId: "",
-    profileId : ""
+    profileId: ""
   };
 
-  const  authCredentials: Credentials = {
+  const authCredentials: Credentials = {
     token: "",
     blackListedToken: ""
   };
 
   before(async function() {
-    console.log('before');
+    console.log("before");
     // Before testing it is convenient to create a new user..
     const testUser = {
       email: "testuser541@test.com",
       password: "12345678"
     };
     const isConnectionOpen = !!db.authenticate();
-    if (!isConnectionOpen) { await db.sync(); }
+    if (!isConnectionOpen) {
+      await db.sync();
+    }
 
-    const createdUser: any = await User.create({...testUser, role: "admin"});
+    const createdUser: any = await User.create({ ...testUser, role: "admin" });
     const user: any = await User.findOne({
       where: { id: createdUser.id },
       include: [{ model: Profile, as: "profile" }]
@@ -43,35 +45,40 @@ describe("Main", function()  {
     // Log in once as administrator
     // Could be any request library...
 
-    const expiredCredentials = await chai.request("http://localhost:8888/api/v1/auth/")
+    const expiredCredentials = await chai
+      .request("http://localhost:8888/api/v1/auth")
       .post("/login")
       .type("form")
       .send(testUser);
-    authCredentials.blackListedToken = `Bearer ${expiredCredentials.body.token}`;
+    authCredentials.blackListedToken = `Bearer ${
+      expiredCredentials.body.token
+    }`;
 
-    await chai.request("http://localhost:8888/api/v1/auth/")
+    await chai
+      .request("http://localhost:8888/api/v1/auth")
       .post("/logout")
       .type("form")
       .set("Authorization", authCredentials.blackListedToken);
 
-    const credentials = await chai.request("http://localhost:8888/api/v1/auth/")
+    const credentials = await chai
+      .request("http://localhost:8888/api/v1/auth")
       .post("/login")
       .type("form")
       .send(testUser);
-    authCredentials.token =  `Bearer ${credentials.body.token}`;
+    authCredentials.token = `Bearer ${credentials.body.token}`;
 
-    console.log('before complete');
+    console.log("before complete");
   });
 
   after(async function() {
-    console.log('after');
+    console.log("after");
     // Delete user if it still exists after the delete test.
     const user: any = await User.findOne({
       where: { id: userData.userId }
       // include: [{ model: Profile, as: "profile" }]
     });
     if (user) {
-      await User.destroy({where: { id: userData.userId }});
+      await User.destroy({ where: { id: userData.userId } });
     }
     await db.close();
   });
@@ -79,5 +86,5 @@ describe("Main", function()  {
   roomTest(authCredentials);
   profileTest(authCredentials, userData);
   userTest(authCredentials, userData);
-
+  bookingTest(authCredentials, userData);
 });
