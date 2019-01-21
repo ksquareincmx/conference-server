@@ -33,7 +33,7 @@ export const toDto = state => {
 export const toEvents = bookings => {
   let events = [[], []];
 
-  const bookingsDate = bookings.map(booking => {
+  bookings.map(booking => {
     const start = Utils.getDateFormat(booking.start);
     const end = Utils.getDateFormat(booking.end);
     const title = booking.description;
