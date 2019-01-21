@@ -1,63 +1,63 @@
 const RoomService = (roomUri, token) => {
   const createOne = room => {
     return fetch(roomUri, {
-      method: 'POST',
+      method: "POST",
       body: {
         description: room.description,
         rommId: room.roomId,
         start: room.start,
-        end: room.end,
+        end: room.end
       },
       headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + token,
-      },
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token
+      }
     }).then(res => res.json());
   };
 
   const getOne = id => {
     return fetch(roomUri + id, {
-      method: 'GET',
+      method: "GET",
       headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + token,
-      },
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token
+      }
     }).then(res => res.json());
   };
 
   const getAll = () => {
     return fetch(roomUri, {
-      method: 'GET',
+      method: "GET",
       headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + token,
-      },
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token
+      }
     }).then(res => res.json());
   };
 
   const updateOne = (room, id) => {
     return fetch(roomUri + id, {
-      method: 'PUT',
+      method: "PUT",
       body: {
         description: room.description,
         rommId: room.roomId,
         start: room.start,
-        end: room.end,
+        end: room.end
       },
       headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + token,
-      },
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token
+      }
     }).then(res => res.json());
   };
 
   const deleteOne = id => {
     return fetch(roomUri + id, {
-      method: 'DELETE',
+      method: "DELETE",
       headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + token,
-      },
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token
+      }
     }).then(res => res.json());
   };
 
@@ -66,7 +66,7 @@ const RoomService = (roomUri, token) => {
     getOne,
     getAll,
     updateOne,
-    deleteOne,
+    deleteOne
   };
 };
 

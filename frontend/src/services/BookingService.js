@@ -1,7 +1,7 @@
 const BookingService = (bookingUri, token) => {
   const createOne = booking => {
     return fetch(bookingUri, {
-      method: 'POST',
+      method: "POST",
       body: JSON.stringify({
         description: booking.description,
         roomId: booking.roomId,
@@ -10,46 +10,46 @@ const BookingService = (bookingUri, token) => {
         attendees: booking.attendees
       }),
       headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + token,
-      },
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token
+      }
     }).then(res => res.json());
   };
 
   const getOne = id => {
     return fetch(bookingUri + id, {
-      method: 'GET',
+      method: "GET",
       headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + token,
-      },
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token
+      }
     }).then(res => res.json());
   };
 
   const getAll = () => {
     return fetch(bookingUri, {
-      method: 'GET',
+      method: "GET",
       headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + token,
-      },
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token
+      }
     }).then(res => res.json());
   };
 
   const getAllWithDetails = () => {
-    const NewbookingUri = bookingUri + '?include=["Room","User"]'
+    const NewbookingUri = bookingUri + '?include=["Room","User"]';
     return fetch(NewbookingUri, {
-      method: 'GET',
+      method: "GET",
       headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + token,
-      },
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token
+      }
     }).then(res => res.json());
   };
 
   const updateOne = (booking, id) => {
     return fetch(bookingUri + id, {
-      method: 'PUT',
+      method: "PUT",
       body: JSON.stringify({
         description: booking.description,
         roomId: booking.roomId,
@@ -58,19 +58,19 @@ const BookingService = (bookingUri, token) => {
         attendees: booking.attendees
       }),
       headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + token,
-      },
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token
+      }
     }).then(res => res.json());
   };
 
   const deleteOne = id => {
     return fetch(bookingUri + id, {
-      method: 'DELETE',
+      method: "DELETE",
       headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + token,
-      },
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token
+      }
     }).then(res => res.json());
   };
 
@@ -80,7 +80,7 @@ const BookingService = (bookingUri, token) => {
     getAll,
     getAllWithDetails,
     updateOne,
-    deleteOne,
+    deleteOne
   };
 };
 
