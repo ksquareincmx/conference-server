@@ -8,7 +8,7 @@
     "apidoc": "apidoc -i app/controllers/ -o public/apidoc/",
     "build": "gulp",
     "start": "node --require source-map-support/register dist/main.js",
-    "test": "mocha --timeout 10000 --require ts-node/register test/**/*.ts",
+    "test": "mocha --require ts-node/register test/**/*main.ts",
     "migrate": "sequelize db:migrate"
   },
   "apidoc": {
