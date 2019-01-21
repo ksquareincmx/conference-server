@@ -31,28 +31,23 @@ export const toDto = state => {
 };
 
 export const toEvents = bookings => {
-  let events = [[], []];
+  const events = bookings.reduce(
+    (accumulator, booking) => {
+      const start = Utils.getDateFormat(booking.start);
+      const end = Utils.getDateFormat(booking.end);
+      const title = booking.description;
+      const roomId = booking.room_id - 1;
 
-  bookings.map(booking => {
-    const start = Utils.getDateFormat(booking.start);
-    const end = Utils.getDateFormat(booking.end);
-    const title = booking.description;
-    const roomId = booking.room_id - 1;
-
-    events[roomId].push({
-      start,
-      end,
-      title,
-      roomId
-    });
-
-    return {
-      start,
-      end,
-      title,
-      roomId
-    };
-  });
+      accumulator[roomId].push({
+        start,
+        end,
+        title,
+        roomId
+      });
+      return accumulator;
+    },
+    [[], []]
+  );
 
   return events;
 };
