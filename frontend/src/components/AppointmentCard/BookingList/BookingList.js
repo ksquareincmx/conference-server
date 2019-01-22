@@ -17,7 +17,7 @@ class BookigList extends React.Component {
       const data = await Promise.all([user, room]);
       return {
         ...book,
-        userName: data[0].name,
+        userName: data[0].name.toUpperCase(),
         roomName: data[1].name
       };
     });
@@ -39,14 +39,7 @@ class BookigList extends React.Component {
         {this.state.bookingItems.map(data => (
           <BookingItem
             key={cuid()}
-            userId={data.user_id}
-            bookingId={data.id}
-            userName={data.userName}
-            roomName={data.roomName}
-            roomId={data.room_id}
-            startDate={data.start}
-            endDate={data.end}
-            attendees={data.attendees}
+            booking={data}
             clicked={this.props.clicked}
           />
         ))}

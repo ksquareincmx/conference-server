@@ -40,7 +40,7 @@ class Content extends React.Component {
   };
 
   handleClickBooking = booking => event => {
-    if (this.props.auth.user.id === booking.userId) {
+    if (this.props.auth.user.id === booking.user_id) {
       this.setState({
         openModal: true,
         bookingClicked: true,

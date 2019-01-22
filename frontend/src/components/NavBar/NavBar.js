@@ -43,9 +43,7 @@ function NavBar(props) {
       </NavLeftSide>
 
       <NavRightSide>
-        <Typography style={styles.typography}>
-          {props.userName ? props.userName.toUpperCase() : ""}
-        </Typography>
+        <Typography style={styles.typography}>{props.userName}</Typography>
 
         <IconButton color="secondary" aria-label="Menu">
           <AccountCircle style={styles.accountCircle} />

@@ -149,10 +149,9 @@ class CalendarPageLogic extends React.Component {
   }
 
   render() {
-    console.log(this.props.auth);
     return (
       <div>
-        <NavBar userName={this.props.auth.user.name} />
+        <NavBar userName={this.props.auth.user.name.toUpperCase()} />
 
         <div className="calendar-container">
           <HeaderView
