@@ -1,25 +1,25 @@
-import { reject } from 'bluebird';
+import { reject } from "bluebird";
 
 const AuthService = authUri => {
   const onLogin = idToken => {
     return fetch(authUri, {
-      method: 'POST',
+      method: "POST",
       body: JSON.stringify({
-        idToken,
+        idToken
       }),
       headers: {
-        'Content-Type': 'application/json',
-      },
+        "Content-Type": "application/json"
+      }
     }).then(res => {
       switch (res.status) {
         case 200:
           return res.json();
         case 401:
-          return reject(new Error('ERROR 401: Unauthorized Account'));
+          return reject(new Error("ERROR 401: Unauthorized Account"));
         case 403:
-          return reject(new Error('ERROR 403'));
+          return reject(new Error("ERROR 403"));
         default:
-          return reject(new Error('Unknow error'));
+          return reject(new Error("Unknow error"));
       }
     });
   };

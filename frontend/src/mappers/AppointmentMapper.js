@@ -31,7 +31,7 @@ export const toDto = state => {
 };
 
 export const toEvents = bookings => {
-  const events = bookings.reduce(
+  return bookings.reduce(
     (accumulator, booking) => {
       const start = Utils.getDateFormat(booking.start);
       const end = Utils.getDateFormat(booking.end);
@@ -48,6 +48,4 @@ export const toEvents = bookings => {
     },
     [[], []]
   );
-
-  return events;
 };
