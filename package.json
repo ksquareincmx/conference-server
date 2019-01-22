@@ -9,7 +9,8 @@
     "build": "gulp",
     "start": "node --require source-map-support/register dist/main.js",
     "test": "mocha --require ts-node/register test/**/*.ts",
-    "migrate": "sequelize db:migrate"
+    "migrate": "sequelize db:migrate",
+    "jsdoc": "jsdoc -c jsdoc.conf.json"
   },
   "apidoc": {
     "title": "conference booking",
@@ -47,6 +48,7 @@
     "gulp-shell": "0.6.5",
     "gulp-sourcemaps": "2.6.4",
     "gulp-typescript": "4.0.2",
+    "jsdoc": "^3.5.5",
     "mocha": "^5.2.0",
     "natives": "^1.1.6",
     "run-sequence": "2.2.1",
