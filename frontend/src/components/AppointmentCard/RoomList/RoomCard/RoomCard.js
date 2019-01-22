@@ -21,7 +21,7 @@ let getStyles = backgroundColor => ({
 function RoomCard(props) {
   let styles = getStyles(props.backgroundColor);
 
-  let colorStatus = props.status ? "red" : "green";
+  let colorStatus = props.presence ? "red" : "green";
 
   return (
     <Card style={styles.card}>

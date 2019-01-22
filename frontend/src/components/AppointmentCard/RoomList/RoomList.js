@@ -1,6 +1,7 @@
 import React from "react";
 import RoomCard from "./RoomCard/";
 import GridList from "@material-ui/core/GridList";
+import * as RoomMapper from "mappers/RoomMapper";
 import "./RoomList.css";
 
 class RoomList extends React.Component {
@@ -8,21 +9,11 @@ class RoomList extends React.Component {
     roomItems: []
   };
 
-  componentDidMount() {
-    this.props.roomService.getListOfRoom().then(rooms => {
-      const newRooms = rooms.map(room => {
-        if (room.color === "green") {
-          room.backgroundColor = "#D8F0BE";
-          room.colorButton = "#4A90E2";
-        } else {
-          room.backgroundColor = "#CAF7ED";
-          room.colorButton = "#92B3AC";
-        }
-        room.roomId = room.id;
-        return room;
-      });
-      this.setState({ roomItems: newRooms });
-    });
+  async componentDidMount() {
+    const roomList = await this.props.roomService.getListOfRoom();
+    const roomListWithColor = RoomMapper.toRoomsWithColor(roomList);
+
+    this.setState({ roomItems: roomListWithColor });
   }
 
   render() {
@@ -35,6 +26,7 @@ class RoomList extends React.Component {
         status={room.presence}
         key={room.roomId}
         roomId={room.roomId}
+        presence={room.presence}
       />
     ));
     return (

@@ -41,7 +41,7 @@ function BookingItem(props) {
   const booking = {
     userId: props.userId,
     bookingId: props.bookingId,
-    userName: props.userName,
+    userName: props.userName ? props.userName.toUpperCase() : "",
     roomName: props.roomName,
     roomId: props.roomId,
     startDate: props.startDate,
@@ -56,10 +56,10 @@ function BookingItem(props) {
           <ListItemIcon>
             <InboxIcon />
           </ListItemIcon>
-          <div className="booking-item-roomname"> {props.roomName}</div>
+          <div className="booking-item-roomname"> {booking.roomName}</div>
         </Grid>
         <Grid item xs={7} container direction="column">
-          <div className="booking-item-username"> {props.userName} </div>
+          <div className="booking-item-username"> {booking.userName} </div>
           <div className="booking-item-time">
             {" "}
             {startTime + " to " + endTime}{" "}

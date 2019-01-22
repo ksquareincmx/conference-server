@@ -9,7 +9,7 @@ function VerifyAuth(auth) {
       <BookingProvider auth={auth}>
         <BookingConsumer>
           {bookingService => (
-            <CalendarPageLogic bookingService={bookingService} />
+            <CalendarPageLogic bookingService={bookingService} auth={auth} />
           )}
         </BookingConsumer>
       </BookingProvider>
