@@ -11,13 +11,13 @@ class BookigList extends React.Component {
 
   getUsers = async () => {
     let bookingItems = this.state.bookingItems.map(async book => {
-      const user = this.props.userService.getUser(book.userId);
-      const room = this.props.roomService.getRoom(book.roomId);
+      const user = this.props.userService.getUser(book.user_id);
+      const room = this.props.roomService.getRoom(book.room_id);
 
       const data = await Promise.all([user, room]);
       return {
         ...book,
-        userName: data[0].name,
+        userName: data[0].name.toUpperCase(),
         roomName: data[1].name
       };
     });
@@ -39,14 +39,7 @@ class BookigList extends React.Component {
         {this.state.bookingItems.map(data => (
           <BookingItem
             key={cuid()}
-            userId={data.userId}
-            bookingId={data.id}
-            userName={data.userName}
-            roomName={data.roomName}
-            roomId={data.roomId}
-            startDate={data.start}
-            endDate={data.end}
-            attendees={data.attendees}
+            booking={data}
             clicked={this.props.clicked}
           />
         ))}
