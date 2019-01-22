@@ -13,7 +13,7 @@ var node = null;
 
 var tsProject = tsc.createProject("tsconfig.json");
 
-gulp.task('apidoc', shell.task('npm run apidoc'));
+gulp.task("apidoc", shell.task("npm run apidoc"));
 
 gulp.task("clean", function(cb) {
   return del("dist", cb);
@@ -58,9 +58,13 @@ gulp.task("copy-locales", function() {
 
 gulp.task("serve", ["compile"], function() {
   if (node) node.kill();
-  node = spawn("node", ["--require", "source-map-support/register", "dist/main.js"], {
-    stdio: "inherit"
-  });
+  node = spawn(
+    "node",
+    ["--require", "source-map-support/register", "dist/main.js"],
+    {
+      stdio: "inherit"
+    }
+  );
   node.on("close", function(code) {
     if (code === 8) {
       gulp.log("Error detected, waiting for changes...");
@@ -70,9 +74,13 @@ gulp.task("serve", ["compile"], function() {
 
 gulp.task("sql", ["compile"], function() {
   if (node) node.kill();
-  node = spawn("node", ["--require", "source-map-support/register", "dist/dumpDbCreate.js"], {
-    stdio: "inherit"
-  });
+  node = spawn(
+    "node",
+    ["--require", "source-map-support/register", "dist/dumpDbCreate.js"],
+    {
+      stdio: "inherit"
+    }
+  );
   node.on("close", function(code) {
     if (code === 8) {
       gulp.log("Error detected, waiting for changes...");
@@ -82,9 +90,13 @@ gulp.task("sql", ["compile"], function() {
 
 gulp.task("seed", ["compile"], function() {
   if (node) node.kill();
-  node = spawn("node", ["--require", "source-map-support/register", "dist/seed.js"], {
-    stdio: "inherit"
-  });
+  node = spawn(
+    "node",
+    ["--require", "source-map-support/register", "dist/seed.js"],
+    {
+      stdio: "inherit"
+    }
+  );
   node.on("close", function(code) {
     if (code === 8) {
       gulp.log("Error detected, waiting for changes...");
@@ -97,6 +109,8 @@ gulp.task("test", ["build"], shell.task("npm test"));
 gulp.task("production", ["build"]);
 
 gulp.task("default", ["production"]);
+
+gulp.task("jsdoc", shell.task(["rm -rf public/jsdoc", "npm run jsdoc"]));
 
 // clean up if an error goes unhandled.
 process.on("exit", function() {
