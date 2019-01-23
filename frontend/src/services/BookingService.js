@@ -22,6 +22,34 @@
  */
 
 /**
+ * @typedef {Object} Room
+ * @property {number} id - Room id.
+ * @property {string} name - Room name.
+ * @property {string} color - Room color.
+ * @property {boolean} presence - Room presence (for future sensor integration).
+ * @property {Date} created_at - Room creation date.
+ * @property {Date} update_at - Room update date.
+ * @property {number} booking_id_actual - Booking id that currently occupies the room, null if its not.
+ * @property {string} status - Booking status ("Available" or "Not Available").
+ */
+
+/**
+ * @typedef {Object} User
+ * @property {number} id - user id.
+ * @property {number} authProviderId - user auth provider id (for the moment only Google).
+ * @property {string} picture - user picture URL.
+ * @property {string} name - user name.
+ * @property {string} email - user email.
+ */
+
+/**
+ * @typedef {Object} BookingWithDetails
+ * @property {BookingResponse} - Booking information
+ * @property {User} - User information.
+ * @property {Room} - Room information.
+ */
+
+/**
  * @version 1.0
  * @exports BookingService
  * @namespace BookingService
@@ -85,37 +113,8 @@ const BookingService = (bookingUri, token) => {
   };
 
   /**
-   * typedef {Object} Room
-   * @property {number} id - Room id.
-   * @property {string} name - Room name.
-   * @property {string} color - Room color.
-   * @property {boolean} presence - Room presence (for future sensor integration).
-   * @property {Date} created_at - Room creation date.
-   * @property {Date} update_at - Room update date.
-   * @property {number} booking_id_actual - Booking id that currently occupies the room, null if its not.
-   * @property {string} status - Booking status ("Available" or "Not Available").
-   */
-
-  /**
-   * typedef {Object} User
-   * @property {number} id - user id.
-   * @property {number} authProviderId - user auth provider id (for the moment only Google).
-   * @property {string} picture - user picture URL.
-   * @property {string} name - user name.
-   * @property {string} email - user email.
-   */
-
-  /**
-   * typedef {Object} BookingWithDetails
-   *  @memberof BookingService
-   * @property {BookingResponse} Booking information
-   * @property {User} User information.
-   * @property {Room} Room information.
-   */
-
-  /**
    * Return all the bookings with his details (Room and User information)
-   *  @memberof BookingService
+   * @memberof BookingService
    * @return {BookingWithDetails}
    */
   const getAllWithDetails = () => {
@@ -132,7 +131,7 @@ const BookingService = (bookingUri, token) => {
   /**
    *  Returns a booking updated by id
    *  @memberof BookingService
-   *  @param {BookingRequest} - booking information.
+   *  @param {BookingRequest} booking - booking information.
    *  @param {number} id - booking id.
    *  @return {BookingResponse} - booking updated information
    */
