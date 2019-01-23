@@ -28,7 +28,7 @@ import { reject } from "bluebird";
  * @version 1.0
  * @exports AuthService
  * @namespace AuthService
- * @property {string} authUri - room uri
+ * @property {string} authUri - auth uri
  */
 
 const AuthService = authUri => {
