@@ -12,7 +12,7 @@
  * @version 1.0
  * @exports UserService
  * @namespace UserService
- * @property {string} roomUri - room uri
+ * @property {string} userUri - user uri
  * @property {string} token - user token
  */
 const UserService = (userUri, token) => {
