@@ -24,13 +24,16 @@ const getDate = date => {
 };
 
 function BookingItem(props) {
-  const startNotFormmat = props.startDate.substring(
+  const startNotFormmat = props.booking.start.substring(
     0,
-    props.startDate.length - 1
+    props.booking.start.length - 1
   );
   const startDate = new Date(startNotFormmat);
 
-  const endNotFormat = props.endDate.substring(0, props.endDate.length - 1);
+  const endNotFormat = props.booking.end.substring(
+    0,
+    props.booking.end.length - 1
+  );
   const endDate = new Date(endNotFormat);
 
   const startTime =
@@ -38,28 +41,20 @@ function BookingItem(props) {
   const endTime =
     addZero(endDate.getHours()) + ":" + addZero(endDate.getMinutes());
 
-  const booking = {
-    userId: props.userId,
-    bookingId: props.bookingId,
-    userName: props.userName,
-    roomName: props.roomName,
-    roomId: props.roomId,
-    startDate: props.startDate,
-    endDate: props.endDate,
-    attendees: props.attendees
-  };
-
   return (
-    <ListItem button onClick={props.clicked(booking)}>
+    <ListItem button onClick={props.clicked(props.booking)}>
       <Grid container direction="row" className="booking-item-row-container">
         <Grid item xs={3} container direction="column" justify="center">
           <ListItemIcon>
             <InboxIcon />
           </ListItemIcon>
-          <div className="booking-item-roomname"> {props.roomName}</div>
+          <div className="booking-item-roomname"> {props.booking.roomName}</div>
         </Grid>
         <Grid item xs={7} container direction="column">
-          <div className="booking-item-username"> {props.userName} </div>
+          <div className="booking-item-username">
+            {" "}
+            {props.booking.userName}{" "}
+          </div>
           <div className="booking-item-time">
             {" "}
             {startTime + " to " + endTime}{" "}

@@ -133,49 +133,67 @@ class CalendarPageLogic extends React.Component {
     }
   };
 
+  printAppointments = async () => {
+    const bookingsList = await this.props.bookingService.getDetailedListOfBooking();
+    const events = AppointmentMapper.toEvents(bookingsList);
+    this.setState(prevState => {
+      prevState.events[0].push(...events[0]);
+      prevState.events[1].push(...events[1]);
+      return {
+        events: prevState.events
+      };
+    });
+  };
+  componentDidMount() {
+    this.printAppointments();
+  }
+
   render() {
     return (
-      <div className="calendar-container">
-        <NavBar />
-        <HeaderView
-          onClickViewButton={this.handlerOnClickViewButton}
-          headerDateContainer={
-            <HeaderStrategy
-              type={this.state.selector}
-              numberDayInMonth={this.state.focusDate.getDate()}
-              fullYear={this.state.focusDate.getFullYear()}
-              date={this.state.focusDate}
-              dayName={Utils.getNameDay(this.state.focusDate)}
-              monthName={Utils.getNameMonth(this.state.focusDate)}
-              numberWeekInYear={Utils.getWeekOfYear(this.state.focusDate)}
-            />
-          }
-        />
-        <CalendarStrategy
-          type={this.state.selector}
-          events={this.state.events}
-          handleSelect={this.handleSelect}
-          components={{ event: this.handleEventView }}
-          localizer={Utils.localizer}
-          minDate={Utils.minDate}
-          maxDate={Utils.maxDate}
-          step={Utils.step}
-          timeSlots={Utils.timeSlots}
-          date={this.state.focusDate}
-        />
+      <div>
+        <NavBar userName={this.props.auth.user.name.toUpperCase()} />
 
-        <DraggingCalendar
-          coordinates={this.state.coordinates}
-          appointmentInfo={this.state.appointmentInfo}
-          onChange={this.handleChangeReasonAppointment}
-          onClick={this.handleClickCreateBookingDraggingCalendar}
-        />
+        <div className="calendar-container">
+          <HeaderView
+            onClickViewButton={this.handlerOnClickViewButton}
+            headerDateContainer={
+              <HeaderStrategy
+                type={this.state.selector}
+                numberDayInMonth={this.state.focusDate.getDate()}
+                fullYear={this.state.focusDate.getFullYear()}
+                date={this.state.focusDate}
+                dayName={Utils.getNameDay(this.state.focusDate)}
+                monthName={Utils.getNameMonth(this.state.focusDate)}
+                numberWeekInYear={Utils.getWeekOfYear(this.state.focusDate)}
+              />
+            }
+          />
+          <CalendarStrategy
+            type={this.state.selector}
+            events={this.state.events}
+            handleSelect={this.handleSelect}
+            components={{ event: this.handleEventView }}
+            localizer={Utils.localizer}
+            minDate={Utils.minDate}
+            maxDate={Utils.maxDate}
+            step={Utils.step}
+            timeSlots={Utils.timeSlots}
+            date={this.state.focusDate}
+          />
 
-        <FooterView
-          {...Utils.footerChangeButtonLabels(this.state.selector)}
-          currentDateLabel={"Today"}
-          onClickButton={this.handlerOnCLickTimeButton}
-        />
+          <DraggingCalendar
+            coordinates={this.state.coordinates}
+            appointmentInfo={this.state.appointmentInfo}
+            onChange={this.handleChangeReasonAppointment}
+            onClick={this.handleClickCreateBookingDraggingCalendar}
+          />
+
+          <FooterView
+            {...Utils.footerChangeButtonLabels(this.state.selector)}
+            currentDateLabel={"Today"}
+            onClickButton={this.handlerOnCLickTimeButton}
+          />
+        </div>
       </div>
     );
   }

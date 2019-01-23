@@ -83,3 +83,11 @@ export const footerChangeButtonLabels = type => {
       };
   }
 };
+
+export const getDateFormat = date => {
+  const dateWithoutZ = date.substring(0, date.length - 5);
+  const dateWithoutDots = dateWithoutZ.replace(".", ":");
+  const dateFotmat = dateWithoutDots.replace("T", " ");
+  var momentDate = moment(dateFotmat);
+  return momentDate.toDate();
+};

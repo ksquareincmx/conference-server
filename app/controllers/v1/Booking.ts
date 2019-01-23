@@ -248,8 +248,8 @@ export class BookingController extends Controller {
       if (!booking) {
         return Controller.notFound(res);
       }
-      const parsedBooking = booking.toJSON();
 
+      const parsedBooking = booking.toJSON();
       if (parsedBooking.end < getActualDate()) {
         return res
           .status(409)
