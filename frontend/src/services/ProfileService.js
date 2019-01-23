@@ -1,4 +1,22 @@
+/**
+ * @typedef {Object} ProfileRequest
+ * @property {string} time_zone
+ * @property {string} locale
+ */
+
+/**
+ * @version 1.0
+ * @exports BookingService
+ * @namespace BookingService
+ * @property {string} profileUri - profile uri
+ * @property {string} token - user token
+ */
 const ProfileService = (profileUri, token) => {
+  /**
+   * Return a profile finded by id
+   * @param {number} id - profile id
+   * @returns {Profile}
+   */
   const getOne = id => {
     return fetch(profileUri + id, {
       method: "GET",
@@ -9,6 +27,10 @@ const ProfileService = (profileUri, token) => {
     }).then(res => res.json());
   };
 
+  /**
+   * Returns all Profiles
+   * @returns {Profile[]}
+   */
   const getAll = () => {
     return fetch(profileUri, {
       method: "GET",
@@ -19,7 +41,13 @@ const ProfileService = (profileUri, token) => {
     }).then(res => res.json());
   };
 
-  const modifyOne = (profile, id) => {
+  /**
+   * Update a Profile and return it
+   * @param {number} id - profile id
+   * @param {ProfileRequest} profile - profile information
+   * @returns {Profile}
+   */
+  const updateOne = (profile, id) => {
     return fetch(profileUri + id, {
       method: "PUT",
       headers: {
@@ -36,7 +64,7 @@ const ProfileService = (profileUri, token) => {
   return {
     getOne,
     getAll,
-    modifyOne
+    updateOne
   };
 };
 

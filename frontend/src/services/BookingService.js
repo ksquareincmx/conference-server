@@ -25,7 +25,7 @@
  * @version 1.0
  * @exports BookingService
  * @namespace BookingService
- * @property {string} roomUri - room uri
+ * @property {string} bookingUri - booking uri
  * @property {string} token - user token
  */
 const BookingService = (bookingUri, token) => {
