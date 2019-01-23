@@ -19,6 +19,7 @@ import * as uuid from "uuid";
 
 // Import tests...
 import { authTest } from "./v1/Auth";
+import { bookingTest } from "./v1/Booking";
 import { profileTest } from "./v1/Profile";
 import { roomTest } from "./v1/Room";
 import { userTest } from "./v1/User";
@@ -161,4 +162,5 @@ describe("Main", function() {
   roomTest(authCredentials);
   profileTest(authCredentials, userData);
   userTest(authCredentials, userData);
+  bookingTest(authCredentials, userData);
 });

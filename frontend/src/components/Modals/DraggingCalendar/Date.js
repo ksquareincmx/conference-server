@@ -11,9 +11,9 @@ function Date(props) {
         <div style={styles.text}>{"Year"}</div>
       </div>
       <div style={styles.dateValuesContainer}>
-        <div>{"10"}</div>
-        <div>{"01"}</div>
-        <div>{"1996"}</div>
+        <div>{props.day}</div>
+        <div>{props.month}</div>
+        <div>{props.year}</div>
       </div>
     </div>
   );

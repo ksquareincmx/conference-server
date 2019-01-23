@@ -1,12 +1,15 @@
 import React from "react";
 import { getButtonStyles } from "./Styles";
+import ButtonMaterial from "@material-ui/core/Button";
 
 function Button(props) {
   let styles = getButtonStyles(props.color);
 
   return (
     <div style={styles.buttonGrid}>
-      <div style={styles.button}>{props.text}</div>
+      <ButtonMaterial style={styles.button} onClick={props.onClick}>
+        {props.text}
+      </ButtonMaterial>
     </div>
   );
 }

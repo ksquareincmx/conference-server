@@ -21,6 +21,7 @@ export interface IGetBookingParams {
 export interface IGetAllBookingParams {
   query: {
     fromDate?: Date;
+    toDate?: Date;
   };
 }
 

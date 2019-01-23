@@ -8,6 +8,7 @@ import {
   areValidsEmails
 } from "./../../libraries/util";
 import { Booking } from "./../../models/Booking";
+import { Room } from "./../../models/Room";
 import { Request, Response, Router } from "express";
 import {
   validateJWT,
@@ -53,12 +54,13 @@ export class BookingController extends Controller {
     @apiHeader {String}   Authorization Bearer [jwt token]
 
     @apiParam   {Date}   body.fromDate      Shows all bookings from a date
+    @apiParam   {Date}   body.toDate        Show all bookings until a date
 
     @apiSuccess {Object[]}  body                   Booking details
     @apiSuccess {Number}  body.id                Booking id
     @apiSuccess {string}  body.description       Booking description
-    @apiSuccess {Date}    body.start             Booking date start
-    @apiSuccess {Date}    body.end               Booking date end
+    @apiSuccess {Date}    body.start             Booking start date
+    @apiSuccess {Date}    body.end               Booking end date
     @apiSuccess {String}  body.eventId           Google calendar event's id
     @apiSuccess {Number}  body.roomId            Booking room
     @apiSuccess {Number}  body.userId            User's id who created the booking
@@ -81,8 +83,8 @@ export class BookingController extends Controller {
     @apiSuccess {Object}  body                   Booking details
     @apiSuccess {Number}  body.id                Booking id
     @apiSuccess {string}  body.description       Booking description
-    @apiSuccess {Date}    body.start             Booking date start
-    @apiSuccess {Date}    body.end               Booking date end
+    @apiSuccess {Date}    body.start             Booking start date
+    @apiSuccess {Date}    body.end               Booking end date
     @apiSuccess {String}  body.eventId           Google calendar event's id
     @apiSuccess {Number}   body.roomId            Booking room
     @apiSuccess {Number}  body.userId            User's id who created the booking
@@ -103,8 +105,8 @@ export class BookingController extends Controller {
       @apiHeader {String} Authorization Bearer [jwt token]
 
       @apiParam {Object}    body                   Booking details
-      @apiParam {Date}      body.start             Booking date start
-      @apiParam {Date}      body.end               Booking date end
+      @apiParam {Date}      body.start             Booking start date
+      @apiParam {Date}      body.end               Booking end date
       @apiParam {String}    body.description       Booking description
       @apiParam {Number}    body.roomId            Booking room id
       @apiParam {String[]}  body.attendees    Emails from users who will attend the event
@@ -113,8 +115,8 @@ export class BookingController extends Controller {
       @apiSuccess {Number}  body.id                Booking id
       @apiSuccess {Number}  body.roomId            Booking room id
       @apiSuccess {string}  body.description       Booking description
-      @apiSuccess {Date}    body.start             Booking date start
-      @apiSuccess {Date}    body.end               Booking date end
+      @apiSuccess {Date}    body.start             Booking start date
+      @apiSuccess {Date}    body.end               Booking end date
       @apiSuccess {Number}  body.userId            User's id who created the booking
       @apiSuccess {String}  body.eventId           Google calendar event's id
       @apiSuccess {Date}    body.updatedAt         Booking creation date
@@ -142,8 +144,8 @@ export class BookingController extends Controller {
       @apiHeader { String } Authorization Bearer [jwt token]
 
       @apiParam {Object}    body                   Booking details
-      @apiParam {Date}      body.start             Booking date start
-      @apiParam {Date}      body.end               Booking date end
+      @apiParam {Date}      body.start             Booking start date
+        @apiParam {Date}      body.end               Booking end date
       @apiParam {String}    body.description       Booking description
       @apiParam {Number}    body.roomId            Booking room id
       @apiParam {String[]}  body.attendees    Emails from users who will attend the event
@@ -152,8 +154,8 @@ export class BookingController extends Controller {
       @apiSuccess {Number}  body.id                Booking id
       @apiSuccess {Number}  body.roomId            Booking room id
       @apiSuccess {string}  body.description       Booking description
-      @apiSuccess {Date}    body.start             Booking date start
-      @apiSuccess {Date}    body.end               Booking date end
+      @apiSuccess {Date}    body.start             Booking start date
+      @apiSuccess {Date}    body.end               Booking end date
       @apiSuccess {Number}  body.userId            User's id who created the booking
       @apiSuccess {String}  body.eventId           Google calendar event's id
       @apiSuccess {Date}    body.updatedAt         Booking creation date
@@ -196,8 +198,8 @@ export class BookingController extends Controller {
    * @typedef {Object} Booking
    * @property {number} id - booking id
    * @property {string} description - booking description
-   * @property {string} start - booking date start
-   * @property {string} end - booking date end
+   * @property {string} start - booking start date
+   * @property {string} end - booking end date
    * @property {string} eventId - google calendar event id associate with booking
    * @property {number} roomId - booking room id
    * @property {number} userId - user who creates the booking
@@ -242,10 +244,21 @@ export class BookingController extends Controller {
 
     try {
       const booking = await this.model.findById(data.params.id);
+
+      if (!booking) {
+        return Controller.notFound(res);
+      }
+      const parsedBooking = booking.toJSON();
+
+      if (parsedBooking.end < getActualDate()) {
+        return res
+          .status(409)
+          .send({ code: 409, message: "Cannot cancel a past meeting" });
+      }
       await calendarService.deleteEvent(booking.eventId);
       this.destroy(req, res);
     } catch (err) {
-      return Controller.serverError(res);
+      return Controller.serverError(res, err);
     }
   };
 
@@ -257,7 +270,7 @@ export class BookingController extends Controller {
     if (isEmpty(data.body.description)) {
       return Controller.badRequest(
         res,
-        "Bad Request: No description in request"
+        "Bad Request: No description in request."
       );
     }
     if (isEmpty(data.body.start)) {
@@ -270,12 +283,12 @@ export class BookingController extends Controller {
       return Controller.badRequest(res, "Bad Request: No end date in request.");
     }
     if (isEmpty(data.body.roomId)) {
-      return Controller.badRequest(res, "Bad Request: No roomId in request");
+      return Controller.badRequest(res, "Bad Request: No roomId in request.");
     }
     if (data.body.attendees.constructor !== Array) {
       return Controller.badRequest(
         res,
-        "Bad Request: No attendees as Array in request"
+        "Bad Request: No attendees as Array in request."
       );
     }
     if (getActualDate() > data.body.start) {
@@ -291,15 +304,26 @@ export class BookingController extends Controller {
       );
     }
     if (!areValidsEmails(data.body.attendees)) {
-      return Controller.badRequest(res, "Bad Request: Invalid email");
+      return Controller.badRequest(res, "Bad Request: Invalid email.");
     }
 
     // insert only if the author email don't exist in data
-    if (!data.body.attendees.some(email => email === req.session.user.email)) {
-      data.body.attendees.push(req.session.user.email);
-    }
+    data.body.attendees.push(req.session.user.email);
+    const uniqueEmails = [...new Set(data.body.attendees)];
 
     try {
+      const roomId = await Room.findOne({
+        attributes: ["id"],
+        where: { id: data.body.roomId }
+      });
+
+      if (isEmpty(roomId)) {
+        return Controller.badRequest(
+          res,
+          `Bad Request: room ${data.body.roomId} not exist.`
+        );
+      }
+
       const booking = await this.model.findAndCountAll({
         where: {
           [Op.and]: {
@@ -329,7 +353,7 @@ export class BookingController extends Controller {
         data.body.start,
         data.body.end,
         data.body.description,
-        data.body.attendees
+        uniqueEmails
       );
 
       // insert booking the DB
@@ -340,14 +364,14 @@ export class BookingController extends Controller {
       );
 
       // insert attendee in the DB
-      data.body.attendees.forEach(async attendee => {
+      uniqueEmails.forEach(async attendee => {
         const attendeeId = await insertAttendee(attendee);
         await insertBookingAttendee(parsedCreatedBooking.id, attendeeId);
       });
 
       const finalBooking = {
         ...parsedCreatedBooking,
-        attendees: data.body.attendees
+        attendees: uniqueEmails
       };
 
       const DTOBooking = bookingMapper.toDTO(finalBooking);
@@ -366,7 +390,7 @@ export class BookingController extends Controller {
     if (isEmpty(data.body.description)) {
       return Controller.badRequest(
         res,
-        "Bad Request: No description in request"
+        "Bad Request: No description in request."
       );
     }
     if (isEmpty(data.body.start)) {
@@ -379,12 +403,12 @@ export class BookingController extends Controller {
       return Controller.badRequest(res, "Bad Request: No end date in request.");
     }
     if (isEmpty(data.body.roomId)) {
-      return Controller.badRequest(res, "Bad Request: No roomId in request");
+      return Controller.badRequest(res, "Bad Request: No roomId in request.");
     }
     if (data.body.attendees.constructor !== Array) {
       return Controller.badRequest(
         res,
-        "Bad Request: No attendees as Array in request"
+        "Bad Request: No attendees as Array in request."
       );
     }
     if (getActualDate() > data.body.start) {
@@ -400,15 +424,26 @@ export class BookingController extends Controller {
       );
     }
     if (!areValidsEmails(data.body.attendees)) {
-      return Controller.badRequest(res, "Bad Request: Invalid email");
+      return Controller.badRequest(res, "Bad Request: Invalid email.");
     }
 
     // insert only if the author email don't exist in the request
-    if (!data.body.attendees.some(email => email === req.session.user.email)) {
-      data.body.attendees.push(req.session.user.email);
-    }
+    data.body.attendees.push(req.session.user.email);
+    const uniqueEmails = [...new Set(data.body.attendees)];
 
     try {
+      const roomId = await Room.findOne({
+        attributes: ["id"],
+        where: { id: data.body.roomId }
+      });
+
+      if (isEmpty(roomId)) {
+        return Controller.badRequest(
+          res,
+          `Bad Request: room ${data.body.roomId} not exist.`
+        );
+      }
+
       const bookings = await this.model.findAndCountAll({
         where: {
           [Op.and]: {
@@ -447,13 +482,13 @@ export class BookingController extends Controller {
         data.body.start,
         data.body.end,
         data.body.description,
-        data.body.attendees
+        uniqueEmails
       );
 
       // update tables: attende and bookingAttende
       const updatedAttendees = await updateBookingAttendee(
         data.params.id,
-        data.body.attendees
+        uniqueEmails
       );
       const updatedBooking = await booking.update({
         ...data.params,
@@ -504,47 +539,63 @@ export class BookingController extends Controller {
     const data: IGetAllBookingParams = {
       query: req.query
     };
-    const toDate: Date = new Date(data.query.fromDate);
+
+    const fromDate: Date = new Date(data.query.fromDate);
+    const toDate: Date = new Date(data.query.toDate);
+
     const isValidDate = date => date.toString() !== "Invalid Date";
 
     try {
-      // TODO: Delete redundant code
-      // Obtain all bookings
-      if (isEmpty(data.query.fromDate)) {
-        const bookings = await this.model.findAll();
-
-        if (bookings) {
-          const parsedBookings = JSON.parse(JSON.stringify(bookings));
-          const finalBookings = await this.bookingsPlusAttendees(
-            parsedBookings
-          );
-          const DTOBookings = finalBookings.map(bookingMapper.toDTO);
-          return res.status(200).json(DTOBookings);
-        }
+      if (!isEmpty(data.query.fromDate) && !isValidDate(fromDate)) {
+        return Controller.badRequest(
+          res,
+          "Bad Request: fromDate must be a date in format YYYY-MM-DDTHH:MM."
+        );
       }
 
-      // Obtain all bookings from a date
-      else if (isValidDate(toDate)) {
-        const bookings = await this.model.findAll({
-          where: {
-            end: { [Op.gte]: toDate }
-          }
-        });
-        if (bookings) {
-          const parsedBookings = JSON.parse(JSON.stringify(bookings));
-          const finalBookings = await this.bookingsPlusAttendees(
-            parsedBookings
-          );
-
-          const DTOBookings = finalBookings.map(bookingMapper.toDTO);
-          return res.status(200).json(DTOBookings);
-        }
+      if (!isEmpty(data.query.toDate) && !isValidDate(toDate)) {
+        return Controller.badRequest(
+          res,
+          "Bad Request: toDate must be a date in format YYYY-MM-DDTHH:MM."
+        );
       }
 
-      return Controller.badRequest(
-        res,
-        "Bad Request: fromDate must be a date in format YYYY-MM-DDTHH:MM."
+      const dateRangeStrategy = async ({ fromDate, toDate }) => {
+        if (isEmpty(fromDate) && isEmpty(toDate)) {
+          return await this.model.findAll();
+        } else if (!isEmpty(fromDate) && isEmpty(toDate)) {
+          return await this.model.findAll({
+            where: {
+              end: { [Op.gte]: fromDate }
+            }
+          });
+        } else if (isEmpty(fromDate) && !isEmpty(toDate)) {
+          return await this.model.findAll({
+            where: {
+              start: { [Op.lte]: toDate }
+            }
+          });
+        } else {
+          return await this.model.findAll({
+            where: {
+              end: { [Op.gte]: fromDate },
+              start: { [Op.lte]: toDate }
+            }
+          });
+        } // Case where !isEmpty(fromDate) && !isEmpty(toDate)
+      };
+
+      const bookings = await dateRangeStrategy({
+        fromDate: data.query.fromDate,
+        toDate: data.query.toDate
+      });
+
+      const finalBookings = await this.bookingsPlusAttendees(
+        bookings.map(booking => booking.toJSON())
       );
+
+      const DTOBookings = finalBookings.map(bookingMapper.toDTO);
+      return res.status(200).json(DTOBookings);
     } catch (err) {
       return Controller.serverError(res, err);
     }

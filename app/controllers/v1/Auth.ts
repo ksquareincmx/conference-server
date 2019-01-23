@@ -51,7 +51,7 @@ export class AuthController extends Controller {
       @apiSuccess {String}    body.user.role                   User role ("user", "admin")
       @apiSuccess {Object}    body.profile                     User profile
       @apiSuccess {Number}    body.profile.id                  User id
-      @apiSuccess {String}    body.profile.timezone            Profile timezon
+      @apiSuccess {String}    body.profile.timezone            Profile timezone
       @apiSuccess {String}    body.profile.locale              Profile locale
       @apiSuccess {Number}    body.profile.userId              User id
       @apiSuccess {String}    body.profile.createAt            User create date
@@ -98,7 +98,7 @@ export class AuthController extends Controller {
       @apiSuccess {String}    body.user.role                   User role ("user", "admin")
       @apiSuccess {Object}    body.profile                     User profile
       @apiSuccess {Number}    body.profile.id                  User id
-      @apiSuccess {String}    body.profile.timezone            Profile timezon
+      @apiSuccess {String}    body.profile.timezone            Profile timezone
       @apiSuccess {String}    body.profile.locale              Profile locale
       @apiSuccess {Number}    body.profile.userId              User id
       @apiSuccess {String}    body.profile.createAt            User create date
@@ -145,7 +145,7 @@ export class AuthController extends Controller {
       @apiSuccess {String}    body.user.role                   User role ("user", "admin")
       @apiSuccess {Object}    body.profile                     User profile
       @apiSuccess {Number}    body.profile.id                  User id
-      @apiSuccess {String}    body.profile.timezone            Profile timezon
+      @apiSuccess {String}    body.profile.timezone            Profile timezone
       @apiSuccess {String}    body.profile.locale              Profile locale
       @apiSuccess {Number}    body.profile.userId              User id
       @apiSuccess {String}    body.profile.createAt            User create date
@@ -183,7 +183,7 @@ export class AuthController extends Controller {
       @apiSuccess {String}    body.user.role                   User role ("user", "admin")
       @apiSuccess {Object}    body.profile                     User profile
       @apiSuccess {Number}    body.profile.id                  User id
-      @apiSuccess {String}    body.profile.timezone            Profile timezon
+      @apiSuccess {String}    body.profile.timezone            Profile timezone
       @apiSuccess {String}    body.profile.locale              Profile locale
       @apiSuccess {Number}    body.profile.userId              User id
       @apiSuccess {String}    body.profile.createAt            User create date
@@ -216,7 +216,7 @@ export class AuthController extends Controller {
       @apiSuccess {String}    body.user.role                   User role ("user", "admin")
       @apiSuccess {Object}    body.profile                     User profile
       @apiSuccess {Number}    body.profile.id                  User id
-      @apiSuccess {String}    body.profile.timezone            Profile timezon
+      @apiSuccess {String}    body.profile.timezone            Profile timezone
       @apiSuccess {String}    body.profile.locale              Profile locale
       @apiSuccess {Number}    body.profile.userId              User id
       @apiSuccess {String}    body.profile.createAt            User create date
@@ -251,7 +251,7 @@ export class AuthController extends Controller {
       @apiSuccess {String}    body.user.role                   User role ("user", "admin")
       @apiSuccess {Object}    body.profile                     User profile
       @apiSuccess {Number}    body.profile.id                  User id
-      @apiSuccess {String}    body.profile.timezone            Profile timezon
+      @apiSuccess {String}    body.profile.timezone            Profile timezone
       @apiSuccess {String}    body.profile.locale              Profile locale
       @apiSuccess {Number}    body.profile.userId              User id
       @apiSuccess {String}    body.profile.createAt            User create date
@@ -733,7 +733,7 @@ export class AuthController extends Controller {
     const oldPass = req.body.oldPass;
     const newPass = req.body.newPass;
     // Validate
-    if (isEmpty(email) || isEmpty(oldPass) || isEmpty(newPass) == null) {
+    if (isEmpty(email) || isEmpty(oldPass) || isEmpty(newPass)) {
       return Controller.badRequest(res);
     }
 
@@ -794,7 +794,7 @@ export class AuthController extends Controller {
 
       // Check if user exists
       let user: User = await User.findOne({
-        where: { authProviderId: null, email },
+        where: { email },
         include: [
           { model: Profile, as: "profile" },
           { model: AuthProvider, as: "authProvider" }

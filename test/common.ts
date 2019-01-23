@@ -1,5 +1,6 @@
 // Import DB setup and models
 import { db } from "../app/db";
+import { Booking } from "../app/models/Booking";
 import { JWTBlacklist } from "../app/models/JWTBlacklist";
 import { Profile } from "../app/models/Profile";
 import { Room } from "../app/models/Room";
@@ -23,6 +24,7 @@ interface Credentials {
 }
 
 export {
+  Booking,
   chai,
   Credentials,
   db,

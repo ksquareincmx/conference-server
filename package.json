@@ -9,7 +9,6 @@
     "build": "gulp",
     "start": "node --require source-map-support/register dist/main.js",
     "test": "mocha --require ts-node/register test/**/*main.ts",
-
     "migrate": "sequelize db:migrate"
   },
   "apidoc": {
@@ -51,6 +50,7 @@
     "mocha": "^5.2.0",
     "natives": "^1.1.6",
     "run-sequence": "2.2.1",
+    "should": "^13.2.3",
     "sqlite3": "4.0.2",
     "ts-node": "^7.0.1",
     "typescript": "^2.9.2"

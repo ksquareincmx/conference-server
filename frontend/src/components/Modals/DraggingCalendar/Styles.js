@@ -1,4 +1,4 @@
-export const getDateStyles = function() {
+export const getDateStyles = () => {
   return {
     dateContainer: {
       display: "flex",
@@ -25,29 +25,46 @@ export const getDateStyles = function() {
   };
 };
 
-export const getCardStyles = function() {
+export const getCardStyles = coordinates => {
+  let top = 0;
+  let bottom = 0;
+  let right = 0;
+  let left = 0;
+  let display = "none";
+
+  if (coordinates) {
+    display = "flex";
+    top = coordinates.top;
+    bottom = coordinates.bottom;
+    right = coordinates.right;
+    left = coordinates.left;
+  }
+
   return {
     cardContainer: {
-      display: "flex",
+      display: display,
       flexDirection: "column",
       height: 300,
       width: 230,
-      backgroundColor: "#EAE8E8"
+      backgroundColor: "#EAE8E8",
+      position: "absolute",
+      top: top,
+      bottom: bottom,
+      right: right,
+      left: left,
+      border: 1,
+      borderStyle: "solid"
     }
   };
 };
 
-export const getButtonStyles = function() {
+export const getButtonStyles = color => {
   return {
     button: {
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
       marginTop: 10,
       height: 30,
       width: 160,
-      backgroundColor: "#7ED321",
-      textAlign: "center",
+      backgroundColor: color === "green" ? "#7ED321" : "#4A90E2",
       color: "white"
     },
 
@@ -58,7 +75,7 @@ export const getButtonStyles = function() {
   };
 };
 
-export const getReasonStyles = function() {
+export const getReasonStyles = () => {
   return {
     reasonAppointment: {
       fontWeight: "bold",
@@ -67,7 +84,7 @@ export const getReasonStyles = function() {
   };
 };
 
-export const getTimeStyles = function() {
+export const getTimeStyles = () => {
   return {
     timeContainer: {
       display: "flex",
