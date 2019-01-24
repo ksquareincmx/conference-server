@@ -43,7 +43,11 @@ const RoomService = (roomUri, token) => {
         "Content-Type": "application/json",
         Authorization: "Bearer " + token
       }
-    }).then(res => res.json());
+    })
+      .then(res => res.json())
+      .catch(err => {
+        throw err;
+      });
   };
 
   /**
@@ -59,7 +63,11 @@ const RoomService = (roomUri, token) => {
         "Content-Type": "application/json",
         Authorization: "Bearer " + token
       }
-    }).then(res => res.json());
+    })
+      .then(res => res.json())
+      .catch(err => {
+        throw err;
+      });
   };
 
   /**
@@ -74,7 +82,11 @@ const RoomService = (roomUri, token) => {
         "Content-Type": "application/json",
         Authorization: "Bearer " + token
       }
-    }).then(res => res.json());
+    })
+      .then(res => res.json())
+      .catch(err => {
+        throw err;
+      });
   };
 
   /**
@@ -95,7 +107,11 @@ const RoomService = (roomUri, token) => {
         "Content-Type": "application/json",
         Authorization: "Bearer " + token
       }
-    }).then(res => res.json());
+    })
+      .then(res => res.json())
+      .catch(err => {
+        throw err;
+      });
   };
 
   /**
@@ -110,7 +126,11 @@ const RoomService = (roomUri, token) => {
         "Content-Type": "application/json",
         Authorization: "Bearer " + token
       }
-    }).then(res => res.json());
+    })
+      .then(res => res.json())
+      .catch(err => {
+        throw err;
+      });
   };
 
   return {

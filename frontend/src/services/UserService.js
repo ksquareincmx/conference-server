@@ -25,9 +25,14 @@ const UserService = (userUri, token) => {
     return fetch(userUri + id, {
       method: "GET",
       headers: {
+        "Content-Type": "application/json",
         Authorization: "Bearer " + token
       }
-    }).then(res => res.json());
+    })
+      .then(res => res.json())
+      .catch(err => {
+        throw err;
+      });
   };
 
   /**
@@ -51,12 +56,36 @@ const UserService = (userUri, token) => {
         password: user.password,
         role: user.role
       }
-    }).then(res => res.json());
+    })
+      .then(res => res.json())
+      .catch(err => {
+        throw err;
+      });
+  };
+
+  /**
+   * Delete a user by id
+   * @memberof UserService
+   * @param {number} id - user id
+   */
+  const deleteOne = id => {
+    return fetch(userUri + id, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token
+      }
+    })
+      .then(res => res.json())
+      .catch(err => {
+        throw err;
+      });
   };
 
   return {
     getOne,
-    updateOne
+    updateOne,
+    deleteOne
   };
 };
 

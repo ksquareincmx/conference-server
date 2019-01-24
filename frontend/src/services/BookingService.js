@@ -78,7 +78,11 @@ const BookingService = (bookingUri, token) => {
         "Content-Type": "application/json",
         Authorization: "Bearer " + token
       }
-    }).then(res => res.json());
+    })
+      .then(res => res.json())
+      .catch(err => {
+        throw err;
+      });
   };
 
   /**
@@ -94,7 +98,11 @@ const BookingService = (bookingUri, token) => {
         "Content-Type": "application/json",
         Authorization: "Bearer " + token
       }
-    }).then(res => res.json());
+    })
+      .then(res => res.json())
+      .catch(err => {
+        throw err;
+      });
   };
 
   /**
@@ -109,7 +117,11 @@ const BookingService = (bookingUri, token) => {
         "Content-Type": "application/json",
         Authorization: "Bearer " + token
       }
-    }).then(res => res.json());
+    })
+      .then(res => res.json())
+      .catch(err => {
+        throw err;
+      });
   };
 
   /**
@@ -125,7 +137,11 @@ const BookingService = (bookingUri, token) => {
         "Content-Type": "application/json",
         Authorization: "Bearer " + token
       }
-    }).then(res => res.json());
+    })
+      .then(res => res.json())
+      .catch(err => {
+        throw err;
+      });
   };
 
   /**
@@ -149,7 +165,11 @@ const BookingService = (bookingUri, token) => {
         "Content-Type": "application/json",
         Authorization: "Bearer " + token
       }
-    }).then(res => res.json());
+    })
+      .then(res => res.json())
+      .catch(err => {
+        throw err;
+      });
   };
 
   /**
@@ -165,7 +185,11 @@ const BookingService = (bookingUri, token) => {
         "Content-Type": "application/json",
         Authorization: "Bearer " + token
       }
-    }).then(res => res.json());
+    })
+      .then(res => res.json())
+      .catch(err => {
+        throw err;
+      });
   };
 
   return {
