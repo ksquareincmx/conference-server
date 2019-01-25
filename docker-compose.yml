@@ -31,10 +31,7 @@ services:
       context: .
       dockerfile: .docker/frontend.dockerfile
     ports:
-      - target: 3000
-        published: ${FRONTEND_PORT}
-        protocol: tcp
-        mode: host
+      - "3000:${FRONTEND_PORT}"
 
 volumes:
   database: {}
