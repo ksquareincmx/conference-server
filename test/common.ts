@@ -1,5 +1,6 @@
 // Import DB setup and models
 import { db } from "../app/db";
+import { IUserId, IUserLogin } from "../app/interfaces/UserInterfaces";
 import { Booking } from "../app/models/Booking";
 import { JWTBlacklist } from "../app/models/JWTBlacklist";
 import { Profile } from "../app/models/Profile";
@@ -12,12 +13,7 @@ import chaiHttp = require("chai-http");
 let should = chai.should();
 chai.use(chaiHttp);
 
-interface UserData {
-  profileId: string;
-  userId: string;
-}
-
-interface Credentials {
+interface ICredential {
   token: string;
   blackListedToken: string;
   refreshToken: string;
@@ -26,12 +22,13 @@ interface Credentials {
 export {
   Booking,
   chai,
-  Credentials,
+  ICredential,
+  IUserId,
+  IUserLogin,
   db,
   JWTBlacklist,
   should,
   User,
-  UserData,
-  Room,
-  Profile
+  Profile,
+  Room
 };
