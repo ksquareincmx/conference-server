@@ -8,9 +8,28 @@
     "apidoc": "apidoc -i app/controllers/ -o public/apidoc/",
     "build": "gulp",
     "start": "node --require source-map-support/register dist/main.js",
-    "test": "mocha --require ts-node/register test/**/*main.ts",
+    "test": "nyc mocha",
     "migrate": "sequelize db:migrate",
     "jsdoc": "jsdoc -c jsdoc.conf.json"
+  },
+  "nyc": {
+    "include": [
+      "app/**/*.ts",
+      "app/**/*.tsx"
+    ],
+    "extension": [
+      ".ts",
+      ".tsx"
+    ],
+    "require": [
+      "ts-node/register"
+    ],
+    "reporter": [
+      "text",
+      "html"
+    ],
+    "sourceMap": true,
+    "instrument": true
   },
   "apidoc": {
     "title": "conference booking",
@@ -51,6 +70,7 @@
     "jsdoc": "^3.5.5",
     "mocha": "^5.2.0",
     "natives": "^1.1.6",
+    "nyc": "^13.1.0",
     "run-sequence": "2.2.1",
     "should": "^13.2.3",
     "sqlite3": "4.0.2",

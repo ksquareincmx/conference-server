@@ -169,5 +169,5 @@ describe("Main", function() {
   roomTest(auth);
   profileTest(auth, userData);
   userTest(auth, userData);
-  // bookingTest(auth, userData);
+  bookingTest(auth, userData);
 });
