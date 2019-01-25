@@ -1,9 +1,9 @@
 // Import the dev-dependencies
-import { chai, Credentials, User, UserData } from "../common";
+import { chai, ICredential, IUserId, IUserLogin, User } from "../common";
 
 const apiPath = "http://localhost:8888/api/v1/User/";
 
-export const userTest = (auth: Credentials, user: UserData) => {
+export const userTest = (auth: ICredential, user: IUserId) => {
   describe("User", () => {
     /*
      * Test the /GET route
@@ -12,7 +12,7 @@ export const userTest = (auth: Credentials, user: UserData) => {
       it("it should get the user", done => {
         chai
           .request(apiPath)
-          .get(user.userId)
+          .get(user.id)
           .set("Authorization", auth.token)
           .end((err, res) => {
             if (err) {
@@ -47,7 +47,7 @@ export const userTest = (auth: Credentials, user: UserData) => {
       it("it should not get the user if auth.token is not correct", done => {
         chai
           .request(apiPath)
-          .get(user.userId)
+          .get(user.id)
           .set("Authorization", "")
           .end((err, res) => {
             if (err) {
@@ -65,7 +65,7 @@ export const userTest = (auth: Credentials, user: UserData) => {
       it("it should not get the user if auth.token is not provided", done => {
         chai
           .request(apiPath)
-          .get(user.userId)
+          .get(user.id)
           .end((err, res) => {
             if (err) {
               throw err;
@@ -79,7 +79,7 @@ export const userTest = (auth: Credentials, user: UserData) => {
       it("it should not get the user if auth.token is blacklisted", done => {
         chai
           .request(apiPath)
-          .get(user.userId)
+          .get(user.id)
           .set("Authorization", auth.blackListedToken)
           .end((err, res) => {
             if (err) {
@@ -110,7 +110,7 @@ export const userTest = (auth: Credentials, user: UserData) => {
       it("it should edit the user", done => {
         chai
           .request(apiPath)
-          .put(user.userId)
+          .put(user.id)
           .send(testEdited)
           .set("Authorization", auth.token)
           .end((err, res) => {
@@ -139,7 +139,6 @@ export const userTest = (auth: Credentials, user: UserData) => {
               throw err;
             }
             res.should.have.status(404);
-            // res.body.should.be.an("string").and.equal("Not Found");
             res.body.should.be.an("object").and.deep.equal({});
             done();
           });
@@ -148,7 +147,7 @@ export const userTest = (auth: Credentials, user: UserData) => {
       it("it should not edit the user if auth.token is not correct", done => {
         chai
           .request(apiPath)
-          .put(user.userId)
+          .put(user.id)
           .send(testEdited)
           .set("Authorization", "")
           .end((err, res) => {
@@ -167,7 +166,7 @@ export const userTest = (auth: Credentials, user: UserData) => {
       it("it should not edit the user if auth.token is not provided", done => {
         chai
           .request(apiPath)
-          .put(user.userId)
+          .put(user.id)
           .send(testEdited)
           .end((err, res) => {
             if (err) {
@@ -182,7 +181,7 @@ export const userTest = (auth: Credentials, user: UserData) => {
       it("it should not edit the user if auth.token is blacklisted", done => {
         chai
           .request(apiPath)
-          .put(user.userId)
+          .put(user.id)
           .send(testEdited)
           .set("Authorization", auth.blackListedToken)
           .end((err, res) => {
@@ -204,26 +203,34 @@ export const userTest = (auth: Credentials, user: UserData) => {
      */
     describe("DELETE", () => {
       let userId: string;
-      const userToDelete = {
+      const userToDelete: IUserLogin = {
         email: "deleteUser@test.com",
         password: "12345678"
       };
 
       before(async function() {
-        const createdUser: any = await User.create({
-          ...userToDelete,
-          role: "admin"
-        });
-        userId = createdUser.id.toString();
+        try {
+          const createdUser: any = await User.create({
+            ...userToDelete,
+            role: "admin"
+          });
+          userId = createdUser.id.toString();
+        } catch (err) {
+          throw err;
+        }
       });
 
       after(async function() {
-        // Delete user if it still exists after the delete test.
-        const user: any = await User.findOne({
-          where: { id: userId }
-        });
-        if (user) {
-          await User.destroy({ where: { id: userId } });
+        try {
+          // Delete user if it still exists after the delete test.
+          const user: any = await User.findOne({
+            where: { id: userId }
+          });
+          if (user) {
+              await User.destroy({ where: { id: userId } });
+          }
+        } catch (err) {
+          throw err;
         }
       });
 

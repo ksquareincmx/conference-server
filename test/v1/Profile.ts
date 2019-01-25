@@ -1,9 +1,9 @@
 // Import DB setup and models
-import { chai, Credentials, UserData } from "../common";
+import { chai, ICredential, IUserId } from "../common";
 
 const apiPath = "http://localhost:8888/api/v1/Profile/";
 
-export const profileTest = (auth: Credentials, user: UserData) => {
+export const profileTest = (auth: ICredential, user: IUserId) => {
   describe("Profile", () => {
     /*
      * Test the /GET route
@@ -12,7 +12,7 @@ export const profileTest = (auth: Credentials, user: UserData) => {
       it("it should get the given profile", done => {
         chai
           .request(apiPath)
-          .get(user.profileId)
+          .get(user.id)
           .set("Authorization", auth.token)
           .end((err, res) => {
             if (err) {
@@ -48,7 +48,7 @@ export const profileTest = (auth: Credentials, user: UserData) => {
       it("it should not get the profile if auth.token is not correct", done => {
         chai
           .request(apiPath)
-          .get(user.profileId)
+          .get(user.id)
           .set("Authorization", "")
           .end((err, res) => {
             if (err) {
@@ -66,7 +66,7 @@ export const profileTest = (auth: Credentials, user: UserData) => {
       it("it should not get the profile if auth.token is not provided", done => {
         chai
           .request(apiPath)
-          .get(user.profileId)
+          .get(user.id)
           .end((err, res) => {
             if (err) {
               throw err;
@@ -80,7 +80,7 @@ export const profileTest = (auth: Credentials, user: UserData) => {
       it("it should not get the profile if auth.token is blacklisted", done => {
         chai
           .request(apiPath)
-          .get(user.profileId)
+          .get(user.id)
           .set("Authorization", auth.blackListedToken)
           .end((err, res) => {
             if (err) {
@@ -132,7 +132,6 @@ export const profileTest = (auth: Credentials, user: UserData) => {
         chai
           .request(apiPath)
           .put("100")
-
           .send(editedProfile)
           .set("Authorization", auth.token)
           .end((err, res) => {

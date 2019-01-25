@@ -1,9 +1,9 @@
 // Import the dev-dependencies
-import { chai, Credentials, Room } from "../common";
+import { chai, ICredential, Room } from "../common";
 
 const apiPath = "http://localhost:8888/api/v1/Room/";
 
-export const roomTest = (auth: Credentials) => {
+export const roomTest = (auth: ICredential) => {
   describe("Room", () => {
     let roomId: string;
     const testRoom = {
@@ -13,18 +13,26 @@ export const roomTest = (auth: Credentials) => {
     };
 
     before(async function() {
-      // Create test room
-      const createdRoom: any = await Room.create(testRoom);
-      roomId = createdRoom.id.toString();
+      try {
+        // Create test room
+        const createdRoom: any = await Room.create(testRoom);
+        roomId = createdRoom.id.toString();
+      } catch (err) {
+        throw err;
+      }
     });
 
     after(async function() {
-      // Delete room if it still exists after the delete test.
-      const room: any = await Room.findOne({
-        where: { id: roomId }
-      });
-      if (room) {
-        await Room.destroy({ where: { id: roomId } });
+      try {
+        // Delete room if it still exists after the delete test.
+        const room: any = await Room.findOne({
+          where: { id: roomId }
+        });
+        if (room) {
+          await Room.destroy({ where: { id: roomId } });
+        }
+      } catch (err) {
+        throw err;
       }
     });
 
@@ -130,12 +138,16 @@ export const roomTest = (auth: Credentials) => {
       };
 
       after(async function() {
-        // Delete the created room.
-        const room: any = await Room.findOne({
-          where: createdRoom
-        });
-        if (room) {
-          await Room.destroy({ where: { id: room.id } });
+        try {
+          // Delete the created room.
+          const room: any = await Room.findOne({
+            where: createdRoom
+          });
+          if (room) {
+            await Room.destroy({ where: { id: room.id } });
+          }
+        } catch (err) {
+          throw err;
         }
       });
 
@@ -279,7 +291,6 @@ export const roomTest = (auth: Credentials) => {
               throw err;
             }
             res.should.have.status(500); // Internal Server Error
-            // res.body.should.be.an("string").and.equal("Not Found");
             res.body.should.be.an("object").and.deep.equal({});
             done();
           });
@@ -369,7 +380,6 @@ export const roomTest = (auth: Credentials) => {
               throw err;
             }
             res.should.have.status(404);
-            // res.body.should.be.an("string").and.equal("Not Found");
             res.body.should.be.an("object").and.deep.equal({});
             done();
           });

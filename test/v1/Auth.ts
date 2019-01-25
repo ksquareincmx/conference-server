@@ -1,27 +1,31 @@
-import { chai, Credentials, User } from "../common";
+import { chai, ICredential, IUserLogin, User } from "../common";
 
 const apiPath = "http://localhost:8888/api/v1/auth/";
 
 export const authTest = (
-  auth: Credentials,
-  testUser: { email: string; password: string }
+  auth: ICredential,
+  testUser: IUserLogin
 ) => {
   describe("Auth", () => {
     /*
      * Test the /register route
      */
     describe("/register", () => {
-      const registerUser = {
+      const registerUser: IUserLogin = {
         email: "register@test.com",
         password: "12345678"
       };
 
       after(async function() {
-        const user: any = await User.findOne({
-          where: { email: registerUser.email }
-        });
-        if (user) {
-          await User.destroy({ where: { id: user.id } });
+        try {
+          const user: any = await User.findOne({
+            where: { email: registerUser.email }
+          });
+          if (user) {
+            await User.destroy({ where: { id: user.id } });
+          }
+        } catch (err) {
+          throw err;
         }
       });
 
@@ -102,26 +106,25 @@ export const authTest = (
           });
       });
 
-      // it("it should not login if email is not registered", (done) => {
-      //   chai.request(apiPath)
-      //       .post("/login")
-      //       .type("form")
-      //       .send({
-      //         email: "somthing@test.com",
-      //         password: "12345678"
-      //       })
-      //       .end((err, res) => {
-      //         res.should.have.status(403);
-      //         res.body.should.be.a("string").and.equal("email not registered");
-      //         done();
-      //       });
-      // });
+      it.skip("it should not login if email is not registered", (done) => {
+        chai.request(apiPath)
+            .post("/login")
+            .type("form")
+            .send({
+              email: "somthing@test.com",
+              password: "12345678"
+            })
+            .end((err, res) => {
+              res.should.have.status(403);
+              res.body.should.be.a("string").and.equal("email not registered");
+              done();
+            });
+      });
 
       it("it should not login if password is incorrect", done => {
         chai
           .request(apiPath)
           .post("/login")
-
           .send({
             ...testUser,
             password: "1234567"
@@ -136,20 +139,20 @@ export const authTest = (
           });
       });
 
-      // it("it should not login if params are invalid", (done) => {
-      //   chai.request(apiPath)
-      //       .post("/register")
-      //       .type("form")
-      //       .send({
-      //         email: "notRegistered@test.com",
-      //         password: "12345678"
-      //       })
-      //       .end((err, res) => {
-      //         res.should.have.status(403);
-      //         res.body.should.be.a("string").and.equal("email in use");
-      //         done();
-      //       });
-      // });
+      it.skip("it should not login if params are invalid", (done) => {
+        chai.request(apiPath)
+            .post("/register")
+            .type("form")
+            .send({
+              email: "notRegistered@test.com",
+              password: "12345678"
+            })
+            .end((err, res) => {
+              res.should.have.status(403);
+              res.body.should.be.a("string").and.equal("email in use");
+              done();
+            });
+      });
     });
 
     /*
@@ -157,13 +160,17 @@ export const authTest = (
      */
     describe("/logout", () => {
       after(async function() {
-        // Redo Login
-        const credentials = await chai
-          .request(apiPath)
-          .post("/login")
-          .send(testUser);
-        auth.refreshToken = `Bearer ${credentials.body.refresh_token.token}`;
-        auth.token = `Bearer ${credentials.body.token}`;
+        try {
+          // Redo Login
+          const credentials = await chai
+            .request(apiPath)
+            .post("/login")
+            .send(testUser);
+          auth.refreshToken = `Bearer ${credentials.body.refresh_token.token}`;
+          auth.token = `Bearer ${credentials.body.token}`;
+        } catch (err) {
+          throw err;
+        }
       });
       it("it should logout the user", done => {
         chai
@@ -357,7 +364,6 @@ export const authTest = (
             res.body.should.be.an("object").and.deep.equal({
               name: "Error",
               message: "This Token is blacklisted"
-              // "message": "This token cannot be used for this request."
             });
             done();
           });

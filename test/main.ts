@@ -1,15 +1,14 @@
-// During the test the env variable is set to test
-process.env.NODE_ENV = "test";
 require("dotenv").config();
 
 import { config } from "../app/config/config";
 import {
-  Credentials,
   db,
+  ICredential,
+  IUserId,
+  IUserLogin,
   JWTBlacklist,
   Profile,
   User,
-  UserData
 } from "./common";
 
 import * as jwt from "jsonwebtoken";
@@ -100,67 +99,75 @@ const createToken = (user: any, type: string) => {
 };
 
 describe("Main", function() {
-  const userData: UserData = {
-    userId: "",
+  const userData: IUserId = {
+    id: "",
     profileId: ""
   };
 
-  const authCredentials: Credentials = {
+  const auth: ICredential = {
     token: "",
     blackListedToken: "",
     refreshToken: ""
   };
 
-  const testUser = {
+  const testUser: IUserLogin = {
     email: "testuser@test.com",
     password: "12345678"
   };
 
   before(async function() {
-    // Open db connection if it is not currently open.
-    const isConnectionOpen = !!db.authenticate();
-    if (!isConnectionOpen) {
-      await db.sync();
+    try {
+      // Open db connection if it is not currently open.
+      const isConnectionOpen = !!db.authenticate();
+      if (!isConnectionOpen) {
+        await db.sync();
+      }
+
+      // Before testing it is convenient to create a new user..
+      const createdUser = await User.create({ ...testUser, role: "admin" });
+      const user = await User.findOne({
+        where: { id: createdUser.id },
+        include: [{ model: Profile, as: "profile" }]
+      });
+      userData.id = createdUser.id.toString();
+      userData.profileId = user.profile.id.toString();
+
+      // Log in
+      const expiredCredentials = await login(testUser);
+      auth.blackListedToken = `Bearer ${expiredCredentials.token}`;
+
+      // Log out to blacklist the token.
+      await logout(
+        auth.blackListedToken,
+        expiredCredentials.expires
+      );
+
+      const credentials = await login(testUser);
+      auth.token = `Bearer ${credentials.token}`;
+      auth.refreshToken = `Bearer ${credentials.refresh_token.token}`;
+    } catch (err) {
+      throw err;
     }
-
-    // Before testing it is convenient to create a new user..
-    const createdUser: any = await User.create({ ...testUser, role: "admin" });
-    const user: any = await User.findOne({
-      where: { id: createdUser.id },
-      include: [{ model: Profile, as: "profile" }]
-    });
-    userData.userId = createdUser.id.toString();
-    userData.profileId = user.profile.id.toString();
-
-    // Log in
-    const expiredCredentials = await login(testUser);
-    authCredentials.blackListedToken = `Bearer ${expiredCredentials.token}`;
-
-    // Log out to blacklist the token.
-    const somt = await logout(
-      authCredentials.blackListedToken,
-      expiredCredentials.expires
-    );
-
-    const credentials = await login(testUser);
-    authCredentials.token = `Bearer ${credentials.token}`;
-    authCredentials.refreshToken = `Bearer ${credentials.refresh_token.token}`;
   });
 
   after(async function() {
-    // Delete user after all tests.
-    const user: any = await User.findOne({
-      where: { id: userData.userId }
-    });
-    if (user) {
-      await User.destroy({ where: { id: userData.userId } });
+    try {
+      // Delete user after all tests.
+      const user: any = await User.findOne({
+        where: { id: userData.id }
+      });
+      if (user) {
+        await User.destroy({ where: { id: userData.id } });
+      }
+      await db.close();
+    } catch (err) {
+      throw err;
     }
-    await db.close();
   });
 
-  authTest(authCredentials, testUser);
-  roomTest(authCredentials);
-  profileTest(authCredentials, userData);
-  userTest(authCredentials, userData);
-  bookingTest(authCredentials, userData);
+  authTest(auth, testUser);
+  roomTest(auth);
+  profileTest(auth, userData);
+  userTest(auth, userData);
+  // bookingTest(auth, userData);
 });

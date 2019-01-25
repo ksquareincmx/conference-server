@@ -1,19 +1,19 @@
 // Import DB setup and models
 
 import {
-  chai,
-  Credentials,
-  db,
-  UserData,
   Booking,
+  chai,
+  db,
+  ICredential,
+  IUserId,
   Room,
-  User
+  User,
 } from "../common";
 
 const apiPath = "/api/v1/booking/";
 const server = "http://localhost:8888";
 
-export const bookingTest = (params: Credentials, user: UserData) => {
+export const bookingTest = (params: ICredential, user: IUserId) => {
   describe("Booking", () => {
     let token;
     let roomId;
