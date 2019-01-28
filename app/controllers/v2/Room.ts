@@ -333,19 +333,14 @@ export class RoomController extends Controller {
   findAvailableHours = async (req: Request, res: Response) => {
     const data: IGetHourParams = { params: req.params, query: req.query };
 
-    // BUG: When a day is passed e.g 2019-12-12 is read like 2019-12-11
-    // TODO: I don't like the way of set fromDate
-    // Check if day exist and is valid
+    // Create a new date for verify it's valid
     const fromDate: Date = data.query.fromDate
-      ? moment(data.query.fromDate)
-          .tz("America/Mexico_City")
-          .format("YYYY-MM-DD")
+      ? moment(data.query.fromDate).format("YYYY-MM-DD")
       : moment()
           .tz("America/Mexico_City")
           .format("YYYY-MM-DD");
 
-    // TODO: Research ways of validate date
-    const isValidDate = date => date.toString() !== "Invalid Date";
+    const isValidDate = date => date.toString() !== "Invalid date";
 
     if (!isEmpty(data.query.fromDate) && !isValidDate(fromDate)) {
       return Controller.badRequest(
@@ -355,6 +350,12 @@ export class RoomController extends Controller {
     }
 
     try {
+      const room = await this.model.findById(data.params.id);
+
+      if (!room) {
+        return Controller.badRequest(res, "Room not exist");
+      }
+
       const bookings = await Booking.findAll({
         where: {
           roomId: data.params.id,
@@ -364,7 +365,6 @@ export class RoomController extends Controller {
       });
 
       // Get hours when the conference room is reserved
-      // This depend of Booking Model
       const getBookingHours = (booking: Booking) => {
         const parsedBooking = booking.toJSON();
         return {
@@ -373,7 +373,6 @@ export class RoomController extends Controller {
         };
       };
 
-      // TODO: compose instead of chain
       const occupiedHours: IHour[] = _.chain(bookings)
         .map(getBookingHours)
         .sortBy("start")
@@ -383,7 +382,6 @@ export class RoomController extends Controller {
       occupiedHours.unshift({ start: "00:00", end: "08:00" });
       occupiedHours.push({ start: "18:00", end: "23:59" });
 
-      // TODO: compose instead of chain
       // Get hours when the conference room is free
       const freeHours: IHour[] = _.chain(occupiedHours)
         .map((hour, i, arr) => {
