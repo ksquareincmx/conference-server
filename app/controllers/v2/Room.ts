@@ -1,4 +1,6 @@
 import { Op } from "sequelize";
+import * as moment from "moment-timezone";
+import * as _ from "lodash";
 import { Controller } from "./../../libraries/Controller";
 import { getActualDate } from "./../../libraries/util";
 import { Room } from "./../../models/Room";
@@ -19,7 +21,7 @@ import {
   ICreateRoomRequest
 } from "./../../interfaces/RoomInterfaces";
 import { roomMapper } from "./../../mappers/RoomMapper";
-import { IGetHourParams } from "./../../interfaces/HourInterfaces";
+import { IGetHourParams, IHour } from "./../../interfaces/HourInterfaces";
 import { hourMapper } from "./../../mappers/HourMapper";
 
 export class RoomController extends Controller {
@@ -161,7 +163,7 @@ export class RoomController extends Controller {
     );
 
     /**
-    @api {get} /api/v2/Hours/ Gets a list of Hours available for made a booking
+    @api {get} /api/v2/:id/hours/ Gets a list of Hours available for made a booking
     @apiPermission access
     @apiName GetHours
     @apiGroup Hours
@@ -236,7 +238,7 @@ export class RoomController extends Controller {
   findAllRoom = async (req: Request, res: Response) => {
     try {
       const rooms = await this.model.findAll();
-      const parsedRooms = JSON.parse(JSON.stringify(rooms, null, 2));
+      const parsedRooms = rooms.map(room => room.toJSON());
 
       const roomsBooking = parsedRooms.map(async room => {
         const roomStatus = await this.roomStatus(room["id"]);
@@ -278,8 +280,8 @@ export class RoomController extends Controller {
       }
 
       const roomCreated = await this.model.create(data.body);
-      const parsedRoom = JSON.parse(JSON.stringify(roomCreated));
-      const DTORoom = roomMapper.toDTO(parsedRoom);
+      const DTORoom = roomMapper.toDTO(roomCreated.toJSON());
+
       return res.status(200).json(DTORoom);
     } catch (err) {
       return Controller.serverError(res);
@@ -319,8 +321,8 @@ export class RoomController extends Controller {
         ...data.body,
         ...data.params
       });
-      const parsedRoom = JSON.parse(JSON.stringify(roomUpdated));
-      const DTORoom = roomMapper.toDTO(parsedRoom);
+
+      const DTORoom = roomMapper.toDTO(roomUpdated.toJSON());
 
       return res.status(200).json(DTORoom);
     } catch (err) {
@@ -329,10 +331,75 @@ export class RoomController extends Controller {
   };
 
   findAvailableHours = async (req: Request, res: Response) => {
-    const data: IGetHourParams = req.query;
+    const data: IGetHourParams = { params: req.params, query: req.query };
 
-    console.log(data);
-    console.log("Hours");
+    // BUG: When a day is passed e.g 2019-12-12 is read like 2019-12-11
+    // TODO: I don't like the way of set fromDate
+    // Check if day exist and is valid
+    const fromDate: Date = data.query.fromDate
+      ? moment(data.query.fromDate)
+          .tz("America/Mexico_City")
+          .format("YYYY-MM-DD")
+      : moment()
+          .tz("America/Mexico_City")
+          .format("YYYY-MM-DD");
+
+    // TODO: Research ways of validate date
+    const isValidDate = date => date.toString() !== "Invalid Date";
+
+    if (!isEmpty(data.query.fromDate) && !isValidDate(fromDate)) {
+      return Controller.badRequest(
+        res,
+        "Bad Request: fromDate must be a date in format YYYY-MM-DD"
+      );
+    }
+
+    try {
+      const bookings = await Booking.findAll({
+        where: {
+          roomId: data.params.id,
+          start: { [Op.gte]: `${fromDate}T08:00:00` },
+          end: { [Op.lte]: `${fromDate}T18:00:00` }
+        }
+      });
+
+      // Get hours when the conference room is reserved
+      // This depend of Booking Model
+      const getBookingHours = (booking: Booking) => {
+        const parsedBooking = booking.toJSON();
+        return {
+          start: parsedBooking.start.toJSON().slice(11, 16),
+          end: parsedBooking.end.toJSON().slice(11, 16)
+        };
+      };
+
+      // TODO: compose instead of chain
+      const occupiedHours: IHour[] = _.chain(bookings)
+        .map(getBookingHours)
+        .sortBy("start")
+        .value();
+
+      // Add to occupiedHours edge Hours
+      occupiedHours.unshift({ start: "00:00", end: "08:00" });
+      occupiedHours.push({ start: "18:00", end: "23:59" });
+
+      // TODO: compose instead of chain
+      // Get hours when the conference room is free
+      const freeHours: IHour[] = _.chain(occupiedHours)
+        .map((hour, i, arr) => {
+          if (i < arr.length - 1) {
+            return hour.end !== arr[i + 1].start
+              ? { start: hour.end, end: arr[i + 1].start }
+              : null;
+          }
+        })
+        .filter()
+        .value();
+
+      return res.status(200).json(freeHours);
+    } catch (err) {
+      return Controller.serverError(res, err);
+    }
   };
 }
 

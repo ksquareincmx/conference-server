@@ -1,6 +1,6 @@
-interface IHour {
-  start: Date;
-  end: Date;
+export interface IHour {
+  start: string;
+  end: string;
 }
 
 export interface IHourResponse {
@@ -10,5 +10,8 @@ export interface IHourResponse {
 export interface IGetHourParams {
   params: {
     id: number;
+  };
+  query: {
+    fromDate: Date;
   };
 }
