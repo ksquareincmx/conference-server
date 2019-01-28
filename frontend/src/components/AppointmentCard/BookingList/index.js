@@ -1,1 +1,3 @@
-export { default } from "components/AppointmentCard/BookingList/BookingList";
+export {
+  default
+} from "components/AppointmentCard/BookingList/BookingListLogic";
