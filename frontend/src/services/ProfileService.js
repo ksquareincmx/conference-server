@@ -28,7 +28,7 @@ const ProfileService = (profileUri, token) => {
     })
       .then(res => res.json())
       .catch(err => {
-        throw err;
+        return new Error("An error occurred whith the request");
       });
   };
 
@@ -47,7 +47,7 @@ const ProfileService = (profileUri, token) => {
     })
       .then(res => res.json())
       .catch(err => {
-        throw err;
+        return new Error("An error occurred whith the request");
       });
   };
 
@@ -71,7 +71,7 @@ const ProfileService = (profileUri, token) => {
     })
       .then(res => res.json())
       .catch(err => {
-        throw err;
+        return new Error("An error occurred whith the request");
       });
   };
 

@@ -31,7 +31,7 @@ const UserService = (userUri, token) => {
     })
       .then(res => res.json())
       .catch(err => {
-        throw err;
+        return new Error("An error occurred whith the request");
       });
   };
 
@@ -59,7 +59,7 @@ const UserService = (userUri, token) => {
     })
       .then(res => res.json())
       .catch(err => {
-        throw err;
+        return new Error("An error occurred whith the request");
       });
   };
 
@@ -78,7 +78,7 @@ const UserService = (userUri, token) => {
     })
       .then(res => res.json())
       .catch(err => {
-        throw err;
+        return new Error("An error occurred whith the request");
       });
   };
 

@@ -49,7 +49,7 @@ const AuthService = authUri => {
     })
       .then(res => res.json())
       .catch(err => {
-        throw err;
+        return new Error("An error occurred whith the request");
       });
   };
 
