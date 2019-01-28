@@ -11,10 +11,19 @@ export interface IGetUserParams {
     id: number;
   };
 }
-
 export interface IUserRequest {
   picture: string;
   name: string;
   email: string;
   password: string;
+}
+
+export interface IUserLogin {
+  email: string;
+  password: string;
+}
+
+export interface IUserId {
+  id: string;
+  profileId: string;
 }

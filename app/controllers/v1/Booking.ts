@@ -255,11 +255,10 @@ export class BookingController extends Controller {
           .status(409)
           .send({ code: 409, message: "Cannot cancel a past meeting" });
       }
-
       await calendarService.deleteEvent(booking.eventId);
       this.destroy(req, res);
     } catch (err) {
-      return Controller.serverError(res);
+      return Controller.serverError(res, err);
     }
   };
 
