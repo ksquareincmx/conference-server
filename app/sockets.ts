@@ -1,7 +1,7 @@
 import * as Socketio from "socket.io";
 import * as _ from "lodash";
 import { server } from "./server";
-import { default as auth } from "./controllers/v1/Auth";
+import { default as auth } from "./controllers/v2/Auth";
 import { Request, Response } from "express-serve-static-core";
 import { db } from "./db";
 import EventService from "./services/EventService";
