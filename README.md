@@ -2,13 +2,11 @@
 
 conference-booking Server, based on Flugzeug.
 
-## Production
+## Production / Staging
 
 Check the `.env.example` file to set up the appropriate environment variables and run `docker-compose up --build`.
 
-## Staging
-
-Check a [basic deploy strategy](https://github.com/ksquarelabsmx/conference-server/wiki/Basic-deploy-strategy-using-Docker,-Git-hooks,-nginx-and-FCGI-Wrap) in the wiki.
+Check a [basic deploy strategy](https://github.com/ksquarelabsmx/conference-server/wiki/Basic-deploy-strategy-using-Docker,-Git-hooks,-nginx-and-FCGI-Wrap) in the wiki to set up a CI environment.
 
 ## Development
 
