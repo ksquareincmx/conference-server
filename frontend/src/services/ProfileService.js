@@ -6,14 +6,15 @@
 
 /**
  * @version 1.0
- * @exports BookingService
- * @namespace BookingService
+ * @exports ProfileService
+ * @namespace ProfileService
  * @property {string} profileUri - profile uri
  * @property {string} token - user token
  */
 const ProfileService = (profileUri, token) => {
   /**
    * Return a profile finded by id
+   * @memberof ProfileService
    * @param {number} id - profile id
    * @returns {Profile}
    */
@@ -24,11 +25,16 @@ const ProfileService = (profileUri, token) => {
         "Content-Type": "application/json",
         Authorization: "Bearer " + token
       }
-    }).then(res => res.json());
+    })
+      .then(res => res.json())
+      .catch(err => {
+        return new Error("An error occurred whith the request");
+      });
   };
 
   /**
    * Returns all Profiles
+   * @memberof ProfileService
    * @returns {Profile[]}
    */
   const getAll = () => {
@@ -38,7 +44,11 @@ const ProfileService = (profileUri, token) => {
         "Content-Type": "application/json",
         Authorization: "Bearer " + token
       }
-    }).then(res => res.json());
+    })
+      .then(res => res.json())
+      .catch(err => {
+        return new Error("An error occurred whith the request");
+      });
   };
 
   /**
@@ -58,7 +68,11 @@ const ProfileService = (profileUri, token) => {
         time_zone: profile.time_zone,
         locale: profile.locale
       }
-    }).then(res => res.json());
+    })
+      .then(res => res.json())
+      .catch(err => {
+        return new Error("An error occurred whith the request");
+      });
   };
 
   return {

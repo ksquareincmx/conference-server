@@ -78,7 +78,11 @@ const BookingService = (bookingUri, token) => {
         "Content-Type": "application/json",
         Authorization: "Bearer " + token
       }
-    }).then(res => res.json());
+    })
+      .then(res => res.json())
+      .catch(err => {
+        return new Error("An error occurred whith the request");
+      });
   };
 
   /**
@@ -94,7 +98,11 @@ const BookingService = (bookingUri, token) => {
         "Content-Type": "application/json",
         Authorization: "Bearer " + token
       }
-    }).then(res => res.json());
+    })
+      .then(res => res.json())
+      .catch(err => {
+        return new Error("An error occurred whith the request");
+      });
   };
 
   /**
@@ -109,7 +117,11 @@ const BookingService = (bookingUri, token) => {
         "Content-Type": "application/json",
         Authorization: "Bearer " + token
       }
-    }).then(res => res.json());
+    })
+      .then(res => res.json())
+      .catch(err => {
+        return new Error("An error occurred whith the request");
+      });
   };
 
   /**
@@ -125,7 +137,11 @@ const BookingService = (bookingUri, token) => {
         "Content-Type": "application/json",
         Authorization: "Bearer " + token
       }
-    }).then(res => res.json());
+    })
+      .then(res => res.json())
+      .catch(err => {
+        return new Error("An error occurred whith the request");
+      });
   };
 
   /**
@@ -149,7 +165,11 @@ const BookingService = (bookingUri, token) => {
         "Content-Type": "application/json",
         Authorization: "Bearer " + token
       }
-    }).then(res => res.json());
+    })
+      .then(res => res.json())
+      .catch(err => {
+        return new Error("An error occurred whith the request");
+      });
   };
 
   /**
@@ -165,7 +185,11 @@ const BookingService = (bookingUri, token) => {
         "Content-Type": "application/json",
         Authorization: "Bearer " + token
       }
-    }).then(res => res.json());
+    })
+      .then(res => res.json())
+      .catch(err => {
+        return new Error("An error occurred whith the request");
+      });
   };
 
   return {

@@ -46,18 +46,11 @@ const AuthService = authUri => {
       headers: {
         "Content-Type": "application/json"
       }
-    }).then(res => {
-      switch (res.status) {
-        case 200:
-          return res.json();
-        case 401:
-          return reject(new Error("ERROR 401: Unauthorized Account"));
-        case 403:
-          return reject(new Error("ERROR 403"));
-        default:
-          return reject(new Error("Unknow error"));
-      }
-    });
+    })
+      .then(res => res.json())
+      .catch(err => {
+        return new Error("An error occurred whith the request");
+      });
   };
 
   return { onLogin };
