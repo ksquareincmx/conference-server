@@ -163,7 +163,7 @@ describe("Main", function() {
   });
 
   authTest(auth, testUser);
-  roomTest(auth);
+  roomTest(auth, userData);
   profileTest(auth, userData);
   userTest(auth, userData);
   bookingTest(auth, userData);

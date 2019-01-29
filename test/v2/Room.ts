@@ -1,9 +1,9 @@
 // Import the dev-dependencies
-import { chai, ICredential, Room } from "../common";
+import { chai, ICredential, IUserId, Room, Booking } from "../common";
 
 const apiPath = "http://localhost:8888/api/v2/Room/";
 
-export const roomTest = (auth: ICredential) => {
+export const roomTest = (auth: ICredential, user: IUserId) => {
   describe("Room", () => {
     let roomId: string;
     const testRoom = {
@@ -40,6 +40,44 @@ export const roomTest = (auth: ICredential) => {
      * Test the /GET route
      */
     describe("GET", () => {
+      const bookingsId = [];
+      // Create bookings for test booking/:id/hours
+
+      before(async function() {
+        try {
+          const bookingsTest = [
+            {
+              description: "This is a test booking",
+              start: "2019-12-12T09:00:00.000Z",
+              end: "2019-12-12T10:00:00.000Z",
+              roomId,
+              userId: user.id
+            },
+            {
+              description: "This is a test booking x2",
+              start: "2019-12-12T14:00:00.000Z",
+              end: "2019-12-12T15:00:00.000Z",
+              roomId,
+              userId: user.id
+            }
+          ];
+          const createdBooking1: any = await Booking.create(bookingsTest[0]);
+          const createdBooking2: any = await Booking.create(bookingsTest[1]);
+
+          bookingsId.push(createdBooking1.id);
+          bookingsId.push(createdBooking2.id);
+        } catch (err) {
+          throw err;
+        }
+      });
+
+      after(async function() {
+        try {
+          await Booking.destroy({ where: { id: bookingsId[0] } });
+          await Booking.destroy({ where: { id: bookingsId[1] } });
+        } catch (err) {}
+      });
+
       it("it should get the room", done => {
         chai
           .request(apiPath)
@@ -126,11 +164,85 @@ export const roomTest = (auth: ICredential) => {
           });
       });
 
-      it.skip("it should get a hours availables if booking non-exist", done => {});
-      it.skip("it should get a hours availables if bookings exists", done => {});
-      it.skip("it should get a hours availables if booking non-exist with default date", done => {});
-      it.skip("it should get a hours availables if bookings exists with default date", done => {});
-      it.skip("it should get a bad request if room exists", done => {});
+      it("it should get a hours availables if booking non-exist with default date", done => {
+        chai
+          .request(apiPath)
+          .get(`${roomId}/hours`)
+          .set("Authorization", auth.token)
+          .end((err, res) => {
+            if (err) {
+              throw err;
+            }
+            res.should.have.status(200);
+            res.body.should.be.an("array");
+            res.body[0].should.be.an("object").and.deep.equal({
+              start: "08:00",
+              end: "18:00"
+            });
+            done();
+          });
+      });
+
+      it("it should get a hours availables if bookings exists with input date", done => {
+        chai
+          .request(apiPath)
+          .get(`${roomId}/hours?fromDate=2019-12-12`)
+          .set("Authorization", auth.token)
+          .end((err, res) => {
+            if (err) {
+              throw err;
+            }
+            res.should.have.status(200);
+            res.body.should.be.an("array");
+            res.body[0].should.be.an("object").and.deep.equal({
+              start: "08:00",
+              end: "09:00"
+            });
+            res.body[1].should.be.an("object").and.deep.equal({
+              start: "10:00",
+              end: "14:00"
+            });
+            res.body[2].should.be.an("object").and.deep.equal({
+              start: "15:00",
+              end: "18:00"
+            });
+            done();
+          });
+      });
+
+      it("it should get a hours availables if bookings non-exists with input date", done => {
+        chai
+          .request(apiPath)
+          .get(`${roomId}/hours?fromDate=2019-12-24`)
+          .set("Authorization", auth.token)
+          .end((err, res) => {
+            if (err) {
+              throw err;
+            }
+            res.should.have.status(200);
+            res.body.should.be.an("array");
+            res.body[0].should.be.an("object").and.deep.equal({
+              start: "08:00",
+              end: "18:00"
+            });
+            done();
+          });
+      });
+
+      it("it should get a bad request if room exists", done => {
+        chai
+          .request(apiPath)
+          .get(`${99999}/hours`)
+          .set("Authorization", auth.token)
+          .end((err, res) => {
+            if (err) {
+              throw err;
+            }
+            res.should.have.status(400);
+            res.body.should.equal("Room not exist");
+            done();
+          });
+      });
     });
 
     /*

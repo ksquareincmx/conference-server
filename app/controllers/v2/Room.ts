@@ -1,6 +1,7 @@
 import { Op } from "sequelize";
 import * as moment from "moment-timezone";
 import * as _ from "lodash";
+import * as fp from "lodash/fp";
 import { Controller } from "./../../libraries/Controller";
 import { getActualDate } from "./../../libraries/util";
 import { Room } from "./../../models/Room";
