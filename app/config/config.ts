@@ -83,9 +83,7 @@ export const config: any = {
 
   auth: {
     google: {
-      clientId:
-        process.env.GOOGLE_CLIENT_ID ||
-        "129092023456-82964pfqurangtddv4q9g4q62cbq6abm.apps.googleusercontent.com",
+      clientId: process.env.GOOGLE_CLIENT_ID,
       allowedDomains: [
         "prompto.io",
         "ksquareinc.com",
@@ -98,9 +96,7 @@ export const config: any = {
 
   serviceAccount: {
     key: process.env.KEY_SERVICE_ACCOUNT || "The key must be in file .env",
-    serviceAcctId:
-      process.env.SERVICE_ACCOUNT ||
-      "coference-booking@esoteric-cab-228016.iam.gserviceaccount.com",
+    serviceAcctId: process.env.SERVICE_ACCOUNT,
     timezone: process.env.TIMEZONE || "UTC-05:00"
   }
 };
