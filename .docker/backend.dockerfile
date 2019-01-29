@@ -1,4 +1,4 @@
-FROM        node:8
+FROM        node:10
 MAINTAINER  Aldo Fregoso
 
 #
@@ -11,7 +11,7 @@ RUN         chmod +rx /tmp/scripts/*.sh
 # Install prerequisites
 #
 ENV         DEBIAN_FRONTEND=noninteractive
-RUN         ["/tmp/scripts/node-8-image-prerequisites.sh"]
+RUN         ["/tmp/scripts/node-10-image-prerequisites.sh"]
 
 #
 # Install gulp
