@@ -12,6 +12,13 @@ import {
   stripNestedObjects,
   filterRoles
 } from "./../../policies/General";
+import {
+  IRoomResponse,
+  IFindRoomParams,
+  IUpdateRoomRequest,
+  ICreateRoomRequest
+} from "./../../interfaces/RoomInterfaces";
+import { roomMapper } from "./../../mappers/RoomMapper";
 
 export class RoomController extends Controller {
   constructor() {
@@ -58,7 +65,7 @@ export class RoomController extends Controller {
         @apiSuccess  {Number}   body.id                   Room id
         @apiSuccess  {String}   body.name                 Room name
         @apiSuccess  {String}   body.color                The color to show in the UI for this room
-        @apiSuccess  {Boolean}  body.presence             If there is someone in the room
+        @apiSuccess  {Boolean}  body.presence             If there is someone in the room (For future sensor integration)
         @apiSuccess  {Number}   body.bookingIdActual      Booking id that currently occupies the room, null if its not
         @apiSuccess  {String}   body.status               Room avability ("Not Available", "Available")
         @apiSuccess  {Date}     body.updatedAt            Room creation date
@@ -79,13 +86,14 @@ export class RoomController extends Controller {
         @apiParam    {Object}   body                Room details
         @apiParam    {String}   body.name           Room name
         @apiParam    {String}   body.color          The color to show in the UI for this room
-        @apiParam    {Boolean}  body.presence       If there is someone in the room
 
         @apiSuccess  {Object}   body                Room details
         @apiSuccess  {Number}   body.id             Room id
         @apiSuccess  {String}   body.name           Room name
         @apiSuccess  {String}   body.color          The color to show in the UI for this room
-        @apiSuccess  {Boolean}  body.presence       If there is someone in the room
+        @apiSuccess  {Boolean}  body.presence       If there is someone in the room (For future sensor integration)
+        @apiSuccess  {Number}   body.bookingIdActual      Booking id that currently occupies the room, null if its not
+        @apiSuccess  {String}   body.status               Room avability ("Not Available", "Available")
         @apiSuccess  {Date}     body.updatedAt      Room creation date
         @apiSuccess  {Date}     body.createdAt      Room update date
 
@@ -111,13 +119,14 @@ export class RoomController extends Controller {
         @apiParam    {Object}   body                Room details
         @apiParam    {String}   body.name           Room name
         @apiParam    {String}   body.color          The color to show in the UI for this room
-        @apiParam    {Boolean}  body.presence       If there is someone in the room
 
         @apiSuccess  {Object}   body                Room details
         @apiSuccess  {Number}   body.id             Room id
         @apiSuccess  {String}   body.name           Room name
         @apiSuccess  {String}   body.color          The color to show in the UI for this room
-        @apiSuccess  {Boolean}  body.presence       If there is someone in the room
+        @apiSuccess  {Boolean}  body.presence       If there is someone in the room (For future sensor integration)
+        @apiSuccess  {Number}   body.bookingIdActual      Booking id that currently occupies the room, null if its not
+        @apiSuccess  {String}   body.status               Room avability ("Not Available", "Available")
         @apiSuccess  {Date}     body.updatedAt      Room creation date
         @apiSuccess  {Date}     body.createdAt      Room update date
 
@@ -210,10 +219,9 @@ export class RoomController extends Controller {
    */
 
   findOneRoom = async (req: Request, res: Response) => {
-    const roomId = req.params.id;
-
+    const data: IFindRoomParams = { params: req.params };
     try {
-      const room = await this.model.findById(roomId);
+      const room = await this.model.findById(data.params.id);
 
       if (!room) {
         return Controller.notFound(res);
@@ -222,7 +230,8 @@ export class RoomController extends Controller {
       const parsedRoom = JSON.parse(JSON.stringify(room));
       const roomStatus = await this.roomStatus(parsedRoom["id"]);
       const roomBooking = { ...parsedRoom, ...roomStatus };
-      res.status(200).json(roomBooking);
+      const DTORoom = roomMapper.toDTO(roomBooking);
+      res.status(200).json(DTORoom);
     } catch (err) {
       return Controller.serverError(res, err);
     }
@@ -241,30 +250,31 @@ export class RoomController extends Controller {
         const roomStatus = await this.roomStatus(room["id"]);
         return { ...room, ...roomStatus };
       });
+
       const resolvedRooms = await Promise.all(roomsBooking);
-      res.status(200).json(resolvedRooms);
+      const DTORooms = resolvedRooms.map(roomMapper.toDTO);
+      res.status(200).json(DTORooms);
     } catch (err) {
       return Controller.serverError(res, err);
     }
   };
 
   createRoom = async (req: Request, res: Response) => {
-    const name = req.body.name;
-    const color = req.body.color;
+    const data: ICreateRoomRequest = <ICreateRoomRequest>{
+      body: roomMapper.toEntity(req.body)
+    };
 
-    if (isEmpty(name)) {
+    if (isEmpty(data.body.name)) {
       return Controller.badRequest(res, "Bad Request: No name in request");
     }
-    if (isEmpty(color)) {
+    if (isEmpty(data.body.color)) {
       return Controller.badRequest(res, "Bad Request: No color in request");
     }
-
-    const roomObj = { name, color };
 
     try {
       const room = await this.model.findOne({
         where: {
-          [Op.or]: { name, color }
+          [Op.or]: { name: data.body.name, color: data.body.color }
         }
       });
 
@@ -275,32 +285,33 @@ export class RoomController extends Controller {
         );
       }
 
-      const roomCreated = await this.model.create(roomObj);
-      return res.status(200).json(roomCreated);
+      const roomCreated = await this.model.create(data.body);
+      const parsedRoom = JSON.parse(JSON.stringify(roomCreated));
+      const DTORoom = roomMapper.toDTO(parsedRoom);
+      return res.status(200).json(DTORoom);
     } catch (err) {
       return Controller.serverError(res);
     }
   };
 
   updateRoom = async (req: Request, res: Response) => {
-    const name = req.body.name;
-    const color = req.body.color;
-    const roomId = req.params.id;
+    const data: IUpdateRoomRequest = <IUpdateRoomRequest>{
+      params: req.params,
+      body: roomMapper.toEntity(req.body)
+    };
 
-    if (isEmpty(name)) {
+    if (isEmpty(data.body.name)) {
       return Controller.badRequest(res, "Bad Request: No name in request");
     }
-    if (isEmpty(color)) {
+    if (isEmpty(data.body.color)) {
       return Controller.badRequest(res, "Bad Request: No color in request");
     }
-
-    const roomObj = { name, color };
 
     try {
       const room = await this.model.findOne({
         where: {
-          [Op.or]: { name, color },
-          id: { [Op.ne]: roomId }
+          [Op.or]: { name: data.body.name, color: data.body.color },
+          id: { [Op.ne]: data.params.id }
         }
       });
 
@@ -311,9 +322,15 @@ export class RoomController extends Controller {
         );
       }
 
-      const actualBooking = await this.model.findById(roomId);
-      const roomUpdated = await actualBooking.update(roomObj);
-      return res.status(200).json(roomUpdated);
+      const actualBooking = await this.model.findById(data.params.id);
+      const roomUpdated = await actualBooking.update({
+        ...data.body,
+        ...data.params
+      });
+      const parsedRoom = JSON.parse(JSON.stringify(roomUpdated));
+      const DTORoom = roomMapper.toDTO(parsedRoom);
+
+      return res.status(200).json(DTORoom);
     } catch (err) {
       return Controller.serverError(res, err);
     }

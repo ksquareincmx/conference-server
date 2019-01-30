@@ -72,8 +72,8 @@ export const config: any = {
 
   db: {
     database: process.env.DB_NAME || "flugzeug-project",
-    username: process.env.DB_USER || "test_user",
-    password: process.env.DB_PASSWORD || "#P4ssw0rd",
+    username: process.env.DB_USER || "root",
+    password: process.env.DB_PASSWORD || "",
     host: process.env.DB_HOST || "localhost",
     dialect: "mysql",
     logging: false,
@@ -83,9 +83,7 @@ export const config: any = {
 
   auth: {
     google: {
-      clientId:
-        process.env.GOOGLE_CLIENT_ID ||
-        "129092023456-82964pfqurangtddv4q9g4q62cbq6abm.apps.googleusercontent.com",
+      clientId: process.env.GOOGLE_CLIENT_ID,
       allowedDomains: [
         "prompto.io",
         "ksquareinc.com",
@@ -94,6 +92,12 @@ export const config: any = {
         "gmail.com"
       ]
     }
+  },
+
+  serviceAccount: {
+    key: process.env.KEY_SERVICE_ACCOUNT || "The key must be in file .env",
+    serviceAcctId: process.env.SERVICE_ACCOUNT,
+    timezone: process.env.TIMEZONE || "UTC-05:00"
   }
 };
 

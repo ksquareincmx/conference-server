@@ -5,7 +5,9 @@ import Button from "../../components/MaterialButton";
 import BookingList from "./BookingList/";
 import Modal from "@material-ui/core/Modal";
 import AppointmentList from "../Modals/CreateMeeting/";
+import "./AppointmentCard.css";
 import { Grid } from "@material-ui/core/";
+import { withRouter } from "react-router-dom";
 
 class Content extends React.Component {
   state = {
@@ -34,15 +36,17 @@ class Content extends React.Component {
   };
 
   handleClickCalendar = () => {
-    window.location.href = "/calendar";
+    this.props.history.push("/calendar");
   };
 
   handleClickBooking = booking => event => {
-    this.setState({
-      openModal: true,
-      bookingClicked: true,
-      bookingClickedObj: booking
-    });
+    if (this.props.auth.user.id === booking.user_id) {
+      this.setState({
+        openModal: true,
+        bookingClicked: true,
+        bookingClickedObj: booking
+      });
+    }
   };
 
   render() {
@@ -133,4 +137,4 @@ const getStyles = () => ({
   }
 });
 
-export default Content;
+export default withRouter(Content);

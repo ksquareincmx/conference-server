@@ -2,20 +2,22 @@
 
 conference-booking Server, based on Flugzeug.
 
-## Production / Staging
+## Production
 
 Check the `.env.example` file to set up the appropriate environment variables and run `docker-compose up --build`.
 
-Check a [basic deploy strategy](https://github.com/ksquarelabsmx/conference-server/wiki/Basic-deploy-strategy-using-Docker,-Git-hooks,-nginx-and-FCGI-Wrap) in the wiki to set up a CI environment.
+Check a [basic deploy strategy](https://github.com/ksquarelabsmx/conference-server/wiki/Basic-deploy-strategy-using-Docker,-Git-hooks,-nginx-and-FCGI-Wrap) in the wiki to set up a basic CI environment.
 
 ## Development
+
+### BackEnd
 
 1. Install MySQL (Linux)
     ```bash
     # Linux
     sudo apt update
     sudo apt install mysql-server mysql-client
-    
+
     # macOS
     brew update
     brew install mysql
@@ -25,7 +27,7 @@ Check a [basic deploy strategy](https://github.com/ksquarelabsmx/conference-serv
     ```bash
     # Fix to ERROR 1298 (HY000): Unknown or incorrect time zone: 'UTC'
     mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root -p mysql
-    
+
     # Connect to MySQL server
     mysql -u root -p
     ```
@@ -59,10 +61,26 @@ Check a [basic deploy strategy](https://github.com/ksquarelabsmx/conference-serv
     gulp watch
     ```
 
+#### FrontEnd
+
+1. Access to the "frontend" folder
+    ```bash
+    cd frontend
+    ```
+
+2. Install dependencies
+    ```bash
+    yarn
+    ```
+
+3. Start the front end development server
+    ```bash
+    yarn start
+    ```
+
 ## Documentation
 
-Read the documentation at ``docs/Framework.md``
-
+Read the documentation at `docs/Framework.md`
 
 ## Print database creation SQL (Useful when writing migrations)
 

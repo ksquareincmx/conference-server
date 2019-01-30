@@ -142,15 +142,15 @@ class AppointmentList extends React.Component {
       }
     } else if (this.props.bookingClicked) {
       if (!this.state.bookingClicked) {
-        const startDateFormat = this.props.bookingClickedObj.startDate.slice(
+        const startDateFormat = this.props.bookingClickedObj.start.slice(
           0,
-          this.props.bookingClickedObj.startDate.length - 1
+          this.props.bookingClickedObj.start.length - 1
         );
         const startDate = new Date(startDateFormat);
 
-        const endDateFormat = this.props.bookingClickedObj.endDate.slice(
+        const endDateFormat = this.props.bookingClickedObj.end.slice(
           0,
-          this.props.bookingClickedObj.endDate.length - 1
+          this.props.bookingClickedObj.end.length - 1
         );
         const endDate = new Date(endDateFormat);
 

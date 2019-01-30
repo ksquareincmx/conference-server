@@ -1,6 +1,6 @@
 import * as CalendarAPI from "node-google-calendar";
 import { Controller } from "./../libraries/Controller";
-import { config } from "./../config/configService";
+import { config } from "./../config/config";
 
 class GoogleCalendarService {
   params: any;
@@ -18,12 +18,12 @@ class GoogleCalendarService {
     };
     this.timeZone = timeZone;
     this.calendarId = calendarId;
-    this.calendar = new CalendarAPI(config);
+    this.calendar = new CalendarAPI(config.serviceAccount);
   }
 
   insertEvent(
-    start: string,
-    end: string,
+    start: Date,
+    end: Date,
     description: string,
     attendees: Array<string>
   ) {
@@ -45,8 +45,8 @@ class GoogleCalendarService {
 
   updateEvent(
     eventId: number,
-    start: string,
-    end: string,
+    start: Date,
+    end: Date,
     description: string,
     attendees: Array<string>
   ) {
@@ -83,14 +83,14 @@ class GoogleCalendarService {
       });
   }
 
-  defineEvent(start: string, end: string, description: string) {
+  defineEvent(start: Date, end: Date, description: string) {
     let event = {
       start: {
         dateTime: start,
         timeZone: this.timeZone
       },
       end: {
-        dateTime: start,
+        dateTime: end,
         timeZone: this.timeZone
       },
       summary: description,
