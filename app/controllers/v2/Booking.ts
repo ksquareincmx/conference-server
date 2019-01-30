@@ -579,5 +579,4 @@ export class BookingController extends Controller {
   };
 }
 
-const booking = new BookingController();
-export default booking;
+export default new BookingController();

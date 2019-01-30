@@ -174,5 +174,4 @@ export class ProfileController extends Controller {
   };
 }
 
-const controller = new ProfileController();
-export default controller;
+export default new ProfileController();

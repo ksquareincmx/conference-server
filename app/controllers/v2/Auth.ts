@@ -766,5 +766,4 @@ export class AuthController extends Controller {
   };
 }
 
-const controller = new AuthController();
-export default controller;
+export default new AuthController();

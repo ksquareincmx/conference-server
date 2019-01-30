@@ -106,5 +106,4 @@ export class UserController extends Controller {
   };
 }
 
-const controller = new UserController();
-export default controller;
+export default new UserController();

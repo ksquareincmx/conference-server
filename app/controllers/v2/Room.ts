@@ -402,5 +402,4 @@ export class RoomController extends Controller {
   };
 }
 
-const room = new RoomController();
-export default room;
+export default new RoomController();
