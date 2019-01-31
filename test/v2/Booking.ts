@@ -305,8 +305,8 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
         const booking = {
           description: "Call Varma",
           room_id: roomId,
-          start: "2019-01-30T12:00:00",
-          end: "2019-01-30T13:00:00",
+          start: "2019-12-30T12:00:00",
+          end: "2019-12-30T13:00:00",
           attendees: ["invalid@email"]
         };
 
@@ -330,7 +330,7 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
           description: "Call Varma",
           room_id: roomId,
           start: "",
-          end: "2019-01-30T13:00:00",
+          end: "2019-12-30T13:00:00",
           attendees: []
         };
 
@@ -353,7 +353,7 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
         const booking = {
           description: "Call Varma",
           room_id: roomId,
-          start: "2019-01-30T12:00:00",
+          start: "2019-12-30T12:00:00",
           end: "",
           attendees: []
         };
@@ -377,8 +377,8 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
         const booking = {
           description: "",
           room_id: roomId,
-          start: "2019-01-30T12:00:00",
-          end: "2019-01-30T13:00:00",
+          start: "2019-12-30T12:00:00",
+          end: "2019-12-30T13:00:00",
           attendees: []
         };
 
@@ -400,8 +400,8 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
       it("Try to schedule a meeting without roomId.", done => {
         const booking = {
           description: "Call Varma",
-          start: "2019-01-30T12:00:00",
-          end: "2019-01-30T13:00:00",
+          start: "2019-12-30T12:00:00",
+          end: "2019-12-30T13:00:00",
           attendees: []
         };
 
@@ -424,8 +424,8 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
         const booking = {
           description: "Call Varma",
           roomId: 99,
-          start: "2019-01-30T12:00:00",
-          end: "2019-01-30T13:00:00",
+          start: "2019-12-30T12:00:00",
+          end: "2019-12-30T13:00:00",
           attendees: []
         };
 
@@ -727,8 +727,8 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
         const booking = {
           description: "Call Varma",
           room_id: roomId,
-          start: "2019-01-30T12:00:00",
-          end: "2019-01-30T13:00:00",
+          start: "2019-12-30T12:00:00",
+          end: "2019-12-30T13:00:00",
           attendees: ["invalid@email"]
         };
 
@@ -752,7 +752,7 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
           description: "Call Varma",
           room_id: roomId,
           start: "",
-          end: "2019-01-30T13:00:00",
+          end: "2019-12-30T13:00:00",
           attendees: []
         };
 
@@ -777,7 +777,7 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
         const booking = {
           description: "Call Varma",
           room_id: roomId,
-          start: "2019-01-30T12:00:00",
+          start: "2019-12-30T12:00:00",
           end: "",
           attendees: []
         };
@@ -801,8 +801,8 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
         const booking = {
           description: "",
           room_id: roomId,
-          start: "2019-01-30T12:00:00",
-          end: "2019-01-30T13:00:00",
+          start: "2019-12-30T12:00:00",
+          end: "2019-12-30T13:00:00",
           attendees: []
         };
 
@@ -824,8 +824,8 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
       it("Try to reschedule a meeting without roomId", done => {
         const booking = {
           description: "Call Varma",
-          start: "2019-01-30T12:00:00",
-          end: "2019-01-30T13:00:00",
+          start: "2019-12-30T12:00:00",
+          end: "2019-12-30T13:00:00",
           attendees: []
         };
 
@@ -848,8 +848,8 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
         const booking = {
           description: "Call Varma",
           roomId: 99,
-          start: "2019-01-30T12:00:00",
-          end: "2019-01-30T13:00:00",
+          start: "2019-12-30T12:00:00",
+          end: "2019-12-30T13:00:00",
           attendees: []
         };
 
