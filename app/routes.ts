@@ -3,7 +3,7 @@ import * as path from "path";
 import { log } from "./libraries/Log";
 import { config } from "./config/config";
 
-const importedCtrls1 = require("require-dir-all")("controllers/v1");
+const importedCtrls1 = require("require-dir-all")("controllers/v2");
 const controllers1 = Object.keys(importedCtrls1).map(
   k => importedCtrls1[k].default
 );
@@ -14,7 +14,7 @@ export function routes(app: Application) {
       log.error("Invalid controller name:", controller.name, controller);
       continue;
     }
-    app.use(`/api/v1/${controller.name}`, controller.routes());
+    app.use(`/api/v2/${controller.name}`, controller.routes());
   }
 
   app.use(Static(path.join(__dirname, "../public")));

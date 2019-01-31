@@ -8,7 +8,7 @@ import {
   IUserLogin,
   JWTBlacklist,
   Profile,
-  User,
+  User
 } from "./common";
 
 import * as jwt from "jsonwebtoken";
@@ -17,11 +17,11 @@ import * as moment from "moment";
 import * as uuid from "uuid";
 
 // Import tests...
-import { authTest } from "./v1/Auth";
-import { bookingTest } from "./v1/Booking";
-import { profileTest } from "./v1/Profile";
-import { roomTest } from "./v1/Room";
-import { userTest } from "./v1/User";
+import { authTest } from "./v2/Auth";
+import { bookingTest } from "./v2/Booking";
+import { profileTest } from "./v2/Profile";
+import { roomTest } from "./v2/Room";
+import { userTest } from "./v2/User";
 
 const login = async user => {
   try {
@@ -137,10 +137,7 @@ describe("Main", function() {
       auth.blackListedToken = `Bearer ${expiredCredentials.token}`;
 
       // Log out to blacklist the token.
-      await logout(
-        auth.blackListedToken,
-        expiredCredentials.expires
-      );
+      await logout(auth.blackListedToken, expiredCredentials.expires);
 
       const credentials = await login(testUser);
       auth.token = `Bearer ${credentials.token}`;
@@ -166,7 +163,7 @@ describe("Main", function() {
   });
 
   authTest(auth, testUser);
-  roomTest(auth);
+  roomTest(auth, userData);
   profileTest(auth, userData);
   userTest(auth, userData);
   bookingTest(auth, userData);
