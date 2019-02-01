@@ -1,6 +1,7 @@
 // Import DB setup and models
 
 import { Booking, chai, db, ICredential, IUserId, Room, User } from "../common";
+import { getTestDate } from "../utils";
 
 const apiPath = "/api/v2/booking/";
 const server = "http://localhost:8888";
@@ -10,6 +11,10 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
     let token;
     let roomId;
     let userId;
+
+    // dates used by post and update booking
+    const startTestDate = `${getTestDate()}T10:15:00`;
+    const endTestDate = `${getTestDate()}T10:25:00`;
 
     // create a room and user that be used in the testing
     before(async () => {
@@ -305,8 +310,8 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
         const booking = {
           description: "Call Varma",
           room_id: roomId,
-          start: "2019-12-30T12:00:00",
-          end: "2019-12-30T13:00:00",
+          start: startTestDate,
+          end: endTestDate,
           attendees: ["invalid@email"]
         };
 
@@ -330,7 +335,7 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
           description: "Call Varma",
           room_id: roomId,
           start: "",
-          end: "2019-12-30T13:00:00",
+          end: endTestDate,
           attendees: []
         };
 
@@ -353,7 +358,7 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
         const booking = {
           description: "Call Varma",
           room_id: roomId,
-          start: "2019-12-30T12:00:00",
+          start: startTestDate,
           end: "",
           attendees: []
         };
@@ -377,8 +382,8 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
         const booking = {
           description: "",
           room_id: roomId,
-          start: "2019-12-30T12:00:00",
-          end: "2019-12-30T13:00:00",
+          start: startTestDate,
+          end: endTestDate,
           attendees: []
         };
 
@@ -400,8 +405,8 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
       it("Try to schedule a meeting without roomId.", done => {
         const booking = {
           description: "Call Varma",
-          start: "2019-12-30T12:00:00",
-          end: "2019-12-30T13:00:00",
+          start: startTestDate,
+          end: endTestDate,
           attendees: []
         };
 
@@ -424,8 +429,8 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
         const booking = {
           description: "Call Varma",
           roomId: 99,
-          start: "2019-12-30T12:00:00",
-          end: "2019-12-30T13:00:00",
+          start: startTestDate,
+          end: endTestDate,
           attendees: []
         };
 
@@ -727,8 +732,8 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
         const booking = {
           description: "Call Varma",
           room_id: roomId,
-          start: "2019-12-30T12:00:00",
-          end: "2019-12-30T13:00:00",
+          start: startTestDate,
+          end: endTestDate,
           attendees: ["invalid@email"]
         };
 
@@ -752,7 +757,7 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
           description: "Call Varma",
           room_id: roomId,
           start: "",
-          end: "2019-12-30T13:00:00",
+          end: endTestDate,
           attendees: []
         };
 
@@ -777,7 +782,7 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
         const booking = {
           description: "Call Varma",
           room_id: roomId,
-          start: "2019-12-30T12:00:00",
+          start: startTestDate,
           end: "",
           attendees: []
         };
@@ -801,8 +806,8 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
         const booking = {
           description: "",
           room_id: roomId,
-          start: "2019-12-30T12:00:00",
-          end: "2019-12-30T13:00:00",
+          start: startTestDate,
+          end: endTestDate,
           attendees: []
         };
 
@@ -824,8 +829,8 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
       it("Try to reschedule a meeting without roomId", done => {
         const booking = {
           description: "Call Varma",
-          start: "2019-12-30T12:00:00",
-          end: "2019-12-30T13:00:00",
+          start: startTestDate,
+          end: endTestDate,
           attendees: []
         };
 
@@ -848,8 +853,8 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
         const booking = {
           description: "Call Varma",
           roomId: 99,
-          start: "2019-12-30T12:00:00",
-          end: "2019-12-30T13:00:00",
+          start: startTestDate,
+          end: endTestDate,
           attendees: []
         };
 
