@@ -114,8 +114,7 @@ export class ProfileController extends Controller {
         return Controller.notFound(res);
       }
 
-      const parsedProfile = JSON.parse(JSON.stringify(profile));
-      const DTOProfiles = profileMapper.toDTO(parsedProfile);
+      const DTOProfiles = profileMapper.toDTO(profile.toJSON());
 
       res.status(200).json(DTOProfiles);
     } catch (err) {
@@ -135,8 +134,10 @@ export class ProfileController extends Controller {
         return Controller.notFound(res);
       }
 
-      const parsedProfiles = JSON.parse(JSON.stringify(profiles));
-      const DTOProfile = parsedProfiles.map(profileMapper.toDTO);
+      const DTOProfile = profiles
+        .map(profile => profile.toJSON())
+        .map(profileMapper.toDTO);
+
       res.status(200).json(DTOProfile);
     } catch (err) {
       return Controller.serverError(res, err);
@@ -165,8 +166,8 @@ export class ProfileController extends Controller {
         ...data.params,
         ...data.body
       });
-      const parsedProfile = JSON.parse(JSON.stringify(updatedProfile));
-      const DTOProfiles = profileMapper.toDTO(parsedProfile);
+
+      const DTOProfiles = profileMapper.toDTO(updatedProfile.toJSON());
       res.status(200).json(DTOProfiles);
     } catch (err) {
       return Controller.serverError(res, err);

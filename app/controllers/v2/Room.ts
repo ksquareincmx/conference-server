@@ -226,7 +226,7 @@ export class RoomController extends Controller {
         return Controller.notFound(res);
       }
 
-      const parsedRoom = JSON.parse(JSON.stringify(room));
+      const parsedRoom = room.toJSON();
       const roomStatus = await this.roomStatus(parsedRoom["id"]);
       const roomBooking = { ...parsedRoom, ...roomStatus };
       const DTORoom = roomMapper.toDTO(roomBooking);
@@ -241,8 +241,8 @@ export class RoomController extends Controller {
       const rooms = await this.model.findAll();
       const parsedRooms = rooms.map(room => room.toJSON());
 
-      const roomsBooking = parsedRooms.map(async room => {
-        const roomStatus = await this.roomStatus(room["id"]);
+      const roomsBooking = parsedRooms.map(room => {
+        const roomStatus = this.roomStatus(room["id"]);
         return { ...room, ...roomStatus };
       });
 

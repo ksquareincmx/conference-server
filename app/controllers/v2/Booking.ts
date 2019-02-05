@@ -284,7 +284,7 @@ export class BookingController extends Controller {
       return Controller.badRequest(res, "Bad Request: Invalid email.");
     }
 
-    // insert only if the author email don't exist in data
+    // remove duplicate emails
     data.body.attendees.push(req.session.user.email);
     const uniqueEmails = [...new Set(data.body.attendees)];
 
@@ -336,9 +336,7 @@ export class BookingController extends Controller {
       // insert booking the DB
       const bookingObj = { ...data.body, eventId: eventCalendar.id };
       const createdBooking = await this.model.create(bookingObj);
-      const parsedCreatedBooking = JSON.parse(
-        JSON.stringify(createdBooking, null, 2)
-      );
+      const parsedCreatedBooking = createdBooking.toJSON();
 
       // insert attendee in the DB
       uniqueEmails.forEach(async attendee => {
@@ -404,7 +402,7 @@ export class BookingController extends Controller {
       return Controller.badRequest(res, "Bad Request: Invalid email.");
     }
 
-    // insert only if the author email don't exist in the request
+    // remove duplicate emails
     data.body.attendees.push(req.session.user.email);
     const uniqueEmails = [...new Set(data.body.attendees)];
 
@@ -443,7 +441,7 @@ export class BookingController extends Controller {
           }
         }
       });
-      //if exist a booking that overlaps whit start and end
+      // if exist a booking that overlaps whit start and end
       if (bookings.count > 0) {
         return Controller.noContent(res);
       }
@@ -471,9 +469,7 @@ export class BookingController extends Controller {
         ...data.params,
         ...data.body
       });
-      const parsedUpdatedBooking = JSON.parse(
-        JSON.stringify(updatedBooking, null, 2)
-      );
+      const parsedUpdatedBooking = updatedBooking.toJSON();
       const finalUpdatedBooking = {
         ...parsedUpdatedBooking,
         attendees: updatedAttendees
@@ -496,7 +492,7 @@ export class BookingController extends Controller {
         return Controller.notFound(res);
       }
 
-      const parsedBooking = JSON.parse(JSON.stringify(booking, null, 2));
+      const parsedBooking = booking.toJSON();
       const attendees = await getAttendees(data.params.id);
 
       const finalBooking = {
@@ -537,23 +533,23 @@ export class BookingController extends Controller {
         );
       }
 
-      const dateRangeStrategy = async ({ fromDate, toDate }) => {
+      const dateRangeStrategy = ({ fromDate, toDate }) => {
         if (isEmpty(fromDate) && isEmpty(toDate)) {
-          return await this.model.findAll();
+          return this.model.findAll();
         } else if (!isEmpty(fromDate) && isEmpty(toDate)) {
-          return await this.model.findAll({
+          return this.model.findAll({
             where: {
               end: { [Op.gte]: fromDate }
             }
           });
         } else if (isEmpty(fromDate) && !isEmpty(toDate)) {
-          return await this.model.findAll({
+          return this.model.findAll({
             where: {
               start: { [Op.lte]: toDate }
             }
           });
         } else {
-          return await this.model.findAll({
+          return this.model.findAll({
             where: {
               end: { [Op.gte]: fromDate },
               start: { [Op.lte]: toDate }
