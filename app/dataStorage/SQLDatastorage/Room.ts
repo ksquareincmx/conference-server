@@ -7,11 +7,14 @@ import {
 } from "./../../interfaces/RoomInterfaces";
 import { IRoomDataStorage } from "./../interfaces/RoomDataStorage";
 
-export function RoomDataStorage(): IRoomDataStorage {
+function RoomDataStorage(): IRoomDataStorage {
   const findById = async (id: number): Promise<IRoom> => {
     try {
       const room = await Room.findById(id);
-      return room.toJSON();
+
+      if (room) {
+        return room.toJSON();
+      }
     } catch (error) {
       throw error;
     }
@@ -20,7 +23,9 @@ export function RoomDataStorage(): IRoomDataStorage {
   const findAll = async (): Promise<IRoom[]> => {
     try {
       const rooms = await Room.findAll();
-      return rooms.map(room => room.toJSON());
+      if (rooms) {
+        return rooms.map(room => room.toJSON());
+      }
     } catch (error) {
       throw error;
     }
@@ -29,44 +34,58 @@ export function RoomDataStorage(): IRoomDataStorage {
   const findByNameColor = async (
     name: string,
     color: string,
-    id?: number
+    id: number
   ): Promise<IRoom> => {
     try {
-      if (id !== undefined) {
+      if (id === undefined) {
         const room = await Room.findOne({
           where: {
-            [Op.or]: { name, color }
+            [Op.or]: { name: name, color: color }
           }
         });
-        return room.toJSON();
+        if (room) {
+          return room.toJSON();
+        }
       }
 
-      const room = await this.model.findOne({
-        where: {
-          [Op.or]: { name, color },
-          id: { [Op.ne]: id }
-        }
-      });
+      if (id) {
+        const room = await Room.findOne({
+          where: {
+            [Op.or]: { name, color },
+            id: { [Op.ne]: id }
+          }
+        });
 
-      return room.toJSON();
+        if (room) {
+          return room.toJSON();
+        }
+      }
     } catch (error) {
-      throw error;
+      throw new Error("errrrror");
     }
   };
 
   const create = async (room: IRoomRequest): Promise<IRoom> => {
     try {
       const roomCreated = await Room.create(room);
-      return roomCreated.toJSON();
-    } catch (error) {}
+      if (roomCreated) {
+        return roomCreated.toJSON();
+      }
+    } catch (error) {
+      throw error;
+    }
   };
 
-  const update = async (room: IUpdateRoom): Promise<IRoom> => {
+  const update = async (roomData: IUpdateRoom): Promise<IRoom> => {
     try {
-      const roomToUpdate = await Room.findById(room.id);
-      const roomUpdated = await roomToUpdate.update(roomToUpdate);
-      return roomUpdated.toJSON();
-    } catch (error) {}
+      const room = await Room.findById(roomData.id);
+      if (room) {
+        const roomUpdated = await room.update(roomData);
+        return roomUpdated.toJSON();
+      }
+    } catch (error) {
+      throw error;
+    }
   };
 
   return {
@@ -77,3 +96,6 @@ export function RoomDataStorage(): IRoomDataStorage {
     update
   };
 }
+
+const roomDataStorage = RoomDataStorage();
+export { roomDataStorage };
