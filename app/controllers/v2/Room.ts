@@ -1,7 +1,7 @@
+import { roomDataStorage } from "./../../dataStorage/SQLDatastorage/Room";
 import { Op } from "sequelize";
 import * as moment from "moment-timezone";
 import * as _ from "lodash";
-import * as fp from "lodash/fp";
 import { Controller } from "./../../libraries/Controller";
 import { getActualDate } from "./../../libraries/util";
 import { Room } from "./../../models/Room";
@@ -10,20 +10,16 @@ import { Request, Response, Router } from "express";
 import { isEmpty } from "./../../libraries/util";
 import {
   validateJWT,
-  filterOwner,
-  appendUser,
   stripNestedObjects,
   filterRoles
 } from "./../../policies/General";
 import {
-  IRoomResponse,
   IFindRoomParams,
   IUpdateRoomRequest,
   ICreateRoomRequest
 } from "./../../interfaces/RoomInterfaces";
 import { roomMapper } from "./../../mappers/RoomMapper";
 import { IGetHourParams, IHour } from "./../../interfaces/HourInterfaces";
-import { hourMapper } from "./../../mappers/HourMapper";
 
 export class RoomController extends Controller {
   constructor() {
@@ -208,7 +204,7 @@ export class RoomController extends Controller {
       });
 
       const parsedBookingId = JSON.parse(JSON.stringify(bookingId));
-      const bookingIdActual = parsedBookingId ? parsedBookingId["id"] : null;
+      const bookingIdActual = parsedBookingId ? parsedBookingId.id : null;
       const status = bookingIdActual ? "Not Available" : "Available";
 
       return { bookingIdActual, status };
@@ -220,16 +216,14 @@ export class RoomController extends Controller {
   findOneRoom = async (req: Request, res: Response) => {
     const data: IFindRoomParams = { params: req.params };
     try {
-      const room = await this.model.findById(data.params.id);
+      const room = await roomDataStorage.findById(data.params.id);
 
       if (!room) {
         return Controller.notFound(res);
       }
 
-      const parsedRoom = JSON.parse(JSON.stringify(room));
-      const roomStatus = await this.roomStatus(parsedRoom["id"]);
-      const roomBooking = { ...parsedRoom, ...roomStatus };
-      const DTORoom = roomMapper.toDTO(roomBooking);
+      const roomStatus = await this.roomStatus(room.id);
+      const DTORoom = roomMapper.toDTO({ ...room, ...roomStatus });
       res.status(200).json(DTORoom);
     } catch (err) {
       return Controller.serverError(res, err);
@@ -238,11 +232,10 @@ export class RoomController extends Controller {
 
   findAllRoom = async (req: Request, res: Response) => {
     try {
-      const rooms = await this.model.findAll();
-      const parsedRooms = rooms.map(room => room.toJSON());
+      const rooms = await roomDataStorage.findAll();
 
-      const roomsBooking = parsedRooms.map(async room => {
-        const roomStatus = await this.roomStatus(room["id"]);
+      const roomsBooking = rooms.map(room => {
+        const roomStatus = this.roomStatus(room.id);
         return { ...room, ...roomStatus };
       });
 
@@ -267,11 +260,10 @@ export class RoomController extends Controller {
     }
 
     try {
-      const room = await this.model.findOne({
-        where: {
-          [Op.or]: { name: data.body.name, color: data.body.color }
-        }
-      });
+      const room = await roomDataStorage.findByNameColor(
+        data.body.name,
+        data.body.color
+      );
 
       if (room) {
         return Controller.badRequest(
@@ -280,12 +272,12 @@ export class RoomController extends Controller {
         );
       }
 
-      const roomCreated = await this.model.create(data.body);
-      const DTORoom = roomMapper.toDTO(roomCreated.toJSON());
+      const roomCreated = await roomDataStorage.create(data.body);
+      const DTORoom = roomMapper.toDTO(roomCreated);
 
       return res.status(200).json(DTORoom);
     } catch (err) {
-      return Controller.serverError(res);
+      return Controller.serverError(res, err);
     }
   };
 
@@ -303,12 +295,11 @@ export class RoomController extends Controller {
     }
 
     try {
-      const room = await this.model.findOne({
-        where: {
-          [Op.or]: { name: data.body.name, color: data.body.color },
-          id: { [Op.ne]: data.params.id }
-        }
-      });
+      const room = await roomDataStorage.findByNameColor(
+        data.body.name,
+        data.body.color,
+        data.params.id
+      );
 
       if (room) {
         return Controller.badRequest(
@@ -317,14 +308,17 @@ export class RoomController extends Controller {
         );
       }
 
-      const actualBooking = await this.model.findById(data.params.id);
-      const roomUpdated = await actualBooking.update({
+      const roomUpdated = await roomDataStorage.update({
         ...data.body,
         ...data.params
       });
 
-      const DTORoom = roomMapper.toDTO(roomUpdated.toJSON());
+      if (!roomUpdated) {
+        return Controller.badRequest(res, "Bad Request: Room not exist");
+      }
 
+      const roomStatus = await this.roomStatus(roomUpdated.id);
+      const DTORoom = roomMapper.toDTO({ ...roomUpdated, ...roomStatus });
       return res.status(200).json(DTORoom);
     } catch (err) {
       return Controller.serverError(res, err);
@@ -334,7 +328,7 @@ export class RoomController extends Controller {
   findAvailableHours = async (req: Request, res: Response) => {
     const data: IGetHourParams = { params: req.params, query: req.query };
 
-    // Create a new date for verify it's valid
+    // Create a new date for verify if it's valid
     const fromDate: Date = data.query.fromDate
       ? moment(data.query.fromDate).format("YYYY-MM-DD")
       : moment()
@@ -351,7 +345,7 @@ export class RoomController extends Controller {
     }
 
     try {
-      const room = await this.model.findById(data.params.id);
+      const room = await roomDataStorage.findById(data.params.id);
 
       if (!room) {
         return Controller.badRequest(res, "Room not exist");
