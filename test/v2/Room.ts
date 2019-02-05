@@ -408,8 +408,10 @@ export const roomTest = (auth: ICredential, user: IUserId) => {
             if (err) {
               throw err;
             }
-            res.should.have.status(400); // Internal Server Error
-            res.body.should.be.an("string").and.deep.equal("Room not exist");
+            res.should.have.status(400);
+            res.body.should.be
+              .an("string")
+              .and.deep.equal("Bad Request: Room not exist");
             done();
           });
       });

@@ -16,7 +16,7 @@ function RoomDataStorage(): IRoomDataStorage {
         return room.toJSON();
       }
     } catch (error) {
-      throw error;
+      throw new Error("Error while finding a room");
     }
   };
 
@@ -27,7 +27,7 @@ function RoomDataStorage(): IRoomDataStorage {
         return rooms.map(room => room.toJSON());
       }
     } catch (error) {
-      throw error;
+      throw new Error("Error while gets all rooms");
     }
   };
 
@@ -61,7 +61,7 @@ function RoomDataStorage(): IRoomDataStorage {
         }
       }
     } catch (error) {
-      throw new Error("errrrror");
+      throw new Error("Error while finding a room");
     }
   };
 
@@ -72,7 +72,7 @@ function RoomDataStorage(): IRoomDataStorage {
         return roomCreated.toJSON();
       }
     } catch (error) {
-      throw error;
+      throw new Error("Error while creating a room");
     }
   };
 
@@ -84,7 +84,7 @@ function RoomDataStorage(): IRoomDataStorage {
         return roomUpdated.toJSON();
       }
     } catch (error) {
-      throw error;
+      throw new Error("Error while updating the room");
     }
   };
 

@@ -314,7 +314,7 @@ export class RoomController extends Controller {
       });
 
       if (!roomUpdated) {
-        return Controller.badRequest(res, "Room not exist");
+        return Controller.badRequest(res, "Bad Request: Room not exist");
       }
 
       const roomStatus = await this.roomStatus(roomUpdated.id);
