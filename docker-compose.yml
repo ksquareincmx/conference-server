@@ -23,13 +23,44 @@ services:
       - mysql
     environment:
       - DB_HOST=mysql
+      - DB_NAME
+      - DB_PASSWORD
+      - DB_USER
+      - EMAIL_API_KEY
+      - EMAIL_DOMAIN
+      - EMAIL_FROM_ADDRESS
+      - GOOGLE_CLIENT_ID
+      - HOME
+      - JWT_SECRET
+      - KEY_SERVICE_ACCOUNT
+      - LOG_LEVEL
+      - NODE_ENV
+      - SERVER_PORT=8888
+      - SERVICE_ACCOUNT
+      - TIMEZONE
+      - URLS_API_ROOT
+      - URLS_PORT
+      - URLS_PROTOCOL
+      - URLS_URL
     ports:
-      - "8888:8888"
+      - "8888:${SERVER_PORT}"
 
   frontend:
     build:
       context: .
       dockerfile: .docker/frontend.dockerfile
+    environment:
+      - BABEL_ENV
+      - CI
+      - DANGEROUSLY_DISABLE_HOST_CHECK
+      - GENERATE_SOURCEMAP
+      - HOST
+      - HTTPS
+      - NODE_ENV
+      - NODE_PATH
+      - PORT=3000
+      - PUBLIC_URL
+      - REACT_APP_SECRET_CODE
     ports:
       - "3000:${FRONTEND_PORT}"
 
