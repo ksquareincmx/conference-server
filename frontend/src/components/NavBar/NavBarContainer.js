@@ -2,20 +2,12 @@ import React, { Fragment } from "react";
 import { AppBar, Toolbar, Grid } from "@material-ui/core/";
 
 function NavBarContainer(props) {
-  const rightSide = props.children.find(
-    child => child.type.componentName === "rightSide"
-  );
-  const leftSide = props.children.find(
-    child => child.type.componentName === "leftSide"
-  );
-
   return (
     <Fragment>
-      <AppBar position="static">
-        <Toolbar style={{ backgroundColor: "#D3D3D3" }}>
-          <Grid container direction="row" justify="space-between">
-            {leftSide}
-            {rightSide}
+      <AppBar position="static" style={{ boxShadow: "none" }}>
+        <Toolbar style={{ backgroundColor: "#3049a1" }}>
+          <Grid container direction="row" justify="flex-end">
+            {props.children}
           </Grid>
         </Toolbar>
       </AppBar>
