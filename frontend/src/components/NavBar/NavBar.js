@@ -4,6 +4,7 @@ import NavBarContainer from "./NavBarContainer";
 import { Typography, IconButton, Avatar } from "@material-ui/core/";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import NavBarMenu from "./NavBarMenu";
+import {startCase, toLower} from "lodash/fp"
 
 const styles = {
   navLeftSideButton: {
@@ -46,10 +47,7 @@ class NavBar extends React.Component {
 
   render(){
 
-    const name = this.props.userName.toLowerCase()
-      .split(' ')
-      .map((s) => s.charAt(0).toUpperCase() + s.substring(1))
-      .join(' ');
+    const name = startCase(toLower(this.props.userName));
     const menuProps = {
         anchorEl: this.state.anchorEl,
         open: Boolean(this.state.anchorEl),
