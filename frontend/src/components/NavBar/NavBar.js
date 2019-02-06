@@ -4,7 +4,7 @@ import NavBarContainer from "./NavBarContainer";
 import { Typography, IconButton, Avatar } from "@material-ui/core/";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import NavBarMenu from "./NavBarMenu";
-import {startCase, toLower} from "lodash/fp"
+import capitalize from "lodash/fp/capitalize";
 
 const styles = {
   navLeftSideButton: {
@@ -47,7 +47,7 @@ class NavBar extends React.Component {
 
   render(){
 
-    const name = startCase(toLower(this.props.userName));
+    const name = capitalize(this.props.userName);
     const menuProps = {
         anchorEl: this.state.anchorEl,
         open: Boolean(this.state.anchorEl),
