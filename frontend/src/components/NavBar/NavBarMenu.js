@@ -2,32 +2,52 @@ import React from "react";
 import { Menu, MenuItem } from "@material-ui/core/";
 import { Link } from "react-router-dom";
 
+
 function NavBarMenu (props) {
-    return(
-        <Menu
+    const { 
+      anchorEl,
+      handleClose,
+      handleLogout
+    } = props;
+    
+    return (
+      <Menu
         id="menu-appbar"
-        anchorEl={props.anchorEl}
+        anchorEl={anchorEl}
         anchorOrigin={{
-          vertical: 'top',
-          horizontal: 'right',
+          vertical: "top",
+          horizontal: "right",
         }}
         transformOrigin={{
-          vertical: 'top',
-          horizontal: 'right',
+          vertical: "top",
+          horizontal: "right",
         }}
-        open={props.open}
-        onClose={props.handleClose}
+        open={Boolean(anchorEl)}
+        onClose={handleClose}
       >
-        <MenuItem onClick={props.handleClose}>Profile</MenuItem>
         <MenuItem 
-          onClick={props.handleClose} 
+          onClick={handleClose}
+        >
+          Profile
+        </MenuItem>
+        
+        <MenuItem 
+          onClick={handleClose} 
           component={Link}
           to="/dashboard"
         >
           Dashboard
         </MenuItem>
+        
         <hr />
-        <MenuItem onClick={props.handleClose}>Log Out</MenuItem>
+        
+        <MenuItem
+          onClick={handleLogout}
+          component={Link}
+          to="/login"
+        >
+          Log Out
+        </MenuItem>
       </Menu>
     );
 }
