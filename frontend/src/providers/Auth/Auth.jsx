@@ -40,7 +40,7 @@ export class AuthProvider extends React.Component {
           refreshToken: res.refresh_token
         },
         user: res.user // { id: number, email: string, name: string, role: string, picture: string }
-      }, this.refreshLocalStorage());
+      }, this.refreshLocalStorage);
     } catch (err) {
       console.log(err);
     }
@@ -50,7 +50,7 @@ export class AuthProvider extends React.Component {
     this.setState({
       user: null,
       jwt: null
-    }, this.refreshLocalStorage());
+    }, this.refreshLocalStorage);
     
   };
 
