@@ -95,7 +95,9 @@ export const config: any = {
   },
 
   serviceAccount: {
-    key: process.env.KEY_SERVICE_ACCOUNT || "The key must be in file .env",
+    key:
+      process.env.KEY_SERVICE_ACCOUNT.replace(/\\n/g, "\n") ||
+      "The key must be in file .env",
     serviceAcctId: process.env.SERVICE_ACCOUNT,
     timezone: process.env.TIMEZONE || "UTC-05:00"
   }
