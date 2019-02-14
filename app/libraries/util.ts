@@ -74,9 +74,10 @@ export function isAvailableDate(start, end) {
   const isAvailableDay = day => !(day === 6 || day === 0);
   const isAvailableHour = () => {
     const officeHourStart = 8; // because horary change and sync with USA
-    const officeHourEnd = "1800";
+    const officeHourEnd = "18:00";
 
-    const endHour = `${endDate.getHours()}${endDate.getMinutes()}`;
+    // only get the hours hh:mm, e.g 09:15
+    const endHour = endDate.toJSON().slice(11, 16);
     return startDate.getHours() >= officeHourStart && endHour <= officeHourEnd;
   };
 

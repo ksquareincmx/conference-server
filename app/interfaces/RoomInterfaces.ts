@@ -1,3 +1,18 @@
+export interface IRoom {
+  id: number;
+  name: string;
+  color: string;
+  presence: boolean;
+  createad_at: Date;
+  updated_at: Date;
+}
+
+export interface IUpdateRoom {
+  id: number;
+  name: string;
+  color: string;
+}
+
 export interface IRoomResponse {
   id: number;
   name: string;
