@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 services:
   mysql:
     image: mysql:8
@@ -44,25 +44,6 @@ services:
       - URLS_URL
     ports:
       - "8888:${SERVER_PORT}"
-
-  frontend:
-    build:
-      context: .
-      dockerfile: .docker/frontend.dockerfile
-    environment:
-      - BABEL_ENV
-      - CI
-      - DANGEROUSLY_DISABLE_HOST_CHECK
-      - GENERATE_SOURCEMAP
-      - HOST
-      - HTTPS
-      - NODE_ENV
-      - NODE_PATH
-      - PORT=3000
-      - PUBLIC_URL
-      - REACT_APP_SECRET_CODE
-    ports:
-      - "3000:${FRONTEND_PORT}"
 
 volumes:
   database: {}
