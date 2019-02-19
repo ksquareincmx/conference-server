@@ -1,5 +1,4 @@
 import * as CalendarAPI from "node-google-calendar";
-import { Controller } from "./../libraries/Controller";
 import { config } from "./../config/config";
 
 class GoogleCalendarService {
@@ -22,8 +21,8 @@ class GoogleCalendarService {
   }
 
   insertEvent(
-    start: Date,
-    end: Date,
+    start: string,
+    end: string,
     description: string,
     attendees: Array<string>
   ) {
@@ -47,8 +46,8 @@ class GoogleCalendarService {
 
   updateEvent(
     eventId: number,
-    start: Date,
-    end: Date,
+    start: string,
+    end: string,
     description: string,
     attendees: Array<string>
   ) {
@@ -85,7 +84,7 @@ class GoogleCalendarService {
       });
   }
 
-  defineEvent(start: Date, end: Date, description: string) {
+  defineEvent(start: string, end: string, description: string) {
     let event = {
       start: {
         dateTime: start,
