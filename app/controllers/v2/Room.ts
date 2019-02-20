@@ -234,8 +234,8 @@ export class RoomController extends Controller {
     try {
       const rooms = await roomDataStorage.findAll();
 
-      const roomsBooking = rooms.map(room => {
-        const roomStatus = this.roomStatus(room.id);
+      const roomsBooking = rooms.map(async room => {
+        const roomStatus = await this.roomStatus(room.id);
         return { ...room, ...roomStatus };
       });
 

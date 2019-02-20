@@ -363,11 +363,8 @@ export class BookingController extends Controller {
         "Bad Request: No description in request."
       );
     }
-    if (!isValidDate(data.body.start) || !isValidDate(data.body.end)) {
-      return Controller.badRequest(
-        res,
-        "Bad Request: No start date in request."
-      );
+    if (!isValidDate(data.body.end) || !isValidDate(data.body.start)) {
+      return Controller.badRequest(res, "Bad Request: Invalid date");
     }
     if (isEmpty(data.body.roomId)) {
       return Controller.badRequest(res, "Bad Request: No roomId in request.");
