@@ -9,17 +9,14 @@
     "build": "gulp",
     "start": "node --require source-map-support/register dist/main.js",
     "test": "nyc mocha",
-    "migrate": "sequelize db:migrate",
-    "jsdoc": "jsdoc -c jsdoc.conf.json"
+    "migrate": "sequelize db:migrate"
   },
   "nyc": {
     "include": [
-      "app/**/*.ts",
-      "app/**/*.tsx"
+      "app/**/*.ts"
     ],
     "extension": [
-      ".ts",
-      ".tsx"
+      ".ts"
     ],
     "require": [
       "ts-node/register"
