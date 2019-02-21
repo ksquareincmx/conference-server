@@ -95,3 +95,6 @@ public/*
 !public/apidoc
 
 .idea/
+
+# nyc
+.nyc_output

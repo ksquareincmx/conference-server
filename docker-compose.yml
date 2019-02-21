@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 services:
   mysql:
     image: mysql:8
@@ -23,15 +23,27 @@ services:
       - mysql
     environment:
       - DB_HOST=mysql
+      - DB_NAME
+      - DB_PASSWORD
+      - DB_USER
+      - EMAIL_API_KEY
+      - EMAIL_DOMAIN
+      - EMAIL_FROM_ADDRESS
+      - GOOGLE_CLIENT_ID
+      - HOME
+      - JWT_SECRET
+      - KEY_SERVICE_ACCOUNT
+      - LOG_LEVEL
+      - NODE_ENV
+      - SERVER_PORT=8888
+      - SERVICE_ACCOUNT
+      - TIMEZONE
+      - URLS_API_ROOT
+      - URLS_PORT
+      - URLS_PROTOCOL
+      - URLS_URL
     ports:
-      - "8888:8888"
-
-  frontend:
-    build:
-      context: .
-      dockerfile: .docker/frontend.dockerfile
-    ports:
-      - "3000:${FRONTEND_PORT}"
+      - "8888:${SERVER_PORT}"
 
 volumes:
   database: {}

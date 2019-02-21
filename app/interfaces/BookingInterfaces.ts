@@ -1,3 +1,4 @@
+import { IBookingDTO } from "./BookingInterfaces";
 // Response
 export interface IBookingResponse {
   description: string;
@@ -35,8 +36,17 @@ export interface IDeleteBookingParams {
 export interface IBookingRequest {
   description: string;
   roomId: number;
-  start: Date;
-  end: Date;
+  start: string;
+  end: string;
+  attendees: string[];
+  userId: number;
+}
+
+export interface IBookingDTO {
+  description: string;
+  room_id: number;
+  start: string;
+  end: string;
   attendees: string[];
   userId: number;
 }
@@ -50,4 +60,11 @@ export interface IUpdateBookingRequest {
     id: number;
   };
   body: IBookingRequest;
+}
+
+export interface IUpdateBookingDTO {
+  params: {
+    id: number;
+  };
+  body: IBookingDTO;
 }

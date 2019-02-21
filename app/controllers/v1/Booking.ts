@@ -377,7 +377,7 @@ export class BookingController extends Controller {
       const DTOBooking = bookingMapper.toDTO(finalBooking);
       res.status(201).json(DTOBooking);
     } catch (err) {
-      return Controller.serverError(res);
+      return Controller.serverError(res, err);
     }
   };
 

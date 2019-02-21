@@ -290,7 +290,7 @@ export class RoomController extends Controller {
       const DTORoom = roomMapper.toDTO(parsedRoom);
       return res.status(200).json(DTORoom);
     } catch (err) {
-      return Controller.serverError(res);
+      return Controller.serverError(res, err);
     }
   };
 

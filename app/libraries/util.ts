@@ -41,11 +41,10 @@ export function getRandomColor() {
   return colors[index];
 }
 
-export function getActualDate(): Date {
+export function getActualDate(): string {
   return moment()
-    .tz("America/Mexico_City")
-    .format()
-    .slice(0, 19);
+    .utc()
+    .format();
 }
 
 /**
@@ -67,23 +66,31 @@ export function toSyntax(obj, syntaxConverter) {
   );
 }
 
-export function isAvailableDate(start, end) {
-  const startDate = new Date(start);
-  const endDate = new Date(end);
-
-  const isAvailableDay = day => !(day === 6 || day === 0);
-  const isAvailableHour = () => {
-    const officeHourStart = 8; // because horary change and sync with USA
-    const officeHourEnd = "18:00";
-
-    // only get the hours hh:mm, e.g 09:15
-    const endHour = endDate.toJSON().slice(11, 16);
-    return startDate.getHours() >= officeHourStart && endHour <= officeHourEnd;
-  };
-
-  return isAvailableDay(startDate.getDay()) && isAvailableHour();
+export function isValidDate(date: string): boolean {
+  return moment(date).isValid();
 }
 
-export function areValidsEmails(emails) {
+export function isAvailableDate(
+  start: string,
+  end: string,
+  timezone = "America/Mexico_City"
+): boolean {
+  const startDate: moment = moment(start).tz(timezone);
+  const endDate: moment = moment(end).tz(timezone);
+
+  // Check if is weekday
+  const isAvailableDay = (day: number) => !(day === 6 || day === 7);
+
+  // Check if the hours is in office hours
+  const isAvailableHour = (starHour: string, endHour: string) =>
+    starHour >= "08:00" && endHour <= "18:00";
+
+  return (
+    isAvailableDay(startDate.isoWeekday()) &&
+    isAvailableHour(startDate.format("HH:mm"), endDate.format("HH:mm"))
+  );
+}
+
+export function areValidsEmails(emails: string[]) {
   return emails.every(email => EmailValidator.validate(email));
 }

@@ -1,7 +1,15 @@
 // Import DB setup and models
 
 import { Booking, chai, db, ICredential, IUserId, Room, User } from "../common";
-import { getTestDate } from "../utils";
+import {
+  availableDate,
+  timeOutOffice,
+  weekendDate,
+  pastDate,
+  invalidEmail,
+  inexistRoom,
+  inexistBooking
+} from "../utils";
 
 const apiPath = "/api/v2/booking/";
 const server = "http://localhost:8888";
@@ -13,8 +21,14 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
     let userId;
 
     // dates used by post and update booking
-    const startTestDate = `${getTestDate()}T10:15:00`;
-    const endTestDate = `${getTestDate()}T10:25:00`;
+    const startTestDate = `${availableDate}T18:00:00.000Z`;
+    const endTestDate = `${availableDate}T19:00:00.000Z`;
+
+    const edgeUpperStartDate = `${availableDate}T19:00:00.000Z`;
+    const edgeUpperEndDate = `${availableDate}T20:00:00.000Z`;
+
+    const edgeLowerStartDate = `${availableDate}T17:00:00.000Z`;
+    const edgeLowerEndDate = `${availableDate}T18:00:00.000Z`;
 
     // create a room and user that be used in the testing
     before(async () => {
@@ -63,8 +77,9 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
     // Delete room and user created for test
     after(async () => {
       try {
-        await Room.destroy({ where: { id: roomId } });
-        await User.destroy({ where: { id: userId } });
+        const roomPromise = Room.destroy({ where: { id: roomId } });
+        const userPromise = User.destroy({ where: { id: userId } });
+        await Promise.all([roomPromise, userPromise]);
       } catch (err) {
         throw err;
       }
@@ -91,8 +106,8 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
         const booking = {
           description: "Call Varma",
           room_id: roomId,
-          start: "2019-02-11T10:15:00",
-          end: "2019-02-11T10:30:00",
+          start: startTestDate,
+          end: endTestDate,
           attendees: []
         };
 
@@ -120,8 +135,8 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
             res.body.description.should.equal("Call Varma");
             res.body.room_id.should.deep.equal(roomId);
             res.body.user_id.should.deep.equal(userId);
-            res.body.start.should.deep.equal("2019-02-11T10:15:00.000Z");
-            res.body.end.should.deep.equal("2019-02-11T10:30:00.000Z");
+            res.body.start.should.deep.equal(startTestDate);
+            res.body.end.should.deep.equal(endTestDate);
             bookingsId.push(res.body.id);
             done();
           });
@@ -130,8 +145,8 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
         const booking = {
           description: "Call Varma",
           room_id: roomId,
-          start: "2019-02-11T10:30:00",
-          end: "2019-02-11T10:45:00",
+          start: edgeLowerStartDate,
+          end: edgeLowerEndDate,
           attendees: []
         };
 
@@ -159,8 +174,8 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
 
             res.body.description.should.equal("Call Varma");
             res.body.room_id.should.deep.equal(roomId);
-            res.body.start.should.deep.equal("2019-02-11T10:30:00.000Z");
-            res.body.end.should.deep.equal("2019-02-11T10:45:00.000Z");
+            res.body.start.should.deep.equal(edgeLowerStartDate);
+            res.body.end.should.deep.equal(edgeLowerEndDate);
             bookingsId.push(res.body.id);
             done();
           });
@@ -169,8 +184,8 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
         const booking = {
           description: "Call Varma",
           room_id: roomId,
-          start: "2019-02-11T10:00:00",
-          end: "2019-02-11T10:15:00",
+          start: edgeUpperStartDate,
+          end: edgeUpperEndDate,
           attendees: []
         };
 
@@ -199,8 +214,8 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
 
             res.body.description.should.equal("Call Varma");
             res.body.room_id.should.deep.equal(roomId);
-            res.body.start.should.deep.equal("2019-02-11T10:00:00.000Z");
-            res.body.end.should.deep.equal("2019-02-11T10:15:00.000Z");
+            res.body.start.should.deep.equal(edgeUpperStartDate);
+            res.body.end.should.deep.equal(edgeUpperEndDate);
             bookingsId.push(res.body.id);
             done();
           });
@@ -209,8 +224,8 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
         const booking = {
           description: "Call Varma",
           room_id: roomId,
-          start: "2019-02-11T10:15:00",
-          end: "2019-02-11T10:30:00",
+          start: startTestDate,
+          end: endTestDate,
           attendees: []
         };
 
@@ -232,8 +247,8 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
         const booking = {
           description: "Call Varma",
           room_id: roomId,
-          start: "2019-04-15T06:00:00",
-          end: "2019-04-15T09:00:00",
+          start: timeOutOffice.startDate,
+          end: timeOutOffice.endDate,
           attendees: []
         };
 
@@ -258,8 +273,8 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
         const booking = {
           description: "Call Varma",
           room_id: roomId,
-          start: "2019-12-14T12:00:00",
-          end: "2019-12-14T13:00:00",
+          start: weekendDate.startDate,
+          end: weekendDate.endDate,
           attendees: []
         };
 
@@ -284,8 +299,8 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
         const booking = {
           description: "Call Varma",
           room_id: roomId,
-          start: "2019-01-08T12:00:00",
-          end: "2019-01-08T13:00:00",
+          start: pastDate.startDate,
+          end: pastDate.endDate,
           attendees: []
         };
 
@@ -312,7 +327,7 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
           room_id: roomId,
           start: startTestDate,
           end: endTestDate,
-          attendees: ["invalid@email"]
+          attendees: [invalidEmail]
         };
 
         chai
@@ -350,7 +365,7 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
             }
 
             res.should.have.status(400);
-            res.body.should.equal("Bad Request: No start date in request.");
+            res.body.should.equal("Bad Request: Invalid date");
             done();
           });
       });
@@ -374,7 +389,7 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
             }
 
             res.should.have.status(400);
-            res.body.should.equal("Bad Request: No end date in request.");
+            res.body.should.equal("Bad Request: Invalid date");
             done();
           });
       });
@@ -428,7 +443,7 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
       it("Try to schedule a meeting with non-exist roomId.", done => {
         const booking = {
           description: "Call Varma",
-          roomId: 99,
+          room_id: inexistRoom,
           start: startTestDate,
           end: endTestDate,
           attendees: []
@@ -446,7 +461,7 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
 
             res.should.have.status(400);
             res.body.should.equal(
-              `Bad Request: room ${booking.roomId} not exist.`
+              `Bad Request: room ${booking.room_id} not exist.`
             );
             done();
           });
@@ -461,16 +476,16 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
         const bookingToEdit = {
           description: "This is a booking to edit",
           room_id: roomId,
-          start: "2019-02-11T10:15:00",
-          end: "2019-02-11T10:25:00",
+          start: `${availableDate}T15:00:00.000Z`,
+          end: `${availableDate}T15:10:00.000Z`,
           attendees: []
         };
 
-        const booking = {
-          description: "This a booking useful for test cases",
+        const bookingToEdit2 = {
+          description: "This is a booking to edit x2",
           room_id: roomId,
-          start: "2019-02-11T10:30:00",
-          end: "2019-02-11T10:45:00",
+          start: `${availableDate}T16:10:00.000Z`,
+          end: `${availableDate}T16:20:00.000Z`,
           attendees: []
         };
 
@@ -486,7 +501,7 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
           const createdBooking = await chai
             .request(server)
             .post(apiPath)
-            .send(booking)
+            .send(bookingToEdit2)
             .set("Authorization", `Bearer ${token}`);
 
           const parsedBookingToEdit = JSON.parse(
@@ -516,17 +531,18 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
       });
 
       it("Should edit a booking.", done => {
-        const booking = {
-          description: "This is a booking to edit x2",
+        const bookingEdit = {
+          description: "This is a booking to edit",
           room_id: roomId,
-          start: "2019-02-11T10:00:00",
-          end: "2019-02-11T10:10:00",
+          start: `${availableDate}T15:20:00.000Z`,
+          end: `${availableDate}T15:30:00.000Z`,
           attendees: []
         };
+
         chai
           .request(server)
           .put(apiPath + bookingsId[0])
-          .send(booking)
+          .send(bookingEdit)
           .set("Authorization", `Bearer ${token}`)
           .end((err, res) => {
             if (err) {
@@ -544,25 +560,25 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
             res.body.should.have.property("event_id");
             res.body.should.have.property("updated_at");
             res.body.should.have.property("created_at");
-            res.body.description.should.equal("This is a booking to edit x2");
-            res.body.room_id.should.equal(roomId);
-            res.body.start.should.equal("2019-02-11T10:00:00.000Z");
-            res.body.end.should.equal("2019-02-11T10:10:00.000Z");
+            res.body.description.should.equal(bookingEdit.description);
+            res.body.room_id.should.equal(bookingEdit.room_id);
+            res.body.start.should.equal(bookingEdit.start);
+            res.body.end.should.equal(bookingEdit.end);
             done();
           });
       });
       it("Should edit a booking. Edge case: start time.", done => {
-        const booking = {
-          description: "This is a booking to edit x3",
+        const bookingEdit = {
+          description: "This is a booking to edit x2",
           room_id: roomId,
-          start: "2019-02-11T10:45:00",
-          end: "2019-02-11T10:50:00",
+          start: `${availableDate}T15:00:00.000Z`,
+          end: `${availableDate}T15:20:00.000Z`,
           attendees: []
         };
         chai
           .request(server)
-          .put(apiPath + bookingsId[0])
-          .send(booking)
+          .put(apiPath + bookingsId[1])
+          .send(bookingEdit)
           .set("Authorization", `Bearer ${token}`)
           .end((err, res) => {
             if (err) {
@@ -580,27 +596,25 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
             res.body.should.have.property("event_id");
             res.body.should.have.property("updated_at");
             res.body.should.have.property("created_at");
-            res.body.description.should.deep.equal(
-              "This is a booking to edit x3"
-            );
-            res.body.room_id.should.deep.equal(roomId);
-            res.body.start.should.deep.equal("2019-02-11T10:45:00.000Z");
-            res.body.end.should.deep.equal("2019-02-11T10:50:00.000Z");
+            res.body.description.should.deep.equal(bookingEdit.description);
+            res.body.room_id.should.deep.equal(bookingEdit.room_id);
+            res.body.start.should.deep.equal(bookingEdit.start);
+            res.body.end.should.deep.equal(bookingEdit.end);
             done();
           });
       });
       it("Should edit a booking. Edge case: end time.", done => {
-        const booking = {
-          description: "This is a booking to edit x4",
+        const bookingEdit = {
+          description: "This is a booking to edit x3",
           room_id: roomId,
-          start: "2019-02-11T10:00:00",
-          end: "2019-02-11T10:30:00",
+          start: `${availableDate}T15:30:00.000Z`,
+          end: `${availableDate}T15:40:00.000Z`,
           attendees: []
         };
         chai
           .request(server)
-          .put(apiPath + bookingsId[0])
-          .send(booking)
+          .put(apiPath + bookingsId[1])
+          .send(bookingEdit)
           .set("Authorization", `Bearer ${token}`)
           .end((err, res) => {
             if (err) {
@@ -618,12 +632,10 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
             res.body.should.have.property("event_id");
             res.body.should.have.property("updated_at");
             res.body.should.have.property("created_at");
-            res.body.description.should.deep.equal(
-              "This is a booking to edit x4"
-            );
-            res.body.room_id.should.deep.equal(roomId);
-            res.body.start.should.deep.equal("2019-02-11T10:00:00.000Z");
-            res.body.end.should.deep.equal("2019-02-11T10:30:00.000Z");
+            res.body.description.should.deep.equal(bookingEdit.description);
+            res.body.room_id.should.deep.equal(bookingEdit.room_id);
+            res.body.start.should.deep.equal(bookingEdit.start);
+            res.body.end.should.deep.equal(bookingEdit.end);
             done();
           });
       });
@@ -631,14 +643,14 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
         const booking = {
           description: "Call Varma",
           room_id: roomId,
-          start: "2019-02-11T10:35:00",
-          end: "2019-02-11T10:40:00",
+          start: `${availableDate}T15:20:00.000Z`,
+          end: `${availableDate}T15:30:00.000Z`,
           attendees: []
         };
 
         chai
           .request(server)
-          .put(apiPath + bookingsId[0])
+          .put(apiPath + bookingsId[1])
           .send(booking)
           .set("Authorization", `Bearer ${token}`)
           .end((err, res) => {
@@ -654,8 +666,8 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
         const booking = {
           description: "Call Varma",
           room_id: roomId,
-          start: "2019-04-15T06:00:00",
-          end: "2019-04-15T09:00:00",
+          start: timeOutOffice.startDate,
+          end: timeOutOffice.endDate,
           attendees: []
         };
 
@@ -680,8 +692,8 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
         const booking = {
           description: "Call Varma",
           room_id: roomId,
-          start: "2019-12-14T12:00:00",
-          end: "2019-12-14T13:00:00",
+          start: weekendDate.startDate,
+          end: weekendDate.endDate,
           attendees: []
         };
 
@@ -706,8 +718,8 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
         const booking = {
           description: "Call Varma",
           room_id: roomId,
-          start: "2019-01-08T12:00:00",
-          end: "2019-01-08T13:00:00",
+          start: pastDate.startDate,
+          end: pastDate.endDate,
           attendees: []
         };
 
@@ -734,7 +746,7 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
           room_id: roomId,
           start: startTestDate,
           end: endTestDate,
-          attendees: ["invalid@email"]
+          attendees: [invalidEmail]
         };
 
         chai
@@ -772,9 +784,7 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
             }
 
             res.should.have.status(400);
-            res.body.should.deep.equal(
-              "Bad Request: No start date in request."
-            );
+            res.body.should.deep.equal("Bad Request: Invalid date");
             done();
           });
       });
@@ -798,7 +808,7 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
             }
 
             res.should.have.status(400);
-            res.body.should.deep.equal("Bad Request: No end date in request.");
+            res.body.should.deep.equal("Bad Request: Invalid date");
             done();
           });
       });
@@ -852,7 +862,7 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
       it("Try to reschedule a meeting with non-exist roomId", done => {
         const booking = {
           description: "Call Varma",
-          roomId: 99,
+          room_id: inexistRoom,
           start: startTestDate,
           end: endTestDate,
           attendees: []
@@ -870,7 +880,7 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
 
             res.should.have.status(400);
             res.body.should.deep.equal(
-              `Bad Request: room ${booking.roomId} not exist.`
+              `Bad Request: room ${booking.room_id} not exist.`
             );
             done();
           });
@@ -881,11 +891,11 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
       const bookingsId = [];
       // Create a bookings useful for testing
       before(async () => {
-        const booking = {
+        const bookingToDelete = {
           description: "This a booking useful for test cases",
           room_id: roomId,
-          start: "2019-02-11T10:30:00",
-          end: "2019-02-11T10:45:00",
+          start: `${availableDate}T23:00:00.000Z`,
+          end: `${availableDate}T23:10:00.000Z`,
           attendees: []
         };
 
@@ -894,7 +904,7 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
           const createdBooking = await chai
             .request(server)
             .post(apiPath)
-            .send(booking)
+            .send(bookingToDelete)
             .set("Authorization", `Bearer ${token}`);
 
           const parsedBooking = JSON.parse(JSON.stringify(createdBooking));
@@ -921,7 +931,7 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
       it("Try to delete a non-exist booking", done => {
         chai
           .request(server)
-          .delete(apiPath + bookingsId[0])
+          .delete(apiPath + inexistBooking)
           .set("Authorization", `Bearer ${token}`)
           .end((err, res) => {
             if (err) {
