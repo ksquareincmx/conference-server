@@ -110,8 +110,6 @@ gulp.task("production", ["build"]);
 
 gulp.task("default", ["production"]);
 
-gulp.task("jsdoc", shell.task(["rm -rf public/jsdoc", "npm run jsdoc"]));
-
 // clean up if an error goes unhandled.
 process.on("exit", function() {
   if (node) node.kill();
