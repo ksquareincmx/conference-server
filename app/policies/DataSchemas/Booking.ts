@@ -11,11 +11,16 @@ const BookingSchema = () => {
     .required();
   const description = Joi.string().required();
   const room_id = Joi.number().required();
-  const attendees = Joi.array()
-    .items(
-      Joi.string()
-        .email()
-        .required()
+  const attendees = Joi.alternatives()
+    .try(
+      Joi.array()
+        .items(
+          Joi.string()
+            .email()
+            .required()
+        )
+        .required(),
+      Joi.array().length(0)
     )
     .required();
 
@@ -23,7 +28,7 @@ const BookingSchema = () => {
   const id = Joi.number().required();
 
   return {
-    createBooking: Joi.object({
+    createBooking: {
       body: {
         start,
         end,
@@ -32,9 +37,9 @@ const BookingSchema = () => {
         attendees,
         userId
       }
-    }),
+    },
 
-    updateBooking: Joi.object({
+    updateBooking: {
       body: {
         start,
         end,
@@ -46,21 +51,23 @@ const BookingSchema = () => {
       params: {
         id
       }
-    }),
+    },
 
-    getBookings: Joi.object({
+    getBookings: {
       param: {
         id
       }
-    }),
+    },
 
-    getAllBookings: Joi.object({
+    getAllBookings: {
       query: {
         fromDate: Joi.date().iso(),
         toDate: Joi.date().iso()
       }
-    })
+    }
   };
 };
 
-export { BookingSchema };
+const bookingSchema = BookingSchema();
+
+export { bookingSchema };

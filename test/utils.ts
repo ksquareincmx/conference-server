@@ -49,6 +49,7 @@ export const pastDate = {
   startDate: "1970-10-10T18:00:00.000Z",
   endDate: "1970-10-10T18:00:00.000Z"
 };
-export const invalidEmail = "invalid@ksquareinc";
+export const validEmail = "admin@example.com";
+export const invalidEmail = "invalidemailksquareinc";
 export const inexistRoom = Number.MAX_SAFE_INTEGER;
 export const inexistBooking = Number.MAX_SAFE_INTEGER;
