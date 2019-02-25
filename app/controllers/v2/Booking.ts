@@ -5,9 +5,7 @@ import { Controller } from "./../../libraries/Controller";
 import {
   isEmpty,
   getActualDate,
-  isAvailableDate,
-  areValidsEmails,
-  isValidDate
+  isAvailableDate
 } from "./../../libraries/util";
 import { Booking } from "./../../models/Booking";
 import { Room } from "./../../models/Room";
@@ -24,7 +22,6 @@ import { insertAttendee } from "./../../libraries/AttendeeDB";
 import {
   insertBookingAttendee,
   getAttendees,
-  deleteAllBookingAttendee,
   updateBookingAttendee
 } from "./../../libraries/BookingAttendeeDB";
 import {
@@ -35,9 +32,10 @@ import {
 import {
   IGetBookingParams,
   IGetAllBookingParams,
-  IDeleteBookingParams,
-  IUpdateBookingRequest
+  IDeleteBookingParams
 } from "./../../interfaces/BookingInterfaces";
+import { validate } from "./../../policies/Validate";
+import { bookingSchema } from "./../../policies/DataSchemas/Booking";
 
 export class BookingController extends Controller {
   constructor() {
@@ -134,6 +132,7 @@ export class BookingController extends Controller {
       stripNestedObjects(),
       filterOwner(),
       appendUser(),
+      validate(bookingSchema.createBooking),
       this.createBooking
     );
 
@@ -148,7 +147,7 @@ export class BookingController extends Controller {
 
       @apiParam {Object}    body                   Booking details
       @apiParam {Date}      body.start             Booking start date
-        @apiParam {Date}      body.end               Booking end date
+      @apiParam {Date}      body.end               Booking end date
       @apiParam {String}    body.description       Booking description
       @apiParam {Number}    body.roomId            Booking room id
       @apiParam {String[]}  body.attendees    Emails from users who will attend the event
@@ -173,6 +172,7 @@ export class BookingController extends Controller {
       stripNestedObjects(),
       appendUser(),
       adminOrOwner(this.model),
+      validate(bookingSchema.updateBooking),
       this.updateBooking
     );
 
@@ -245,38 +245,11 @@ export class BookingController extends Controller {
   createBooking = async (req: Request, res: Response) => {
     const data = createBookingMapper.toEntity(req.body);
 
-    if (isEmpty(data.description)) {
-      return Controller.badRequest(
-        res,
-        "Bad Request: No description in request."
-      );
-    }
-    if (!isValidDate(data.end) || !isValidDate(data.start)) {
-      return Controller.badRequest(res, "Bad Request: Invalid date");
-    }
-    if (isEmpty(data.roomId)) {
-      return Controller.badRequest(res, "Bad Request: No roomId in request.");
-    }
-    if (data.attendees.constructor !== Array) {
-      return Controller.badRequest(
-        res,
-        "Bad Request: No attendees as Array in request."
-      );
-    }
-    if (getActualDate() > data.start) {
-      return Controller.badRequest(
-        res,
-        "bad Request: Bookings in past dates aren't allowed."
-      );
-    }
     if (!isAvailableDate(data.start, data.end)) {
       return Controller.badRequest(
         res,
         "bad Request: The booking only can have office hours (Monday-Friday, 8AM-6PM)."
       );
-    }
-    if (!areValidsEmails(data.attendees)) {
-      return Controller.badRequest(res, "Bad Request: Invalid email.");
     }
 
     // remove duplicate emails
@@ -357,43 +330,11 @@ export class BookingController extends Controller {
       body: req.body
     });
 
-    if (isEmpty(data.body.description)) {
-      return Controller.badRequest(
-        res,
-        "Bad Request: No description in request."
-      );
-    }
-    if (!isValidDate(data.body.end) || !isValidDate(data.body.start)) {
-      return Controller.badRequest(res, "Bad Request: Invalid date");
-    }
-    if (isEmpty(data.body.roomId)) {
-      return Controller.badRequest(res, "Bad Request: No roomId in request.");
-    }
-    if (data.body.attendees.constructor !== Array) {
-      return Controller.badRequest(
-        res,
-        "Bad Request: No attendees as Array in request."
-      );
-    }
-    if (
-      getActualDate() >
-      moment(data.body.start)
-        .utc()
-        .format()
-    ) {
-      return Controller.badRequest(
-        res,
-        "bad Request: Bookings in past dates aren't allowed."
-      );
-    }
     if (!isAvailableDate(data.body.start, data.body.end)) {
       return Controller.badRequest(
         res,
         "bad Request: The booking only can have office hours (Monday-Friday, 8AM-6PM)."
       );
-    }
-    if (!areValidsEmails(data.body.attendees)) {
-      return Controller.badRequest(res, "Bad Request: Invalid email.");
     }
 
     // remove duplicate emails
