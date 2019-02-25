@@ -23,7 +23,7 @@ const BookingSchema = () => {
   const id = Joi.number().required();
 
   return {
-    createBooking: Joi.object().keys({
+    createBooking: Joi.object({
       body: {
         start,
         end,
@@ -34,7 +34,7 @@ const BookingSchema = () => {
       }
     }),
 
-    updateBooking: Joi.object().keys({
+    updateBooking: Joi.object({
       body: {
         start,
         end,
@@ -48,13 +48,13 @@ const BookingSchema = () => {
       }
     }),
 
-    getBookings: Joi.object().keys({
+    getBookings: Joi.object({
       param: {
         id
       }
     }),
 
-    getAllBookings: Joi.object().keys({
+    getAllBookings: Joi.object({
       query: {
         fromDate: Joi.date().iso(),
         toDate: Joi.date().iso()

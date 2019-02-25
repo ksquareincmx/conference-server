@@ -6,39 +6,39 @@ const RoomSchema = () => {
   const id = Joi.number().required();
 
   return {
-    createRoom: Joi.object().keys({
+    createRoom: {
       body: {
         name,
         color
       }
-    }),
+    },
 
-    updateRoom: Joi.object().keys({
+    updateRoom: {
       body: {
         name,
         color
       }
-    }),
+    },
 
-    deleteRoom: Joi.object().keys({
+    deleteRoom: {
       params: {
         id
       }
-    }),
+    },
 
-    getRoom: Joi.object().keys({
+    getRoom: {
       params: {
         id
       }
-    }),
+    },
 
-    getAvailableHours: Joi.object().keys({
+    getAvailableHours: {
       params: {
         id
       }
-    }),
+    },
 
-    hours: Joi.object().keys({
+    hours: {
       query: {
         fromDate: Joi.date()
           .iso()
@@ -51,7 +51,7 @@ const RoomSchema = () => {
       params: {
         id
       }
-    })
+    }
   };
 };
 
