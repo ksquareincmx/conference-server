@@ -8,8 +8,15 @@ export const roomTest = (auth: ICredential, user: IUserId) => {
     let roomId: string;
     const testRoom = {
       name: "Test Room",
-      color: "Test Color",
-      presence: false
+      color: "Test Color"
+    };
+
+    const testRoomWithoutName = {
+      color: "Created Color"
+    };
+
+    const testRoomWithoutColor = {
+      name: "Created Room"
     };
 
     before(async function() {
@@ -251,8 +258,7 @@ export const roomTest = (auth: ICredential, user: IUserId) => {
     describe("POST", () => {
       const createdRoom = {
         name: "Created Room",
-        color: "Created Color",
-        presence: true
+        color: "Created Color"
       };
 
       after(async function() {
@@ -305,6 +311,42 @@ export const roomTest = (auth: ICredential, user: IUserId) => {
             res.body.should.be
               .a("string")
               .and.equal("Bad Request: name and color must be uniques");
+            done();
+          });
+      });
+
+      it("it should not create a new room if name not exist", done => {
+        chai
+          .request(apiPath)
+          .post("")
+          .send(testRoomWithoutName)
+          .set("Authorization", auth.token)
+          .end((err, res) => {
+            if (err) {
+              throw err;
+            }
+            res.should.have.status(400);
+            res.body.should.be
+              .a("string")
+              .and.equal("Bad Request: name is required");
+            done();
+          });
+      });
+
+      it("it should not create a new room if color not exist", done => {
+        chai
+          .request(apiPath)
+          .post("")
+          .send(testRoomWithoutColor)
+          .set("Authorization", auth.token)
+          .end((err, res) => {
+            if (err) {
+              throw err;
+            }
+            res.should.have.status(400);
+            res.body.should.be
+              .a("string")
+              .and.equal("Bad Request: color is required");
             done();
           });
       });
@@ -369,8 +411,7 @@ export const roomTest = (auth: ICredential, user: IUserId) => {
     describe("PUT", () => {
       const editedRoom = {
         name: "Edited Room",
-        color: "Edited Color",
-        presence: true
+        color: "Edited Color"
       };
 
       it("it should edit the room", done => {
@@ -391,6 +432,42 @@ export const roomTest = (auth: ICredential, user: IUserId) => {
             res.body.should.have.property("presence");
             res.body.should.have.property("updated_at");
             res.body.should.have.property("created_at");
+            done();
+          });
+      });
+
+      it("it should not create a new room if name not exist", done => {
+        chai
+          .request(apiPath)
+          .put(roomId)
+          .send(testRoomWithoutName)
+          .set("Authorization", auth.token)
+          .end((err, res) => {
+            if (err) {
+              throw err;
+            }
+            res.should.have.status(400);
+            res.body.should.be
+              .a("string")
+              .and.equal("Bad Request: name is required");
+            done();
+          });
+      });
+
+      it("it should not create a new room if color not exist", done => {
+        chai
+          .request(apiPath)
+          .put(roomId)
+          .send(testRoomWithoutColor)
+          .set("Authorization", auth.token)
+          .end((err, res) => {
+            if (err) {
+              throw err;
+            }
+            res.should.have.status(400);
+            res.body.should.be
+              .a("string")
+              .and.equal("Bad Request: color is required");
             done();
           });
       });

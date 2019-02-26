@@ -1,11 +1,11 @@
+import * as moment from "moment-timezone";
 import * as _ from "lodash";
 import { Op } from "sequelize";
 import { Controller } from "./../../libraries/Controller";
 import {
   isEmpty,
   getActualDate,
-  isAvailableDate,
-  areValidsEmails
+  isAvailableDate
 } from "./../../libraries/util";
 import { Booking } from "./../../models/Booking";
 import { Room } from "./../../models/Room";
@@ -15,26 +15,27 @@ import {
   filterOwner,
   appendUser,
   stripNestedObjects,
-  filterRoles,
-  adminOrOwner,
-  isOwner
+  adminOrOwner
 } from "./../../policies/General";
 import calendarService from "./../../services/GoogleCalendarService";
 import { insertAttendee } from "./../../libraries/AttendeeDB";
 import {
   insertBookingAttendee,
   getAttendees,
-  deleteAllBookingAttendee,
   updateBookingAttendee
 } from "./../../libraries/BookingAttendeeDB";
-import { bookingMapper } from "./../../mappers/BookingMapper";
+import {
+  bookingMapper,
+  createBookingMapper,
+  updateBookingMapper
+} from "./../../mappers/BookingMapper";
 import {
   IGetBookingParams,
   IGetAllBookingParams,
-  IDeleteBookingParams,
-  ICreateBookingRequest,
-  IUpdateBookingRequest
+  IDeleteBookingParams
 } from "./../../interfaces/BookingInterfaces";
+import { validate } from "./../../policies/Validate";
+import { bookingSchema } from "./../../policies/DataSchemas/Booking";
 
 export class BookingController extends Controller {
   constructor() {
@@ -131,6 +132,7 @@ export class BookingController extends Controller {
       stripNestedObjects(),
       filterOwner(),
       appendUser(),
+      validate(bookingSchema.createBooking),
       this.createBooking
     );
 
@@ -145,7 +147,7 @@ export class BookingController extends Controller {
 
       @apiParam {Object}    body                   Booking details
       @apiParam {Date}      body.start             Booking start date
-        @apiParam {Date}      body.end               Booking end date
+      @apiParam {Date}      body.end               Booking end date
       @apiParam {String}    body.description       Booking description
       @apiParam {Number}    body.roomId            Booking room id
       @apiParam {String[]}  body.attendees    Emails from users who will attend the event
@@ -170,6 +172,7 @@ export class BookingController extends Controller {
       stripNestedObjects(),
       appendUser(),
       adminOrOwner(this.model),
+      validate(bookingSchema.updateBooking),
       this.updateBooking
     );
 
@@ -240,64 +243,29 @@ export class BookingController extends Controller {
   };
 
   createBooking = async (req: Request, res: Response) => {
-    const data: ICreateBookingRequest = <ICreateBookingRequest>{
-      body: bookingMapper.toEntity(req.body)
-    };
+    const data = createBookingMapper.toEntity(req.body);
 
-    if (isEmpty(data.body.description)) {
-      return Controller.badRequest(
-        res,
-        "Bad Request: No description in request."
-      );
-    }
-    if (isEmpty(data.body.start)) {
-      return Controller.badRequest(
-        res,
-        "Bad Request: No start date in request."
-      );
-    }
-    if (isEmpty(data.body.end)) {
-      return Controller.badRequest(res, "Bad Request: No end date in request.");
-    }
-    if (isEmpty(data.body.roomId)) {
-      return Controller.badRequest(res, "Bad Request: No roomId in request.");
-    }
-    if (data.body.attendees.constructor !== Array) {
-      return Controller.badRequest(
-        res,
-        "Bad Request: No attendees as Array in request."
-      );
-    }
-    if (getActualDate() > data.body.start) {
-      return Controller.badRequest(
-        res,
-        "bad Request: Bookings in past dates aren't allowed."
-      );
-    }
-    if (!isAvailableDate(data.body.start, data.body.end)) {
+    if (!isAvailableDate(data.start, data.end)) {
       return Controller.badRequest(
         res,
         "bad Request: The booking only can have office hours (Monday-Friday, 8AM-6PM)."
       );
     }
-    if (!areValidsEmails(data.body.attendees)) {
-      return Controller.badRequest(res, "Bad Request: Invalid email.");
-    }
 
     // remove duplicate emails
-    data.body.attendees.push(req.session.user.email);
-    const uniqueEmails = [...new Set(data.body.attendees)];
+    data.attendees.push(req.session.user.email);
+    const uniqueEmails = [...new Set(data.attendees)];
 
     try {
       const roomId = await Room.findOne({
         attributes: ["id"],
-        where: { id: data.body.roomId }
+        where: { id: data.roomId }
       });
 
       if (isEmpty(roomId)) {
         return Controller.badRequest(
           res,
-          `Bad Request: room ${data.body.roomId} not exist.`
+          `Bad Request: room ${data.roomId} not exist.`
         );
       }
 
@@ -307,15 +275,15 @@ export class BookingController extends Controller {
             [Op.not]: {
               [Op.or]: {
                 end: {
-                  [Op.lte]: data.body.start
+                  [Op.lte]: data.start
                 },
                 start: {
-                  [Op.gte]: data.body.end
+                  [Op.gte]: data.end
                 }
               }
             },
             roomId: {
-              [Op.eq]: data.body.roomId
+              [Op.eq]: data.roomId
             }
           }
         }
@@ -327,14 +295,14 @@ export class BookingController extends Controller {
 
       // insert event in Google calendar and send invitations
       const eventCalendar = await calendarService.insertEvent(
-        data.body.start,
-        data.body.end,
-        data.body.description,
+        data.start,
+        data.end,
+        data.description,
         uniqueEmails
       );
 
       // insert booking the DB
-      const bookingObj = { ...data.body, eventId: eventCalendar.id };
+      const bookingObj = { ...data, eventId: eventCalendar.id };
       const createdBooking = await this.model.create(bookingObj);
       const parsedCreatedBooking = createdBooking.toJSON();
 
@@ -357,49 +325,16 @@ export class BookingController extends Controller {
   };
 
   updateBooking = async (req: Request, res: Response) => {
-    const data: IUpdateBookingRequest = <IUpdateBookingRequest>{
+    const data = updateBookingMapper.toEntity({
       params: req.params,
-      body: bookingMapper.toEntity(req.body)
-    };
+      body: req.body
+    });
 
-    if (isEmpty(data.body.description)) {
-      return Controller.badRequest(
-        res,
-        "Bad Request: No description in request."
-      );
-    }
-    if (isEmpty(data.body.start)) {
-      return Controller.badRequest(
-        res,
-        "Bad Request: No start date in request."
-      );
-    }
-    if (isEmpty(data.body.end)) {
-      return Controller.badRequest(res, "Bad Request: No end date in request.");
-    }
-    if (isEmpty(data.body.roomId)) {
-      return Controller.badRequest(res, "Bad Request: No roomId in request.");
-    }
-    if (data.body.attendees.constructor !== Array) {
-      return Controller.badRequest(
-        res,
-        "Bad Request: No attendees as Array in request."
-      );
-    }
-    if (getActualDate() > data.body.start) {
-      return Controller.badRequest(
-        res,
-        "bad Request: Bookings in past dates aren't allowed."
-      );
-    }
     if (!isAvailableDate(data.body.start, data.body.end)) {
       return Controller.badRequest(
         res,
         "bad Request: The booking only can have office hours (Monday-Friday, 8AM-6PM)."
       );
-    }
-    if (!areValidsEmails(data.body.attendees)) {
-      return Controller.badRequest(res, "Bad Request: Invalid email.");
     }
 
     // remove duplicate emails
@@ -425,10 +360,14 @@ export class BookingController extends Controller {
             [Op.not]: {
               [Op.or]: {
                 end: {
-                  [Op.lte]: data.body.start
+                  [Op.lte]: moment(data.body.start)
+                    .utc()
+                    .format()
                 },
                 start: {
-                  [Op.gte]: data.body.end
+                  [Op.gte]: moment(data.body.end)
+                    .utc()
+                    .format()
                 }
               }
             },

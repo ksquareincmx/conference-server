@@ -1,3 +1,4 @@
+import { validate } from "./../../policies/Validate";
 import { roomDataStorage } from "./../../dataStorage/SQLDatastorage/Room";
 import { Op } from "sequelize";
 import * as moment from "moment-timezone";
@@ -20,6 +21,7 @@ import {
 } from "./../../interfaces/RoomInterfaces";
 import { roomMapper } from "./../../mappers/RoomMapper";
 import { IGetHourParams, IHour } from "./../../interfaces/HourInterfaces";
+import { roomSchema } from "./../../policies/DataSchemas/Room";
 
 export class RoomController extends Controller {
   constructor() {
@@ -105,6 +107,7 @@ export class RoomController extends Controller {
       validateJWT("access"),
       stripNestedObjects(),
       filterRoles(["admin"]),
+      validate(roomSchema.createRoom),
       this.createRoom
     );
 
@@ -138,6 +141,7 @@ export class RoomController extends Controller {
       validateJWT("access"),
       stripNestedObjects(),
       filterRoles(["admin"]),
+      validate(roomSchema.updateRoom),
       this.updateRoom
     );
 
@@ -234,8 +238,8 @@ export class RoomController extends Controller {
     try {
       const rooms = await roomDataStorage.findAll();
 
-      const roomsBooking = rooms.map(room => {
-        const roomStatus = this.roomStatus(room.id);
+      const roomsBooking = rooms.map(async room => {
+        const roomStatus = await this.roomStatus(room.id);
         return { ...room, ...roomStatus };
       });
 
@@ -251,13 +255,6 @@ export class RoomController extends Controller {
     const data: ICreateRoomRequest = <ICreateRoomRequest>{
       body: roomMapper.toEntity(req.body)
     };
-
-    if (isEmpty(data.body.name)) {
-      return Controller.badRequest(res, "Bad Request: No name in request");
-    }
-    if (isEmpty(data.body.color)) {
-      return Controller.badRequest(res, "Bad Request: No color in request");
-    }
 
     try {
       const room = await roomDataStorage.findByNameColor(
@@ -286,13 +283,6 @@ export class RoomController extends Controller {
       params: req.params,
       body: roomMapper.toEntity(req.body)
     };
-
-    if (isEmpty(data.body.name)) {
-      return Controller.badRequest(res, "Bad Request: No name in request");
-    }
-    if (isEmpty(data.body.color)) {
-      return Controller.badRequest(res, "Bad Request: No color in request");
-    }
 
     try {
       const room = await roomDataStorage.findByNameColor(
