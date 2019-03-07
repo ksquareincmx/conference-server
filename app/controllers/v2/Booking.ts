@@ -1,3 +1,4 @@
+import { config } from "./../../config/config";
 import * as moment from "moment-timezone";
 import * as _ from "lodash";
 import { Op } from "sequelize";
@@ -28,14 +29,18 @@ import {
   bookingMapper,
   createBookingMapper,
   updateBookingMapper
-} from "./../../mappers/BookingMapper";
+} from "../../mappers/v2/BookingMapper";
 import {
   IGetBookingParams,
-  IGetAllBookingParams,
-  IDeleteBookingParams
-} from "./../../interfaces/BookingInterfaces";
+  IGetBookingsParams,
+  IDeleteBookingParams,
+  IBookingResponse
+} from "../../interfaces/v2/BookingInterfaces";
 import { validate } from "./../../policies/Validate";
 import { bookingSchema } from "./../../policies/DataSchemas/Booking";
+import { bookingDataStorage } from "./../../dataStorage/SQLDatastorage/Booking";
+import { BookingAttendee } from "../../models/BookingAttendee";
+import { Attendee } from "../../models/Attendee";
 
 export class BookingController extends Controller {
   constructor() {
@@ -70,7 +75,12 @@ export class BookingController extends Controller {
     @apiSuccess {String[]} body.attendees    Emails from users who will attend the event
   */
 
-    this.router.get("/", validateJWT("access"), this.findAllBooking);
+    this.router.get(
+      "/",
+      validateJWT("access"),
+      validate(bookingSchema.getBookings),
+      this.findBookingsService
+    );
 
     /**
     @api {get} /api/v1/Booking/:id Get a Booking
@@ -447,67 +457,27 @@ export class BookingController extends Controller {
     }
   };
 
-  findAllBooking = async (req: Request, res: Response) => {
-    const data: IGetAllBookingParams = {
+  findBookingsService = async (req: Request, res: Response) => {
+    const data: IGetBookingsParams = {
       query: req.query
     };
 
-    const fromDate: Date = new Date(data.query.fromDate);
-    const toDate: Date = new Date(data.query.toDate);
-
-    const isValidDate = date => date.toString() !== "Invalid Date";
-
     try {
-      if (!isEmpty(data.query.fromDate) && !isValidDate(fromDate)) {
-        return Controller.badRequest(
-          res,
-          "Bad Request: fromDate must be a date in format YYYY-MM-DDTHH:MM."
-        );
-      }
+      const { bookings, rows } = await bookingDataStorage.findAll(data.query);
+      const DTOBookings: IBookingResponse[] = bookings.map(bookingMapper.toDTO);
 
-      if (!isEmpty(data.query.toDate) && !isValidDate(toDate)) {
-        return Controller.badRequest(
-          res,
-          "Bad Request: toDate must be a date in format YYYY-MM-DDTHH:MM."
-        );
-      }
-
-      const dateRangeStrategy = ({ fromDate, toDate }) => {
-        if (isEmpty(fromDate) && isEmpty(toDate)) {
-          return this.model.findAll();
-        } else if (!isEmpty(fromDate) && isEmpty(toDate)) {
-          return this.model.findAll({
-            where: {
-              end: { [Op.gte]: fromDate }
-            }
-          });
-        } else if (isEmpty(fromDate) && !isEmpty(toDate)) {
-          return this.model.findAll({
-            where: {
-              start: { [Op.lte]: toDate }
-            }
-          });
-        } else {
-          return this.model.findAll({
-            where: {
-              end: { [Op.gte]: fromDate },
-              start: { [Op.lte]: toDate }
-            }
-          });
-        } // Case where !isEmpty(fromDate) && !isEmpty(toDate)
+      // Add pagination metadata
+      const page: number = Number(data.query.page || 1);
+      const size: number = Number(data.query.pageSize || config.api.limit);
+      const pagination = {
+        size,
+        prev: page - 1 || null,
+        next: page * size >= rows ? null : page + 1
       };
 
-      const bookings = await dateRangeStrategy({
-        fromDate: data.query.fromDate,
-        toDate: data.query.toDate
-      });
-
-      const finalBookings = await this.bookingsPlusAttendees(
-        bookings.map(booking => booking.toJSON())
-      );
-
-      const DTOBookings = finalBookings.map(bookingMapper.toDTO);
-      return res.status(200).json(DTOBookings);
+      return res
+        .status(200)
+        .json({ _pagination: pagination, bookings: DTOBookings });
     } catch (err) {
       return Controller.serverError(res, err);
     }
