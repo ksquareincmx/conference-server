@@ -2,7 +2,7 @@ import {
   IRoom,
   IRoomRequest,
   IUpdateRoom
-} from "../../interfaces/RoomInterfaces";
+} from "../../interfaces/v2/RoomInterfaces";
 
 export interface IRoomDataStorage {
   findById(id: number): Promise<IRoom>;
