@@ -162,9 +162,9 @@ describe("Main", function() {
     }
   });
 
-  authTest(auth, testUser);
-  roomTest(auth, userData);
-  profileTest(auth, userData);
-  userTest(auth, userData);
+  // authTest(auth, testUser);
+  // roomTest(auth, userData);
+  // profileTest(auth, userData);
+  // userTest(auth, userData);
   bookingTest(auth, userData);
 });

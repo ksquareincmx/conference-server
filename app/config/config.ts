@@ -50,7 +50,7 @@ export const config: any = {
 
   api: {
     // Default limit and offset levels for responses
-    limit: 99,
+    limit: 10,
     offset: 0,
     // Show detailed error responses or not
     debug: true

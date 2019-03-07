@@ -17,8 +17,8 @@ import {
   IFindRoomParams,
   IUpdateRoomRequest,
   ICreateRoomRequest
-} from "./../../interfaces/RoomInterfaces";
-import { roomMapper } from "./../../mappers/RoomMapper";
+} from "../../interfaces/v1/RoomInterfaces";
+import { roomMapper } from "./../../mappers/v1/RoomMapper";
 
 export class RoomController extends Controller {
   constructor() {

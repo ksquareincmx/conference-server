@@ -27,14 +27,14 @@ import {
   deleteAllBookingAttendee,
   updateBookingAttendee
 } from "./../../libraries/BookingAttendeeDB";
-import { bookingMapper } from "./../../mappers/BookingMapper";
+import { bookingMapper } from "./../../mappers/v1/BookingMapper";
 import {
   IGetBookingParams,
   IGetAllBookingParams,
   IDeleteBookingParams,
   ICreateBookingRequest,
   IUpdateBookingRequest
-} from "./../../interfaces/BookingInterfaces";
+} from "../../interfaces/v1/BookingInterfaces";
 
 export class BookingController extends Controller {
   constructor() {

@@ -12,8 +12,8 @@ import {
   IGetProfileParams,
   IGetAllProfileSession,
   IUpdateProfileRequest
-} from "./../../interfaces/ProfileInterfaces";
-import { profileMapper } from "./../../mappers/ProfileMapper";
+} from "../../interfaces/v2/ProfileInterfaces";
+import { profileMapper } from "../../mappers/v2/ProfileMapper";
 
 export class ProfileController extends Controller {
   constructor() {

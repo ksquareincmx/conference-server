@@ -4,7 +4,7 @@ import {
   IRoom,
   IRoomRequest,
   IUpdateRoom
-} from "./../../interfaces/RoomInterfaces";
+} from "../../interfaces/v2/RoomInterfaces";
 import { IRoomDataStorage } from "./../interfaces/RoomDataStorage";
 
 function RoomDataStorage(): IRoomDataStorage {

@@ -18,9 +18,9 @@ import {
   IFindRoomParams,
   IUpdateRoomRequest,
   ICreateRoomRequest
-} from "./../../interfaces/RoomInterfaces";
-import { roomMapper } from "./../../mappers/RoomMapper";
-import { IGetHourParams, IHour } from "./../../interfaces/HourInterfaces";
+} from "../../interfaces/v2/RoomInterfaces";
+import { roomMapper } from "../../mappers/v2/RoomMapper";
+import { IGetHourParams, IHour } from "../../interfaces/v2/HourInterfaces";
 import { roomSchema } from "./../../policies/DataSchemas/Room";
 
 export class RoomController extends Controller {

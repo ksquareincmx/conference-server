@@ -1,5 +1,5 @@
-import { IUserResponse } from "./../interfaces/UserInterfaces";
-import { toSyntax } from "./../libraries/util";
+import { IUserResponse } from "../../interfaces/v1/UserInterfaces";
+import { toSyntax } from "../../libraries/util";
 
 import * as fp from "lodash/fp";
 
