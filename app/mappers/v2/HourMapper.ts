@@ -1,5 +1,5 @@
-import { IHourResponse } from "./../interfaces/HourInterfaces";
-import { toSyntax } from "./../libraries/util";
+import { IHourResponse } from "../../interfaces/v2/HourInterfaces";
+import { toSyntax } from "./../../libraries/util";
 
 import * as fp from "lodash/fp";
 

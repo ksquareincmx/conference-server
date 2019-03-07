@@ -1,5 +1,5 @@
-import { IProfileResponse } from "./../interfaces/ProfileInterfaces";
-import { toSyntax } from "./../libraries/util";
+import { IProfileResponse } from "./../../interfaces/v2/ProfileInterfaces";
+import { toSyntax } from "./../../libraries/util";
 
 import * as fp from "lodash/fp";
 

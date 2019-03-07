@@ -4,8 +4,8 @@ import {
   IBookingResponse,
   IBookingRequest,
   IBookingDTO
-} from "./../interfaces/BookingInterfaces";
-import { toSyntax } from "./../libraries/util";
+} from "./../../interfaces/v2/BookingInterfaces";
+import { toSyntax } from "./../../libraries/util";
 
 import * as fp from "lodash/fp";
 import * as moment from "moment";

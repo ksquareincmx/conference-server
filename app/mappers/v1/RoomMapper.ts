@@ -1,5 +1,5 @@
-import { IRoomResponse } from "./../interfaces/RoomInterfaces";
-import { toSyntax } from "./../libraries/util";
+import { IRoomResponse } from "../../interfaces/v1/RoomInterfaces";
+import { toSyntax } from "../../libraries/util";
 
 import * as fp from "lodash/fp";
 

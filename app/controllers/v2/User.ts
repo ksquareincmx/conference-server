@@ -2,9 +2,8 @@ import { Controller } from "./../../libraries/Controller";
 import { User } from "./../../models/User";
 import { Request, Response, Router } from "express";
 import { validateJWT, isSelfUser, filterRoles } from "./../../policies/General";
-import { isEmpty } from "../../libraries/util";
-import { userMapper } from "./../../mappers/UserMapper";
-import { IGetUserParams } from "./../../interfaces/UserInterfaces";
+import { userMapper } from "../../mappers/v2/UserMapper";
+import { IGetUserParams } from "../../interfaces/v2/UserInterfaces";
 
 export class UserController extends Controller {
   constructor() {

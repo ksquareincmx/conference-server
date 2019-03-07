@@ -5,15 +5,14 @@ import {
   validateJWT,
   filterOwner,
   appendUser,
-  stripNestedObjects,
-  filterRoles
+  stripNestedObjects
 } from "./../../policies/General";
 import {
   IGetProfileParams,
   IGetAllProfileSession,
   IUpdateProfileRequest
-} from "./../../interfaces/ProfileInterfaces";
-import { profileMapper } from "./../../mappers/ProfileMapper";
+} from "../../interfaces/v1/ProfileInterfaces";
+import { profileMapper } from "./../../mappers/v1/ProfileMapper";
 
 export class ProfileController extends Controller {
   constructor() {

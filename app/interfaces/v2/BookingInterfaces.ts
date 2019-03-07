@@ -1,5 +1,4 @@
-import { IBookingDTO } from "./BookingInterfaces";
-// Response
+import { IGetBookingParams } from "./BookingInterfaces";
 export interface IBookingResponse {
   description: string;
   room_id: number;
@@ -19,10 +18,22 @@ export interface IGetBookingParams {
   };
 }
 
-export interface IGetAllBookingParams {
+export interface IGetBookingsParams {
   query: {
-    fromDate?: Date;
-    toDate?: Date;
+    start?: {
+      gte?: string;
+      lte?: string;
+    };
+    end?: {
+      gte?: string;
+      lte?: string;
+    };
+    roomId?: {
+      eq?: number;
+    };
+    order?: string;
+    page?: number;
+    pageSize?: number;
   };
 }
 
@@ -68,3 +79,9 @@ export interface IUpdateBookingDTO {
   };
   body: IBookingDTO;
 }
+
+const v1 = {};
+
+const v2 = {};
+
+export { v1, v2 };
