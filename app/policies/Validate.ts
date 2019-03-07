@@ -7,7 +7,8 @@ export function validate(schema: any) {
     const supportedMethods = new Set(["post", "put", "get"]);
 
     const validationOptions = {
-      abortEarly: true // abort after the first validation error
+      abortEarly: true, // abort after the first validation error
+      allowUnknown: false // doesn't allow objects to contain unknown keys
     };
 
     const method = req.method.toLowerCase();
