@@ -7,9 +7,15 @@ import { BookingAttendee } from "./../../models/BookingAttendee";
 import { IBooking, IQuery } from "./interfaces";
 
 const formatBookings = (bookings: IBooking[]) => {
-  const parsedBookings: IBooking[] = bookings.map((booking: any) =>
-    booking.toJSON()
-  );
+  const parsedBookings: IBooking[] = bookings.map((booking: any) => {
+    if (booking["user"]) {
+      const bookingObj = booking.toJSON();
+      // This is necessary for remove values for user: password, role
+      return { ...fp.omit("user", bookingObj), user: booking.user.toJSON() };
+    }
+
+    return booking.toJSON();
+  });
 
   const formattedBookings = parsedBookings.map((booking: IBooking) => {
     const attendees: string[] = booking.bookingAttendee.reduce(
@@ -27,33 +33,34 @@ const formatBookings = (bookings: IBooking[]) => {
 };
 
 function BookingDataStorage(model = Booking) {
-  //
   const findAll = async (query: IQuery) => {
     try {
-      const { limit, offset, order } = parseQueryFactory(query);
+      // by default return this association
+      const baseInclude = [
+        {
+          attributes: ["id"],
+          model: BookingAttendee,
+          required: true,
+          include: [
+            {
+              attributes: ["email"],
+              model: Attendee,
+              required: false
+            }
+          ]
+        }
+      ];
 
+      const { limit, offset, order, include } = parseQueryFactory(query);
+      // total records it's useful for pagination
       const rowPromise = model.count();
       /*
         TODO: 
-          - Define base include (it's necessary) and add extra include
           - Define base where (if it's necessary) and add extra include 
           see parseQueryFactory
       */
       const bookingsPromise = model.findAll({
-        include: [
-          {
-            attributes: ["id"],
-            model: BookingAttendee,
-            required: true,
-            include: [
-              {
-                attributes: ["email"],
-                model: Attendee,
-                required: false
-              }
-            ]
-          }
-        ],
+        include: [...baseInclude, ...include],
         limit,
         offset,
         order
@@ -63,7 +70,7 @@ function BookingDataStorage(model = Booking) {
         bookingsPromise,
         rowPromise
       ]);
-      console.log(rows);
+
       return { rows, bookings: formatBookings(bookings) };
     } catch (error) {
       throw new Error(error);

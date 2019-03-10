@@ -66,31 +66,41 @@ const BookingSchema = () => {
         page,
         pageSize,
         order,
-        start: Joi.object()
-          .keys({
-            lte: Joi.date()
-              .iso()
-              .optional(),
-            gte: Joi.date()
-              .iso()
-              .optional()
-          })
+        start: Joi.alternatives()
+          .try(
+            Joi.object().keys({
+              lte: Joi.date()
+                .iso()
+                .optional()
+            }),
+            Joi.object().keys({
+              gte: Joi.date()
+                .iso()
+                .optional()
+            })
+          )
           .optional(),
 
-        end: Joi.object()
-          .keys({
-            lte: Joi.date()
-              .iso()
-              .optional(),
-            gte: Joi.date()
-              .iso()
-              .optional()
-          })
+        end: Joi.alternatives()
+          .try(
+            Joi.object().keys({
+              lte: Joi.date()
+                .iso()
+                .optional()
+            }),
+            Joi.object().keys({
+              gte: Joi.date()
+                .iso()
+                .optional()
+            })
+          )
           .optional(),
 
         roomId: Joi.number()
           .positive()
-          .optional()
+          .optional(),
+
+        include: Joi.array().items(Joi.string().required())
       }
     },
 
