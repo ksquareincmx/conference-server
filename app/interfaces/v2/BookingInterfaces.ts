@@ -1,3 +1,4 @@
+import { getActualDate } from "./../../libraries/util";
 import { IGetBookingParams } from "./BookingInterfaces";
 export interface IBookingResponse {
   description: string;
@@ -20,20 +21,13 @@ export interface IGetBookingParams {
 
 export interface IGetBookingsParams {
   query: {
-    start?: {
-      gte?: string;
-      lte?: string;
-    };
-    end?: {
-      gte?: string;
-      lte?: string;
-    };
-    roomId?: {
-      eq?: number;
-    };
+    start?: { lte: string } | { gte: string };
+    end?: { gte: string } | { lte: string };
+    roomId?: { eq: number };
     order?: string;
     page?: number;
     pageSize?: number;
+    include?: string;
   };
 }
 
@@ -79,9 +73,3 @@ export interface IUpdateBookingDTO {
   };
   body: IBookingDTO;
 }
-
-const v1 = {};
-
-const v2 = {};
-
-export { v1, v2 };

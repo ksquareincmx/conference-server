@@ -1229,6 +1229,79 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
               done();
             });
         });
+        it("Should get bookings and associations", done => {
+          chai
+            .request(server)
+            .get(`${apiPath}?include=["Room", "User"]`)
+            .set("Authorization", `Bearer ${token}`)
+            .end((err, res) => {
+              if (err) {
+                throw err;
+              }
+
+              res.body.should.have.property("_pagination");
+              res.body.should.have
+                .property("_pagination")
+                .have.property("size", 10);
+              res.body.should.have
+                .property("_pagination")
+                .have.property("prev", null);
+              res.body.should.have
+                .property("_pagination")
+                .have.property("next", null);
+              res.body.should.have
+                .property("bookings")
+                .that.has.an("array")
+                .that.has.length(3);
+
+              res.body.bookings[0].should.have.property("id");
+              res.body.bookings[0].should.have.property("description");
+              res.body.bookings[0].should.have.property("room_id");
+              res.body.bookings[0].should.have.property("start");
+              res.body.bookings[0].should.have.property("end");
+              res.body.bookings[0].should.have.property("user_id");
+              res.body.bookings[0].should.have.property("event_id");
+              res.body.bookings[0].should.have.property("updated_at");
+              res.body.bookings[0].should.have.property("created_at");
+              res.body.bookings[0].description.should.deep.equal("Call Varma");
+              res.body.bookings[0].room_id.should.deep.equal(roomId);
+              res.body.bookings[0].user_id.should.deep.equal(userId);
+              res.body.bookings[0].start.should.deep.equal(
+                "2019-02-11T16:15:00.000Z"
+              );
+              res.body.bookings[0].end.should.deep.equal(
+                "2019-02-11T16:30:00.000Z"
+              );
+
+              res.body.bookings[0].should.have.property("room");
+              res.body.bookings[0].should.have.property("user");
+              res.body.bookings[0].room.id.should.deep.equal(roomId);
+              res.body.bookings[0].user.id.should.deep.equal(userId);
+
+              res.body.bookings[1].should.have.property("room");
+              res.body.bookings[1].should.have.property("user");
+              res.body.bookings[2].should.have.property("room");
+              res.body.bookings[2].should.have.property("user");
+              done();
+            });
+        });
+        it("Should fails when get bookings and associations", done => {
+          chai
+            .request(server)
+            .get(`${apiPath}?include=['Room']`)
+            .set("Authorization", `Bearer ${token}`)
+            .end((err, res) => {
+              if (err) {
+                throw err;
+              }
+
+              res.should.have.status(400);
+              res.body.should.deep.equal(
+                "Bad Request: include must be an array"
+              );
+              done();
+            });
+        });
       });
     });
   });

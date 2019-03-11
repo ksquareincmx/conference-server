@@ -1,11 +1,12 @@
 import * as fp from "lodash/fp";
 
+import { db } from "./../../db";
 import { IQuery } from "./interfaces";
 import { config } from "./../../config/config";
+import { required } from "joi";
 
 /*
  TODO:
-    add parseInclude, receive a include base,
     add parseWhere, receive a where base
 */
 const parseOrder = (order: string) => {
@@ -32,21 +33,39 @@ const parseLimit = (limit: number): number => {
   return Number(limit || config.api.limit);
 };
 
+const parseInclude = (models: string) => {
+  if (models) {
+    const modelsDB = getModelsFromDB(JSON.parse(models));
+    return modelsDB.map(model => ({
+      model: model,
+      required: false
+    }));
+  }
+  return [];
+};
+
+// only return existing models
+const getModelsFromDB = (includeModels: string[]) =>
+  includeModels.reduce((modelsBD, model) => {
+    return db.models[model] ? [...modelsBD, db.models[model]] : modelsBD;
+  }, []);
+
 // Compute offset and limit useful for pagination
-const paginationData = (pageSize: number, page = 1) => ({
+const paginationData = (pageSize: number, page: number = 1) => ({
   offset: pageSize * page - pageSize,
   limit: pageSize
 });
 
-// TODO: add parseInclude and parseWhere
+// TODO: add parseWhere
 const parseQueryFactory = (query: IQuery) => {
-  const { pageSize, page, order } = query;
+  const { pageSize, page, order, include } = query;
   const { offset, limit } = paginationData(pageSize, page);
 
   return {
     limit: parseLimit(limit),
     offset: parseOffset(offset),
-    order: parseOrder(order)
+    order: parseOrder(order),
+    include: parseInclude(include)
   };
 };
 
