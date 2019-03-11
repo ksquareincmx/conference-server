@@ -1,14 +1,10 @@
+import { Op } from "sequelize";
 import * as fp from "lodash/fp";
 
 import { db } from "./../../db";
 import { IQuery } from "./interfaces";
 import { config } from "./../../config/config";
-import { required } from "joi";
 
-/*
- TODO:
-    add parseWhere, receive a where base
-*/
 const parseOrder = (order: string) => {
   if (fp.isUndefined(order)) {
     return undefined;
@@ -19,7 +15,6 @@ const parseOrder = (order: string) => {
   const orderParam = splitedOrder[1];
 
   if (orderParam !== "ASC" && orderParam !== "DESC") {
-    throw new Error("Invalid query");
   }
 
   return [[colName, orderParam]];
@@ -44,11 +39,22 @@ const parseInclude = (models: string) => {
   return [];
 };
 
+const parseWhere = (filters: any) => {
+  return fp.mapValues((filter: any) => {
+    const operation = Object.keys(filter)[0];
+    return {
+      [Op[operation]]: filter[operation]
+    };
+  }, filters);
+};
+
 // only return existing models
 const getModelsFromDB = (includeModels: string[]) =>
-  includeModels.reduce((modelsBD, model) => {
-    return db.models[model] ? [...modelsBD, db.models[model]] : modelsBD;
-  }, []);
+  includeModels.reduce(
+    (modelsBD, model) =>
+      db.models[model] ? [...modelsBD, db.models[model]] : modelsBD,
+    []
+  );
 
 // Compute offset and limit useful for pagination
 const paginationData = (pageSize: number, page: number = 1) => ({
@@ -58,14 +64,15 @@ const paginationData = (pageSize: number, page: number = 1) => ({
 
 // TODO: add parseWhere
 const parseQueryFactory = (query: IQuery) => {
-  const { pageSize, page, order, include } = query;
+  const { pageSize, page, order, include, ...where } = query;
   const { offset, limit } = paginationData(pageSize, page);
 
   return {
     limit: parseLimit(limit),
     offset: parseOffset(offset),
     order: parseOrder(order),
-    include: parseInclude(include)
+    include: parseInclude(include),
+    where: parseWhere(where)
   };
 };
 

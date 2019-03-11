@@ -96,8 +96,10 @@ const BookingSchema = () => {
           )
           .optional(),
 
-        roomId: Joi.number()
-          .positive()
+        roomId: Joi.object()
+          .keys({
+            eq: Joi.number().required()
+          })
           .optional(),
 
         include: Joi.array().items(Joi.string().required())

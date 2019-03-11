@@ -51,19 +51,30 @@ function BookingDataStorage(model = Booking) {
         }
       ];
 
+<<<<<<< Updated upstream
       const { limit, offset, order, include } = parseQueryFactory(query);
       // total records it's useful for pagination
+=======
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
       const rowPromise = model.count();
       /*
         TODO: 
           - Define base where (if it's necessary) and add extra include 
           see parseQueryFactory
       */
+=======
+      const { limit, offset, order, include, where } = parseQueryFactory(query);
+      // total records it's useful for pagination
+      const rowPromise = model.count();
+
+>>>>>>> Stashed changes
       const bookingsPromise = model.findAll({
         include: [...baseInclude, ...include],
         limit,
         offset,
-        order
+        order,
+        where
       });
 
       const [bookings, rows]: [any, number] = await Promise.all([
