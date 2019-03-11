@@ -1030,7 +1030,7 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
                 emailId: attendee.id.toString(),
                 bookingId: createdBooking.id.toString()
               });
-              bookingsId.push(createdBooking.id.toString());
+              bookingsId.push(Number(createdBooking.id.toString()));
             }
           } catch (err) {
             throw err;
@@ -1176,7 +1176,7 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
         it("Should get bookings with pagination previus=null and next=null", done => {
           chai
             .request(server)
-            .get("/api/v2/booking?pageSize=3&page=1")
+            .get("/api/v2/booking?pageSize=3&page=1&order=start DESC")
             .set("Authorization", `Bearer ${token}`)
             .end((err, res) => {
               if (err) {
@@ -1285,7 +1285,7 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
               done();
             });
         });
-        it("Should fails when get bookings and associations", done => {
+        it("Should fail when get bookings and associations", done => {
           chai
             .request(server)
             .get(`${apiPath}?include=['Room']`)
@@ -1299,6 +1299,154 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
               res.body.should.deep.equal(
                 "Bad Request: include must be an array"
               );
+              done();
+            });
+        });
+        it("Should get bookings ordered ascendingly", done => {
+          chai
+            .request(server)
+            .get(`${apiPath}?order=start ASC`)
+            .set("Authorization", `Bearer ${token}`)
+            .end((err, res) => {
+              if (err) {
+                throw err;
+              }
+
+              res.should.have.status(200);
+              res.body.bookings[0].id.should.deep.equal(bookingsId[0]);
+              res.body.bookings[1].id.should.deep.equal(bookingsId[1]);
+              res.body.bookings[2].id.should.deep.equal(bookingsId[2]);
+
+              done();
+            });
+        });
+        it("Should get bookings ordered downwards", done => {
+          chai
+            .request(server)
+            .get(`${apiPath}?order=start DESC`)
+            .set("Authorization", `Bearer ${token}`)
+            .end((err, res) => {
+              if (err) {
+                throw err;
+              }
+              res.should.have.status(200);
+              res.body.bookings[0].id.should.deep.equal(bookingsId[2]);
+              res.body.bookings[1].id.should.deep.equal(bookingsId[1]);
+              res.body.bookings[2].id.should.deep.equal(bookingsId[0]);
+
+              done();
+            });
+        });
+        it("Should get dates filters by start date", done => {
+          chai
+            .request(server)
+            .get(`${apiPath}?start[gte]=2019-03-11T16:15:00.000Z`)
+            .set("Authorization", `Bearer ${token}`)
+            .end((err, res) => {
+              if (err) {
+                throw err;
+              }
+
+              res.should.have.status(200);
+              res.body.bookings.should.have.length(1);
+              res.body.bookings[0].id.should.deep.equal(bookingsId[2]);
+
+              done();
+            });
+        });
+        it("Should return bad request, invalid start date", done => {
+          chai
+            .request(server)
+            .get(`${apiPath}?start[lte]="2019-03-11T16:15:00.000Z"`)
+            .set("Authorization", `Bearer ${token}`)
+            .end((err, res) => {
+              if (err) {
+                throw err;
+              }
+
+              res.should.have.status(400);
+              res.body.should.deep.equal(
+                "Bad Request: lte must be a valid ISO 8601 date"
+              );
+              done();
+            });
+        });
+        it("Should get dates filters by end date", done => {
+          chai
+            .request(server)
+            .get(`${apiPath}?end[lte]=2019-02-11T16:30:00.000Z`)
+            .set("Authorization", `Bearer ${token}`)
+            .end((err, res) => {
+              if (err) {
+                throw err;
+              }
+
+              res.should.have.status(200);
+              res.body.bookings.should.have.length(1);
+              res.body.bookings[0].id.should.deep.equal(bookingsId[0]);
+
+              done();
+            });
+        });
+        it("Should return bad request, invalid end date", done => {
+          chai
+            .request(server)
+            .get(`${apiPath}?end[lte]="2019-03-11T16:15:00.000Z"`)
+            .set("Authorization", `Bearer ${token}`)
+            .end((err, res) => {
+              if (err) {
+                throw err;
+              }
+
+              res.should.have.status(400);
+              res.body.should.deep.equal(
+                "Bad Request: lte must be a valid ISO 8601 date"
+              );
+              done();
+            });
+        });
+        it("Should get dates filters by roomId", done => {
+          chai
+            .request(server)
+            .get(`${apiPath}?roomId[eq]=${roomId}`)
+            .set("Authorization", `Bearer ${token}`)
+            .end((err, res) => {
+              if (err) {
+                throw err;
+              }
+
+              res.should.have.status(200);
+              res.body.bookings.should.have.length(3);
+              done();
+            });
+        });
+        it("Should get dates filters by roomId, room doesn't exist", done => {
+          chai
+            .request(server)
+            .get(`${apiPath}?roomId[eq]=${inexistRoom}`)
+            .set("Authorization", `Bearer ${token}`)
+            .end((err, res) => {
+              if (err) {
+                throw err;
+              }
+
+              res.should.have.status(200);
+              res.body.bookings.should.have.length(0);
+              done();
+            });
+        });
+        it("Should return bad request, invalid roomId", done => {
+          chai
+            .request(server)
+            .get(`${apiPath}?roomId[eq]="1"`)
+            .set("Authorization", `Bearer ${token}`)
+            .end((err, res) => {
+              if (err) {
+                throw err;
+              }
+
+              res.should.have.status(400);
+              res.body.should.deep.equal("Bad Request: eq must be a number");
               done();
             });
         });
