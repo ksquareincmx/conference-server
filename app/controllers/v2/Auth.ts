@@ -25,84 +25,86 @@ export class AuthController extends Controller {
 
   routes(): Router {
     /*
-      @api {post} /api/v1/auth/login/ Login
+      @api {post} /api/v2/auth/login/ Login
       @apiPermission none
       @apiName postLoginAuth
       @apiGroup Auth
 
-      @apiHeader { String }   Content-Type Application/Json
-      @apiHeader { String }   Authorization Bearer [jwt token]
+      @apiHeader { string }   Content-Type Application/Json
+      @apiHeader { string }   Authorization Bearer [jwt token]
 
       @apiParam {Object}  body                Login credentials
-      @apiParam {String}  body.email          User email
-      @apiParam {String}  body.password       User password
+      @apiParam {string}  body.email          User email
+      @apiParam {string}  body.password       User password
 
       @apiSuccess {Object}    body                       Success credentials
-      @apiSuccess {String}    body.token                 JWT token
-      @apiSuccess {Number}    body.expires               Token expiration time
+      @apiSuccess {string}    body.token                 JWT token
+      @apiSuccess {number}    body.expires               Token expiration time
       @apiSuccess {Object}    body.refresh_token         JWT refresh token data
-      @apiSuccess {String}    body.refresh_token.token   JWT Refresh Token
-      @apiSuccess {Number}    body.refresh_token.expires       Refresh token expiration time
-      @apiSuccess {Number}    body.refresh_token.expires_in    Refresh token expiration time
+      @apiSuccess {string}    body.refresh_token.token   JWT Refresh Token
+      @apiSuccess {number}    body.refresh_token.expires       Refresh token expiration time
+      @apiSuccess {number}    body.refresh_token.expires_in    Refresh token expiration time
       @apiSuccess {Object}    body.user                        User details
-      @apiSuccess {Number}    body.user.id                     User id
-      @apiSuccess {String}    body.user.name                   User name
-      @apiSuccess {String}    body.user.email                  User email
-      @apiSuccess {String}    body.user.role                   User role ("user", "admin")
+      @apiSuccess {number}    body.user.id                     User id
+      @apiSuccess {string}    body.user.name                   User name
+      @apiSuccess {string}    body.user.email                  User email
+      @apiSuccess {string}    body.user.role                   User role ("user", "admin")
       @apiSuccess {Object}    body.profile                     User profile
-      @apiSuccess {Number}    body.profile.id                  User id
-      @apiSuccess {String}    body.profile.timezone            Profile timezone
-      @apiSuccess {String}    body.profile.locale              Profile locale
-      @apiSuccess {Number}    body.profile.userId              User id
-      @apiSuccess {String}    body.profile.createAt            User create date
-      @apiSuccess {String}    body.profile.updateAt            User update date
+      @apiSuccess {number}    body.profile.id                  User id
+      @apiSuccess {string}    body.profile.timezone            Profile timezone
+      @apiSuccess {string}    body.profile.locale              Profile locale
+      @apiSuccess {number}    body.profile.userId              User id
+      @apiSuccess {string}    body.profile.createAt            User create date
+      @apiSuccess {string}    body.profile.updateAt            User update date
 
     */
 
     this.router.post("/login", this.login);
 
     /**
-      @api {post} /api/v1/auth/logout/ Logout
+      @api {post} /api/v2/auth/logout Logout
+      @apiVersion 1.0.0
       @apiPermission access
       @apiName postLogoutAuth
       @apiGroup Auth
 
-      @apiHeader { String }   Content-Type Application/Json
-      @apiHeader { String }   Authorization Bearer [jwt token]
+      @apiHeader { string }   Content-Type Application/Json
+      @apiHeader { string }   Authorization Bearer [jwt token]
 
     */
 
     this.router.post("/logout", validateJWT("access"), this.logout);
 
     /**
-      @api {post} /api/v1/auth/register/ Register
+      @api {post} /api/v2/auth/register Register
+      @apiVersion 1.0.0
       @apiPermission none
       @apiName postRegisterAuth
       @apiGroup Auth
 
       @apiParam {Object}  body                Login credentials
-      @apiParam {String}  body.email          User email
-      @apiParam {String}  body.password       User password
+      @apiParam {string}  body.email          User email
+      @apiParam {string}  body.password       User password
 
       @apiSuccess {Object}    body                       Success credentials
-      @apiSuccess {String}    body.token                 JWT token
-      @apiSuccess {Number}    body.expires               Token expiration time
+      @apiSuccess {string}    body.token                 JWT token
+      @apiSuccess {number}    body.expires               Token expiration time
       @apiSuccess {Object}    body.refresh_token         JWT refresh token data
-      @apiSuccess {String}    body.refresh_token.token   JWT Refresh Token
-      @apiSuccess {Number}    body.refresh_token.expires       Refresh token expiration time
-      @apiSuccess {Number}    body.refresh_token.expires_in    Refresh token expiration time
+      @apiSuccess {string}    body.refresh_token.token   JWT Refresh Token
+      @apiSuccess {number}    body.refresh_token.expires       Refresh token expiration time
+      @apiSuccess {number}    body.refresh_token.expires_in    Refresh token expiration time
       @apiSuccess {Object}    body.user                        User details
-      @apiSuccess {Number}    body.user.id                     User id
-      @apiSuccess {String}    body.user.name                   User name
-      @apiSuccess {String}    body.user.email                  User email
-      @apiSuccess {String}    body.user.role                   User role ("user", "admin")
+      @apiSuccess {number}    body.user.id                     User id
+      @apiSuccess {string}    body.user.name                   User name
+      @apiSuccess {string}    body.user.email                  User email
+      @apiSuccess {string}    body.user.role                   User role ("user", "admin")
       @apiSuccess {Object}    body.profile                     User profile
-      @apiSuccess {Number}    body.profile.id                  User id
-      @apiSuccess {String}    body.profile.timezone            Profile timezone
-      @apiSuccess {String}    body.profile.locale              Profile locale
-      @apiSuccess {Number}    body.profile.userId              User id
-      @apiSuccess {String}    body.profile.createAt            User create date
-      @apiSuccess {String}    body.profile.updateAt            User update date
+      @apiSuccess {number}    body.profile.id                  User id
+      @apiSuccess {string}    body.profile.timezone            Profile timezone
+      @apiSuccess {string}    body.profile.locale              Profile locale
+      @apiSuccess {number}    body.profile.userId              User id
+      @apiSuccess {string}    body.profile.createAt            User create date
+      @apiSuccess {string}    body.profile.updateAt            User update date
 
     */
 
@@ -110,7 +112,7 @@ export class AuthController extends Controller {
 
     /*
       @apiDescription Validates the reset token passed as a query param and redirects to a reset token UI
-      @api {get} /api/v1/auth/reset?token=[token] Start the Reset Password flow
+      @api {get} /api/v2/auth/reset?token=[token] Start the Reset Password flow
       @apiPermission none (requires a valid reset token as a query param)
       @apiName getResetAuth
       @apiGroup Auth
@@ -120,142 +122,145 @@ export class AuthController extends Controller {
     this.router.get("/reset", this.resetGet);
 
     /*
-      @api {post} /api/v1/auth/reset/ Reset
+      @api {post} /api/v2/auth/reset/ Reset
       @apiPermission none
       @apiName postResetAuth
       @apiGroup Auth
 
-      @apiHeader { String }   Content-Type Application/Json
-      @apiHeader { String }   Authorization Bearer [jwt token]
+      @apiHeader { string }   Content-Type Application/Json
+      @apiHeader { string }   Authorization Bearer [jwt token]
 
-      @apiParam {String}  body.email          User email
-      @apiParam {String}  body.password       User password
+      @apiParam {string}  body.email          User email
+      @apiParam {string}  body.password       User password
 
       @apiSuccess {Object}    body                       Success credentials
-      @apiSuccess {String}    body.token                 JWT token
-      @apiSuccess {Number}    body.expires               Token expiration time
+      @apiSuccess {string}    body.token                 JWT token
+      @apiSuccess {number}    body.expires               Token expiration time
       @apiSuccess {Object}    body.refresh_token         JWT refresh token data
-      @apiSuccess {String}    body.refresh_token.token   JWT Refresh Token
-      @apiSuccess {Number}    body.refresh_token.expires       Refresh token expiration time
-      @apiSuccess {Number}    body.refresh_token.expires_in    Refresh token expiration time
+      @apiSuccess {string}    body.refresh_token.token   JWT Refresh Token
+      @apiSuccess {number}    body.refresh_token.expires       Refresh token expiration time
+      @apiSuccess {number}    body.refresh_token.expires_in    Refresh token expiration time
       @apiSuccess {Object}    body.user                        User details
-      @apiSuccess {Number}    body.user.id                     User id
-      @apiSuccess {String}    body.user.name                   User name
-      @apiSuccess {String}    body.user.email                  User email
-      @apiSuccess {String}    body.user.role                   User role ("user", "admin")
+      @apiSuccess {number}    body.user.id                     User id
+      @apiSuccess {string}    body.user.name                   User name
+      @apiSuccess {string}    body.user.email                  User email
+      @apiSuccess {string}    body.user.role                   User role ("user", "admin")
       @apiSuccess {Object}    body.profile                     User profile
-      @apiSuccess {Number}    body.profile.id                  User id
-      @apiSuccess {String}    body.profile.timezone            Profile timezone
-      @apiSuccess {String}    body.profile.locale              Profile locale
-      @apiSuccess {Number}    body.profile.userId              User id
-      @apiSuccess {String}    body.profile.createAt            User create date
-      @apiSuccess {String}    body.profile.updateAt            User update date
+      @apiSuccess {number}    body.profile.id                  User id
+      @apiSuccess {string}    body.profile.timezone            Profile timezone
+      @apiSuccess {string}    body.profile.locale              Profile locale
+      @apiSuccess {number}    body.profile.userId              User id
+      @apiSuccess {string}    body.profile.createAt            User create date
+      @apiSuccess {string}    body.profile.updateAt            User update date
 
     */
 
     this.router.post("/reset", this.resetPost);
 
     /**
-      @api {post} /api/v1/auth/change/ Change password
+      @api {post} /api/v2/auth/change Change password
+      @apiVersion 1.0.0
       @apiPermission access
       @apiName postChangeAuth
       @apiGroup Auth
 
-      @apiHeader { String }   Content-Type Application/Json
-      @apiHeader { String }   Authorization Bearer [jwt token]
+      @apiHeader { string }   Content-Type Application/Json
+      @apiHeader { string }   Authorization Bearer [jwt token]
 
       @apiParam {Object}     body              Change password data
-      @apiParam {String}     body.email        User email
-      @apiParam {String}     body.oldPass      User old password
-      @apiParam {String}     body.newPass      User new password
+      @apiParam {string}     body.email        User email
+      @apiParam {string}     body.oldPass      User old password
+      @apiParam {string}     body.newPass      User new password
 
       @apiSuccess {Object}    body                       Success credentials
-      @apiSuccess {String}    body.token                 JWT token
-      @apiSuccess {Number}    body.expires               Token expiration time
+      @apiSuccess {string}    body.token                 JWT token
+      @apiSuccess {number}    body.expires               Token expiration time
       @apiSuccess {Object}    body.refresh_token         JWT refresh token data
-      @apiSuccess {String}    body.refresh_token.token   JWT Refresh Token
-      @apiSuccess {Number}    body.refresh_token.expires       Refresh token expiration time
-      @apiSuccess {Number}    body.refresh_token.expires_in    Refresh token expiration time
+      @apiSuccess {string}    body.refresh_token.token   JWT Refresh Token
+      @apiSuccess {number}    body.refresh_token.expires       Refresh token expiration time
+      @apiSuccess {number}    body.refresh_token.expires_in    Refresh token expiration time
       @apiSuccess {Object}    body.user                        User details
-      @apiSuccess {Number}    body.user.id                     User id
-      @apiSuccess {String}    body.user.name                   User name
-      @apiSuccess {String}    body.user.email                  User email
-      @apiSuccess {String}    body.user.role                   User role ("user", "admin")
+      @apiSuccess {number}    body.user.id                     User id
+      @apiSuccess {string}    body.user.name                   User name
+      @apiSuccess {string}    body.user.email                  User email
+      @apiSuccess {string}    body.user.role                   User role ("user", "admin")
       @apiSuccess {Object}    body.profile                     User profile
-      @apiSuccess {Number}    body.profile.id                  User id
-      @apiSuccess {String}    body.profile.timezone            Profile timezone
-      @apiSuccess {String}    body.profile.locale              Profile locale
-      @apiSuccess {Number}    body.profile.userId              User id
-      @apiSuccess {String}    body.profile.createAt            User create date
-      @apiSuccess {String}    body.profile.updateAt            User update date
+      @apiSuccess {number}    body.profile.id                  User id
+      @apiSuccess {string}    body.profile.timezone            Profile timezone
+      @apiSuccess {string}    body.profile.locale              Profile locale
+      @apiSuccess {number}    body.profile.userId              User id
+      @apiSuccess {string}    body.profile.createAt            User create date
+      @apiSuccess {string}    body.profile.updateAt            User update date
 
     */
 
     this.router.post("/change", validateJWT("access"), this.changePassword);
 
     /**
-      @api {post} /api/v1/auth/refresh/ Refresh token
+      @api {post} /api/v2/auth/refresh Refresh token
+      @apiVersion 1.0.0
       @apiPermission refresh (valid refresh token present in Authorization header)
       @apiName postRefreshAuth
       @apiGroup Auth
 
-      @apiHeader { String }   Content-Type Application/Json
-      @apiHeader { String }   Authorization Bearer [jwt token]
+      @apiHeader { string }   Content-Type Application/Json
+      @apiHeader { string }   Authorization Bearer [jwt token]
 
       @apiSuccess {Object}    body                       Success credentials
-      @apiSuccess {String}    body.token                 JWT token
-      @apiSuccess {Number}    body.expires               Token expiration time
+      @apiSuccess {string}    body.token                 JWT token
+      @apiSuccess {number}    body.expires               Token expiration time
       @apiSuccess {Object}    body.refresh_token         JWT refresh token data
-      @apiSuccess {String}    body.refresh_token.token   JWT Refresh Token
-      @apiSuccess {Number}    body.refresh_token.expires       Refresh token expiration time
-      @apiSuccess {Number}    body.refresh_token.expires_in    Refresh token expiration time
+      @apiSuccess {string}    body.refresh_token.token   JWT Refresh Token
+      @apiSuccess {number}    body.refresh_token.expires       Refresh token expiration time
+      @apiSuccess {number}    body.refresh_token.expires_in    Refresh token expiration time
       @apiSuccess {Object}    body.user                        User details
-      @apiSuccess {Number}    body.user.id                     User id
-      @apiSuccess {String}    body.user.name                   User name
-      @apiSuccess {String}    body.user.email                  User email
-      @apiSuccess {String}    body.user.role                   User role ("user", "admin")
+      @apiSuccess {number}    body.user.id                     User id
+      @apiSuccess {string}    body.user.name                   User name
+      @apiSuccess {string}    body.user.email                  User email
+      @apiSuccess {string}    body.user.role                   User role ("user", "admin")
       @apiSuccess {Object}    body.profile                     User profile
-      @apiSuccess {Number}    body.profile.id                  User id
-      @apiSuccess {String}    body.profile.timezone            Profile timezone
-      @apiSuccess {String}    body.profile.locale              Profile locale
-      @apiSuccess {Number}    body.profile.userId              User id
-      @apiSuccess {String}    body.profile.createAt            User create date
-      @apiSuccess {String}    body.profile.updateAt            User update date
+      @apiSuccess {number}    body.profile.id                  User id
+      @apiSuccess {string}    body.profile.timezone            Profile timezone
+      @apiSuccess {string}    body.profile.locale              Profile locale
+      @apiSuccess {number}    body.profile.userId              User id
+      @apiSuccess {string}    body.profile.createAt            User create date
+      @apiSuccess {string}    body.profile.updateAt            User update date
 
     */
 
     this.router.post("/refresh", validateJWT("refresh"), this.refreshToken);
 
     /**
-      @api {post} /api/v1/auth/googleLogin/ Google login
+      @api {post} /api/v2/auth/googleLogin Google login
+      @apiVersion 1.0.0
       @apiPermission none
       @apiName postGoogleLoginAuth
       @apiGroup Auth
 
-      @apiHeader { String }   Content-Type Application/Json
-      @apiHeader { String }   Authorization Bearer [jwt token]
+      @apiHeader { string }   Content-Type Application/Json
+      @apiHeader { string }   Authorization Bearer [jwt token]
 
-      @apiParam {Number}  idToken          token id
+      @apiParam {number}  idToken          token id
 
       @apiSuccess {Object}    body                       Success credentials
-      @apiSuccess {String}    body.token                 JWT token
-      @apiSuccess {Number}    body.expires               Token expiration time
+      @apiSuccess {string}    body.token                 JWT token
+      @apiSuccess {number}    body.expires               Token expiration time
       @apiSuccess {Object}    body.refresh_token         JWT refresh token data
-      @apiSuccess {String}    body.refresh_token.token   JWT Refresh Token
-      @apiSuccess {Number}    body.refresh_token.expires       Refresh token expiration time
-      @apiSuccess {Number}    body.refresh_token.expires_in    Refresh token expiration time
+      @apiSuccess {string}    body.refresh_token.token   JWT Refresh Token
+      @apiSuccess {number}    body.refresh_token.expires       Refresh token expiration time
+      @apiSuccess {number}    body.refresh_token.expires_in    Refresh token expiration time
       @apiSuccess {Object}    body.user                        User details
-      @apiSuccess {Number}    body.user.id                     User id
-      @apiSuccess {String}    body.user.name                   User name
-      @apiSuccess {String}    body.user.email                  User email
-      @apiSuccess {String}    body.user.role                   User role ("user", "admin")
+      @apiSuccess {number}    body.user.id                     User id
+      @apiSuccess {string}    body.user.name                   User name
+      @apiSuccess {string}    body.user.email                  User email
+      @apiSuccess {string}    body.user.role                   User role ("user", "admin")
       @apiSuccess {Object}    body.profile                     User profile
-      @apiSuccess {Number}    body.profile.id                  User id
-      @apiSuccess {String}    body.profile.timezone            Profile timezone
-      @apiSuccess {String}    body.profile.locale              Profile locale
-      @apiSuccess {Number}    body.profile.userId              User id
-      @apiSuccess {String}    body.profile.createAt            User create date
-      @apiSuccess {String}    body.profile.updateAt            User update date
+      @apiSuccess {number}    body.profile.id                  User id
+      @apiSuccess {string}    body.profile.timezone            Profile timezone
+      @apiSuccess {string}    body.profile.locale              Profile locale
+      @apiSuccess {number}    body.profile.userId              User id
+      @apiSuccess {string}    body.profile.createAt            User create date
+      @apiSuccess {string}    body.profile.updateAt            User update date
     */
 
     this.router.post("/googlelogin", this.googleLogin);
