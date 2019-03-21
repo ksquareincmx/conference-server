@@ -2,6 +2,14 @@
 
 conference-booking Server, based on Flugzeug.
 
+## Table of contents
+
+1. [Production](#production)
+2. [Development](#development)
+3. [Docs](#docs)
+4. Print database creation SQL
+5. [License](#license)
+
 ## Production
 
 Check the `.env.example` file to set up the appropriate environment variables and run `docker-compose up --build`.
@@ -9,8 +17,6 @@ Check the `.env.example` file to set up the appropriate environment variables an
 Check a [basic deploy strategy](https://github.com/ksquarelabsmx/conference-server/wiki/Basic-deploy-strategy-using-Docker,-Git-hooks,-nginx-and-FCGI-Wrap) in the wiki to set up a basic CI environment.
 
 ## Development
-
-### BackEnd
 
 1. Install MySQL (Linux)
     ```bash
@@ -59,31 +65,17 @@ Check a [basic deploy strategy](https://github.com/ksquarelabsmx/conference-serv
 7. Start the development server
     ```bash
     gulp watch
-    ```
 
-#### FrontEnd
-
-1. Access to the "frontend" folder
-    ```bash
-    cd frontend
-    ```
-
-2. Install dependencies
-    ```bash
-    yarn
-    ```
-
-3. Start the front end development server
-    ```bash
-    yarn start
-    ```
-
-## Documentation
+## Docs
 
 Read the documentation at `docs/Framework.md`
 
-## Print database creation SQL (Useful when writing migrations)
+## Print database creation SQL (Useful when writing migrations)
 
 ```
 gulp sql
 ```
+
+## License
+
+[MIT](https://github.com/ksquareincmx/conference-server/blob/master/LICENSE)
