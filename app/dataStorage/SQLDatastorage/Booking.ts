@@ -1,6 +1,9 @@
+import { User } from "./../../models/User";
+import { Op } from "sequelize";
 import * as fp from "lodash/fp";
 
 import { parseQueryFactory } from "./query";
+import { Room } from "./../../models/Room";
 import { Booking } from "./../../models/Booking";
 import { Attendee } from "./../../models/Attendee";
 import { BookingAttendee } from "./../../models/BookingAttendee";
@@ -48,6 +51,14 @@ function BookingDataStorage(model = Booking) {
               required: false
             }
           ]
+        },
+        {
+          model: Room,
+          require: true
+        },
+        {
+          model: User,
+          required: true
         }
       ];
 
@@ -74,8 +85,39 @@ function BookingDataStorage(model = Booking) {
     }
   };
 
+  const create = async (booking: IBooking) => {};
+
+  // checks if booking exist in determinate intervalue time
+  const findCollisions = async ({ start, end, roomId }) => {
+    try {
+      const booking: Booking = await Booking.find({
+        where: {
+          [Op.and]: {
+            [Op.not]: {
+              [Op.or]: {
+                end: {
+                  [Op.lte]: start
+                },
+                start: {
+                  [Op.gte]: end
+                }
+              }
+            },
+            roomId: {
+              [Op.eq]: roomId
+            }
+          }
+        }
+      });
+
+      return booking;
+    } catch (error) {}
+  };
+
   return {
-    findAll
+    findAll,
+    create,
+    findCollisions
   };
 }
 

@@ -10,12 +10,41 @@ import { toSyntax } from "./../../libraries/util";
 import * as fp from "lodash/fp";
 import * as moment from "moment";
 
+// TODO: add interface for arg toDTO
 export const bookingMapper = {
-  toEntity: bookingJSON => toSyntax(bookingJSON, fp.camelCase),
-  toDTO: (bookingEntity): IBookingResponse =>
-    <IBookingResponse>toSyntax(bookingEntity, fp.snakeCase)
+  toEntity: bookingDao => toSyntax(bookingDao, fp.camelCase),
+  toDTO: (bookingEntity): IBookingResponse => {
+    return {
+      id: bookingEntity.id,
+      description: bookingEntity.description,
+      start: bookingEntity.start,
+      end: bookingEntity.end,
+      user_id: bookingEntity.userId,
+      room_id: bookingEntity.roomId,
+      event_id: bookingEntity.eventId,
+      updated_at: bookingEntity.updatedAt,
+      created_at: bookingEntity.createdAt,
+      attendees: bookingEntity.attendees,
+      room: {
+        id: bookingEntity.room.id,
+        name: bookingEntity.room.name,
+        color: bookingEntity.room.color,
+        presence: bookingEntity.room.presence,
+        created_at: bookingEntity.room.createdAt,
+        updated_at: bookingEntity.room.updatedAt
+      },
+      user: {
+        id: bookingEntity.user.id,
+        auth_provider_id: bookingEntity.user.authProviderId,
+        picture: bookingEntity.user.picture,
+        name: bookingEntity.user.name,
+        email: bookingEntity.user.email
+      }
+    };
+  }
 };
 
+// TODO: create a interface with params optional and reduce to one mapper
 export const createBookingMapper = {
   toEntity: (dto: IBookingDTO): IBookingRequest => ({
     start: moment(dto.start)

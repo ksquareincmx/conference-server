@@ -100,9 +100,7 @@ const BookingSchema = () => {
           .keys({
             eq: Joi.number().required()
           })
-          .optional(),
-
-        include: Joi.array().items(Joi.string().required())
+          .optional()
       }
     },
 
