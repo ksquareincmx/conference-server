@@ -1089,7 +1089,7 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
         it("Should get bookings with pagination previous=null", done => {
           chai
             .request(server)
-            .get("/api/v2/booking?pageSize=1&page=1")
+            .get(`/api/v2/booking?pageSize=1&page=1`)
             .set("Authorization", `Bearer ${token}`)
             .end((err, res) => {
               if (err) {
@@ -1118,7 +1118,7 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
         it("Should get bookings with pagination previous=1 and next=2", done => {
           chai
             .request(server)
-            .get("/api/v2/booking?pageSize=1&page=2")
+            .get(`/api/v2/booking?pageSize=1&page=2`)
             .set("Authorization", `Bearer ${token}`)
             .end((err, res) => {
               if (err) {
@@ -1176,7 +1176,7 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
         it("Should get bookings with pagination previus=null and next=null", done => {
           chai
             .request(server)
-            .get("/api/v2/booking?pageSize=3&page=1&order=start DESC")
+            .get(`/api/v2/booking?pageSize=3&page=1&order=start DESC`)
             .set("Authorization", `Bearer ${token}`)
             .end((err, res) => {
               if (err) {
@@ -1229,10 +1229,10 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
               done();
             });
         });
-        it("Should get bookings and associations", done => {
+        it("Should get bookings", done => {
           chai
             .request(server)
-            .get(`${apiPath}?include=["Room", "User"]`)
+            .get(`${apiPath}`)
             .set("Authorization", `Bearer ${token}`)
             .end((err, res) => {
               if (err) {
@@ -1282,23 +1282,6 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
               res.body.bookings[1].should.have.property("user");
               res.body.bookings[2].should.have.property("room");
               res.body.bookings[2].should.have.property("user");
-              done();
-            });
-        });
-        it("Should fail when get bookings and associations", done => {
-          chai
-            .request(server)
-            .get(`${apiPath}?include=['Room']`)
-            .set("Authorization", `Bearer ${token}`)
-            .end((err, res) => {
-              if (err) {
-                throw err;
-              }
-
-              res.should.have.status(400);
-              res.body.should.deep.equal(
-                "Bad Request: include must be an array"
-              );
               done();
             });
         });
