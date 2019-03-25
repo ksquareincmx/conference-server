@@ -5,10 +5,8 @@
   "private": true,
   "main": "dist/main.js",
   "scripts": {
-    "apidoc": "apidoc -i app/controllers/ -o public/apidoc/",
     "build": "gulp",
     "start": "node --require source-map-support/register dist/main.js",
-    "test": "nyc mocha",
     "migrate": "sequelize db:migrate"
   },
   "nyc": {

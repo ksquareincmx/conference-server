@@ -96,5 +96,8 @@ public/*
 
 .idea/
 
+# API docs 
+public/apidoc
+
 # nyc
 .nyc_output
