@@ -1,3 +1,5 @@
+import * as fp from "lodash/fp";
+
 import { config } from "./../../config/config";
 import * as moment from "moment-timezone";
 import * as _ from "lodash";
@@ -39,6 +41,7 @@ import {
 import { validate } from "./../../policies/Validate";
 import { bookingSchema } from "./../../policies/DataSchemas/Booking";
 import { bookingDataStorage } from "./../../dataStorage/SQLDatastorage/Booking";
+import { User } from "../../models/User";
 
 export class BookingController extends Controller {
   constructor() {
@@ -297,30 +300,14 @@ export class BookingController extends Controller {
         );
       }
 
-      const booking = await this.model.findAndCountAll({
-        where: {
-          [Op.and]: {
-            [Op.not]: {
-              [Op.or]: {
-                end: {
-                  [Op.lte]: data.start
-                },
-                start: {
-                  [Op.gte]: data.end
-                }
-              }
-            },
-            roomId: {
-              [Op.eq]: data.roomId
-            }
-          }
-        }
-      });
+      const booking: Booking = await bookingDataStorage.findCollisions(data);
+
       //if exist a booking that overlaps whit start and end
-      if (booking.count > 0) {
+      if (booking) {
         return Controller.noContent(res);
       }
 
+      // TODO: Refactor and do transaction of the code below
       // insert event in Google calendar and send invitations
       const eventCalendar = await calendarService.insertEvent(
         data.start,
@@ -330,18 +317,29 @@ export class BookingController extends Controller {
       );
 
       // insert booking the DB
-      const bookingObj = { ...data, eventId: eventCalendar.id };
-      const createdBooking = await this.model.create(bookingObj);
-      const parsedCreatedBooking = createdBooking.toJSON();
+      const bookingDao = await this.model.create({
+        ...data,
+        eventId: eventCalendar.id
+      });
+
+      // get the created booking with room and user details
+      const createdBooking: Booking = await Booking.findById(bookingDao.id, {
+        include: [Room, User]
+      });
+      const parsedBooking = createdBooking.toJSON();
 
       // insert attendee in the DB
       uniqueEmails.forEach(async attendee => {
         const attendeeId = await insertAttendee(attendee);
-        await insertBookingAttendee(parsedCreatedBooking.id, attendeeId);
+        await insertBookingAttendee(parsedBooking.id, attendeeId);
       });
 
+      // remove sensible data from user
       const finalBooking = {
-        ...parsedCreatedBooking,
+        ...fp.omit("user", parsedBooking),
+        user: {
+          ...fp.omit(["password", "role"], parsedBooking.user)
+        },
         attendees: uniqueEmails
       };
 
@@ -382,34 +380,9 @@ export class BookingController extends Controller {
         );
       }
 
-      const bookings = await this.model.findAndCountAll({
-        where: {
-          [Op.and]: {
-            [Op.not]: {
-              [Op.or]: {
-                end: {
-                  [Op.lte]: moment(data.body.start)
-                    .utc()
-                    .format()
-                },
-                start: {
-                  [Op.gte]: moment(data.body.end)
-                    .utc()
-                    .format()
-                }
-              }
-            },
-            id: {
-              [Op.ne]: data.params.id
-            },
-            roomId: {
-              [Op.eq]: data.body.roomId
-            }
-          }
-        }
-      });
+      const bookings = await bookingDataStorage.findCollisions(data.body);
       // if exist a booking that overlaps whit start and end
-      if (bookings.count > 0) {
+      if (bookings) {
         return Controller.noContent(res);
       }
 
@@ -418,6 +391,7 @@ export class BookingController extends Controller {
         return res.status(404).end();
       }
 
+      // TODO: transsaction
       // update the event and send emails
       await calendarService.updateEvent(
         booking.eventId,
@@ -432,13 +406,22 @@ export class BookingController extends Controller {
         data.params.id,
         uniqueEmails
       );
-      const updatedBooking = await booking.update({
+      const bookingDao: Booking = await booking.update({
         ...data.params,
         ...data.body
       });
-      const parsedUpdatedBooking = updatedBooking.toJSON();
+
+      const updatedBooking: Booking = await Booking.findById(bookingDao.id, {
+        include: [Room, User]
+      });
+      const parsedBooking = updatedBooking.toJSON();
+
+      // remove sensible data from user
       const finalUpdatedBooking = {
-        ...parsedUpdatedBooking,
+        ...fp.omit("user", parsedBooking),
+        user: {
+          ...fp.omit(["password", "role"], parsedBooking.user)
+        },
         attendees: updatedAttendees
       };
       const DTOBooking = bookingMapper.toDTO(finalUpdatedBooking);
@@ -454,7 +437,9 @@ export class BookingController extends Controller {
     };
 
     try {
-      const booking = await this.model.findById(data.params.id);
+      const booking = await this.model.findById(data.params.id, {
+        include: [Room, User]
+      });
       if (!booking) {
         return Controller.notFound(res);
       }

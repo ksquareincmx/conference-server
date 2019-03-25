@@ -1,5 +1,5 @@
-import { getActualDate } from "./../../libraries/util";
 import { IGetBookingParams } from "./BookingInterfaces";
+
 export interface IBookingResponse {
   description: string;
   room_id: number;
@@ -11,6 +11,21 @@ export interface IBookingResponse {
   event_id: string;
   updated_at: Date;
   created_at: Date;
+  room: {
+    id: number;
+    name: string;
+    color: string;
+    presence: boolean;
+    created_at: string;
+    updated_at: string;
+  };
+  user: {
+    id: number;
+    auth_provider_id: number;
+    picture: string;
+    name: string;
+    email: string;
+  };
 }
 
 export interface IGetBookingParams {
@@ -27,7 +42,6 @@ export interface IGetBookingsParams {
     order?: string;
     page?: number;
     pageSize?: number;
-    include?: string;
   };
 }
 

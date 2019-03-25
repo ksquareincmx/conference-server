@@ -13,7 +13,7 @@ var node = null;
 
 var tsProject = tsc.createProject("tsconfig.json");
 
-gulp.task("apidoc", shell.task("npm run apidoc"));
+gulp.task("apidoc", shell.task("apidoc -i app/controllers/ -o public/apidoc/"));
 
 gulp.task("clean", function(cb) {
   return del("dist", cb);
@@ -104,7 +104,11 @@ gulp.task("seed", ["compile"], function() {
   });
 });
 
-gulp.task("test", ["build"], shell.task("npm test"));
+gulp.task("test", shell.task("nyc mocha"));
+
+gulp.task("run-test", function(cb) {
+  runSequence("watch", "test", cb);
+});
 
 gulp.task("production", ["build"]);
 
