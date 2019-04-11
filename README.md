@@ -2,6 +2,14 @@
 
 Server application to booking conferences room
 
+## Table of contents
+
+1. [Production](#production)
+2. [Development](#development)
+3. [Docs](#docs)
+4. Print database creation SQL
+5. [License](#license)
+
 ## Installing / Getting started
 
 This app uses [Flugzeug /ˈfluːktsɔʏ̯k/ ✈️](https://github.com/ksquareincmx/flugzeug) framework
@@ -13,6 +21,13 @@ It's recommended to have basic knowledge of the technologies and structure using
 ### Prerequesites
 
 It's neccesary install global dependencies:
+
+1. Install MySQL (Linux)
+   ```bash
+   # Linux
+   sudo apt update
+   sudo apt install mysql-server mysql-client
+   ```
 
 ```bash
 
@@ -93,6 +108,14 @@ gulp test
 
 It's recommended to install [Prettier](https://prettier.io/) plugin and use the default configuration
 
+7. Start the development server
+
+```bash
+gulp watch
+```
+
+## Docs
+
 ## API Refence
 
 You can see the API documentation in dev mode following the next steps:
@@ -125,3 +148,7 @@ sudo mysql -u root -p
 # Create database
 mysql> create database `conference-booking`;
 ```
+
+## License
+
+[MIT](https://github.com/ksquareincmx/conference-server/blob/master/LICENSE)
