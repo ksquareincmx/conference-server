@@ -67,7 +67,8 @@ export function isOwner(model: Model<any, any>, key: string = "userId") {
     let userId = req.session.jwt.id;
     if (userId == null) return Controller.unauthorized(res);
     let id: number = req.params.id;
-    if (id == null) return Controller.badRequest(res, "Bad Request: No id in request.");
+    if (id == null)
+      return Controller.badRequest(res, "Bad Request: No id in request.");
     model
       .findById(id)
       .then((result: any) => {
@@ -85,14 +86,12 @@ export function isOwner(model: Model<any, any>, key: string = "userId") {
 /*
   Enforces access only to owner and the admin
 */
-export function adminOrOwner(model: Model<any, any>){
-
+export function adminOrOwner(model: Model<any, any>) {
   return (req: Request, res: Response, next: Function) => {
-
     if (req.session == null) req.session = {};
     let role = req.session.jwt.role;
     if (role == null) return Controller.unauthorized(res);
-    if (role != 'admin') return isOwner(model)(req, res, next);
+    if (role != "admin") return isOwner(model)(req, res, next);
 
     next();
   };
@@ -123,9 +122,12 @@ export function stripNestedObjects() {
     for (let key in req.body) {
       if (req.body.hasOwnProperty(key)) {
         // Validate if not from prototype
-        if (Object.prototype.toString.call(req.body[key]) === "[object Object]") {
+        if (
+          Object.prototype.toString.call(req.body[key]) === "[object Object]"
+        ) {
           // Append id and delete original
-          if (req.body[key].id !== undefined) req.body[`${key}Id`] = req.body[key].id;
+          if (req.body[key].id !== undefined)
+            req.body[`${key}Id`] = req.body[key].id;
           delete req.body[key];
         }
       }
@@ -156,7 +158,8 @@ export function isSelfUser() {
     if (req.session == null) req.session = {};
     let id = req.session.jwt.id;
     if (id == null) return Controller.unauthorized(res);
-    if (parseInt(id) !== parseInt(req.params.id)) return Controller.unauthorized(res);
+    if (parseInt(id) !== parseInt(req.params.id))
+      return Controller.unauthorized(res);
     next();
   };
 }

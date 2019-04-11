@@ -12,8 +12,8 @@ import {
   IGetProfileParams,
   IGetAllProfileSession,
   IUpdateProfileRequest
-} from "./../../interfaces/ProfileInterfaces";
-import { profileMapper } from "./../../mappers/ProfileMapper";
+} from "../../interfaces/v2/ProfileInterfaces";
+import { profileMapper } from "../../mappers/v2/ProfileMapper";
 
 export class ProfileController extends Controller {
   constructor() {
@@ -24,18 +24,19 @@ export class ProfileController extends Controller {
 
   routes(): Router {
     /**
-      @api {get} /api/v1/Profile/ Get a list of Profile
+      @api {get} /api/v2/profile  Get a list of Profile
+      @apiVersion 1.0.0
       @apiPermission access (Enforces access only to owner)
       @apiName getAllProfiles
       @apiGroup Profile
 
-      @apiHeader { String }   Content-Type Application/Json
-      @apiHeader { String }   Authorization Bearer [jwt token]
+      @apiHeader { string }   Content-Type Application/Json
+      @apiHeader { string }   Authorization Bearer [jwt token]
 
       @apiSuccess  {Object[]}   body                    Profile details
-      @apiSuccess  {String}     body.time_zone          Profile time zone
-      @apiSuccess  {String}     body.locale             Profile locale ("en", "es")
-      @apiSuccess  {Number}     body.userId             User id
+      @apiSuccess  {string}     body.time_zone          Profile time zone
+      @apiSuccess  {string}     body.locale             Profile locale ("en", "es")
+      @apiSuccess  {number}     body.userId             User id
   */
 
     this.router.get(
@@ -46,20 +47,21 @@ export class ProfileController extends Controller {
     );
 
     /**
-        @api {get} /api/v1/Profile/:id Get a Profile
+        @api {get} /api/v2/profile/:id Get a Profile
+        @apiVersion 1.0.0
         @apiPermission access (Enforces access only to owner)
         @apiName getProfile
         @apiGroup Profile
 
-        @apiHeader { String }   Content-Type Application/Json
-        @apiHeader { String }   Authorization Bearer [jwt token]
+        @apiHeader { string }   Content-Type Application/Json
+        @apiHeader { string }   Authorization Bearer [jwt token]
 
-        @apiParam    {Number}     id                      Profile id
+        @apiParam    {number}     id                      Profile id
 
         @apiSuccess  {Object}     body                    Profile details
-        @apiSuccess  {String}     body.time_zone          Profile time zone
-        @apiSuccess  {String}     body.locale             Profile locale ("en", "es")
-        @apiSuccess  {Number}     body.userId             User id
+        @apiSuccess  {string}     body.time_zone          Profile time zone
+        @apiSuccess  {string}     body.locale             Profile locale ("en", "es")
+        @apiSuccess  {number}     body.userId             User id
     */
 
     this.router.get(
@@ -70,25 +72,26 @@ export class ProfileController extends Controller {
     );
 
     /**
-        @api {put} /api/v1/Profile/:id  Modify a Profile
+        @api {put} /api/v2/profile/:id  Modify a Profile
+        @apiVersion 1.0.0
         @apiPermission access (Enforces access only to owner)
         @apiName putProfile
         @apiGroup Profile
 
-        @apiHeader { String }   Content-Type Application/Json
-        @apiHeader { String }   Authorization Bearer [jwt token]
+        @apiHeader { string }   Content-Type Application/Json
+        @apiHeader { string }   Authorization Bearer [jwt token]
 
-        @apiParam    {Number}   id                      Profile id
+        @apiParam    {number}   id                      Profile id
 
         @apiParam    {Object}   body                    Profile details
-        @apiParam    {String}   body.time_zone          Profile time zone
-        @apiParam    {String}   body.locale             Profile locale ("en", "es")
-        @apiParam    {Number}   body.userId             User id
+        @apiParam    {string}   body.time_zone          Profile time zone
+        @apiParam    {string}   body.locale             Profile locale ("en", "es")
+        @apiParam    {number}   body.userId             User id
 
         @apiSuccess  {Object}   body                    Profile details
-        @apiSuccess  {String}   body.time_zone          Profile time zone
-        @apiSuccess  {String}   body.locale             Profile locale ("en", "es")
-        @apiSuccess  {Number}   body.userId             User id
+        @apiSuccess  {string}   body.time_zone          Profile time zone
+        @apiSuccess  {string}   body.locale             Profile locale ("en", "es")
+        @apiSuccess  {number}   body.userId             User id
     */
 
     this.router.put(

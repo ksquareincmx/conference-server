@@ -1,7 +1,8 @@
 // Import DB setup and models
 import { db } from "../app/db";
-import { IUserId, IUserLogin } from "../app/interfaces/UserInterfaces";
+import { IUserId, IUserLogin } from "../app/interfaces/v2/UserInterfaces";
 import { Booking } from "../app/models/Booking";
+import { Attendee } from "../app/models/Attendee";
 import { JWTBlacklist } from "../app/models/JWTBlacklist";
 import { Profile } from "../app/models/Profile";
 import { Room } from "../app/models/Room";

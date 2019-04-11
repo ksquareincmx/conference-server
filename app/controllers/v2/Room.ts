@@ -18,9 +18,9 @@ import {
   IFindRoomParams,
   IUpdateRoomRequest,
   ICreateRoomRequest
-} from "./../../interfaces/RoomInterfaces";
-import { roomMapper } from "./../../mappers/RoomMapper";
-import { IGetHourParams, IHour } from "./../../interfaces/HourInterfaces";
+} from "../../interfaces/v2/RoomInterfaces";
+import { roomMapper } from "../../mappers/v2/RoomMapper";
+import { IGetHourParams, IHour } from "../../interfaces/v2/HourInterfaces";
 import { roomSchema } from "./../../policies/DataSchemas/Room";
 
 export class RoomController extends Controller {
@@ -32,73 +32,74 @@ export class RoomController extends Controller {
 
   routes(): Router {
     /**
-        @api {get} /api/v1/Room/ Get a list of Rooms
-          @apiName getAllRooms
+        @api {get} /api/v2/room Get Rooms
+        @apiVersion 1.0.0
+        @apiName getRooms
         @apiPermission access
         @apiGroup Room
 
-        @apiHeader { String }   Content-Type Application/Json
-        @apiHeader { String }   Authorization Bearer [jwt token]
+        @apiHeader  {string}   Content-Type Application/Json
+        @apiHeader  {string}   Authorization Bearer [jwt token]
 
-        @apiSuccess  {Object[]}   body                    Room details
-        @apiSuccess  {Number}     body.id                 Room id
-        @apiSuccess  {String}     body.name               Room name
-        @apiSuccess  {String}     body.color              The color to show in the UI for this room
-        @apiSuccess  {Boolean}    body.presence           If there is someone in the room (For future sensor integration)
-        @apiSuccess  {Number}     body.bookingIdActual    Booking id that currently occupies the room, null if its not
-        @apiSuccess  {String}     body.status             Room avability ("Not Available", "Available")
-        @apiSuccess  {Date}       body.updatedAt          Room creation date
-        @apiSuccess  {Date}       body.createdAt          Room update date
-
-
+        @apiSuccess  {Object[]}   body                      Room details
+        @apiSuccess  {number}     body.id                   Room id
+        @apiSuccess  {string}     body.name                 Room name
+        @apiSuccess  {string}     body.color                The color to show in the UI for this room
+        @apiSuccess  {Boolean}    body.presence             If there is someone in the room (For future sensor integration)
+        @apiSuccess  {number}     body.booking_id_actual    Booking id that currently occupies the room, null if its not
+        @apiSuccess  {string}     body.status               Room avability ("Not Available", "Available")
+        @apiSuccess  {Date}       body.updated_at           Room creation date
+        @apiSuccess  {Date}       body.created_at           Room update date
     */
 
     this.router.get("/", validateJWT("access"), this.findAllRoom);
 
     /**
-        @api {get} /api/v1/Room/:id Get a Room
+        @api {get} /api/v2/room/:id Get a Room
+        @apiVersion 1.0.0
         @apiPermission access
         @apiName getRoom
         @apiGroup Room
 
-        @apiHeader { String }   Content-Type Application/Json
-        @apiHeader { String }   Authorization Bearer [jwt token]
+        @apiHeader { string }   Content-Type Application/Json
+        @apiHeader { string }   Authorization Bearer [jwt token]
 
         @apiSuccess  {Object}   body                      Room details
-        @apiSuccess  {Number}   body.id                   Room id
-        @apiSuccess  {String}   body.name                 Room name
-        @apiSuccess  {String}   body.color                The color to show in the UI for this room
+        @apiSuccess  {number}   body.id                   Room id
+        @apiSuccess  {string}   body.name                 Room name
+        @apiSuccess  {string}   body.color                The color to show in the UI for this room
         @apiSuccess  {Boolean}  body.presence             If there is someone in the room (For future sensor integration)
-        @apiSuccess  {Number}   body.bookingIdActual      Booking id that currently occupies the room, null if its not
-        @apiSuccess  {String}   body.status               Room avability ("Not Available", "Available")
-        @apiSuccess  {Date}     body.updatedAt            Room creation date
-        @apiSuccess  {Date}     body.createdAt            Room update date
+        @apiSuccess  {number}   body.booking_id_actual      Booking id that currently occupies the room, null if its not
+        @apiSuccess  {string}   body.status               Room avability ("Not Available", "Available")
+        @apiSuccess  {Date}     body.updated_at            Room creation date
+        @apiSuccess  {Date}     body.created_at            Room update date
     */
 
     this.router.get("/:id", validateJWT("access"), this.findOneRoom);
 
     /**
-        @api {post} /api/v1/Room/ Create a Room
+        @api {post} /api/v2/room Create a Room
+        @apiVersion 1.0.0
         @apiPermission access (only admin)
         @apiName postRoom
         @apiGroup Room
 
-        @apiHeader { String }   Content-Type Application/Json
-        @apiHeader { String }   Authorization Bearer [jwt token]
+        @apiHeader { string }   Content-Type Application/Json
+        @apiHeader { string }   Authorization Bearer [jwt token]
 
         @apiParam    {Object}   body                Room details
-        @apiParam    {String}   body.name           Room name
-        @apiParam    {String}   body.color          The color to show in the UI for this room
+        @apiParam    {string}   body.name           Room name
+        @apiParam    {string}   body.color          The color to show in the UI for this room
 
         @apiSuccess  {Object}   body                Room details
-        @apiSuccess  {Number}   body.id             Room id
-        @apiSuccess  {String}   body.name           Room name
-        @apiSuccess  {String}   body.color          The color to show in the UI for this room
+        @apiSuccess  {number}   body.id             Room id
+        @apiSuccess  {string}   body.name           Room name
+        @apiSuccess  {string}   body.color          The color to show in the UI for this room
         @apiSuccess  {Boolean}  body.presence       If there is someone in the room (For future sensor integration)
-        @apiSuccess  {Number}   body.bookingIdActual      Booking id that currently occupies the room, null if its not
-        @apiSuccess  {String}   body.status               Room avability ("Not Available", "Available")
-        @apiSuccess  {Date}     body.updatedAt      Room creation date
-        @apiSuccess  {Date}     body.createdAt      Room update date
+        @apiSuccess  {number}   body.booking_id_actual      Booking id that currently occupies the room, null if its not
+        @apiSuccess  {string}   body.status               Room avability ("Not Available", "Available")
+        @apiSuccess  {Date}     body.updated_at      Room creation date
+        @apiSuccess  {Date}     body.created_at      Room update date
 
     */
 
@@ -112,27 +113,28 @@ export class RoomController extends Controller {
     );
 
     /**
-        @api {put} /api/v1/Room/:id Modify a room
+        @api {put} /api/v2/room/:id Modify a room
+        @apiVersion 1.0.0
         @apiPermission access (only admin)
         @apiName putRoom
         @apiGroup Room
 
-        @apiHeader { String }   Content-Type Application/Json
-        @apiHeader { String }   Authorization Bearer [jwt token]
+        @apiHeader   {string}   Content-Type Application/Json
+        @apiHeader   {string}   Authorization Bearer [jwt token]
 
         @apiParam    {Object}   body                Room details
-        @apiParam    {String}   body.name           Room name
-        @apiParam    {String}   body.color          The color to show in the UI for this room
+        @apiParam    {string}   body.name           Room name
+        @apiParam    {string}   body.color          The color to show in the UI for this room
 
         @apiSuccess  {Object}   body                Room details
-        @apiSuccess  {Number}   body.id             Room id
-        @apiSuccess  {String}   body.name           Room name
-        @apiSuccess  {String}   body.color          The color to show in the UI for this room
+        @apiSuccess  {number}   body.id             Room id
+        @apiSuccess  {string}   body.name           Room name
+        @apiSuccess  {string}   body.color          The color to show in the UI for this room
         @apiSuccess  {Boolean}  body.presence       If there is someone in the room (For future sensor integration)
-        @apiSuccess  {Number}   body.bookingIdActual      Booking id that currently occupies the room, null if its not
-        @apiSuccess  {String}   body.status               Room avability ("Not Available", "Available")
-        @apiSuccess  {Date}     body.updatedAt      Room creation date
-        @apiSuccess  {Date}     body.createdAt      Room update date
+        @apiSuccess  {number}   body.booking_id_actual      Booking id that currently occupies the room, null if its not
+        @apiSuccess  {string}   body.status          Room avability ("Not Available", "Available")
+        @apiSuccess  {Date}     body.updated_at      Room creation date
+        @apiSuccess  {Date}     body.created_at      Room update date
 
     */
 
@@ -146,13 +148,14 @@ export class RoomController extends Controller {
     );
 
     /**
-        @api {delete} /api/v1/Room/:id Delete a Room
+        @api {delete} /api/v2/room/:id Delete a Room
+        @apiVersion 1.0.0
         @apiPermission access (only admin)
         @apiName deleteRoom
         @apiGroup Room
 
-        @apiHeader { String }   Content-Type Application/Json
-        @apiHeader { String }   Authorization Bearer [jwt token]
+        @apiHeader { string }   Content-Type Application/Json
+        @apiHeader { string }   Authorization Bearer [jwt token]
 
     */
 
@@ -164,15 +167,16 @@ export class RoomController extends Controller {
     );
 
     /**
-    @api {get} /api/v2/:id/hours/ Gets a list of Hours available for made a booking
+    @api {get} /api/v2/room/:id/hours Gets available hours
+    @apiVersion 1.0.0
     @apiPermission access
     @apiName GetHours
-    @apiGroup Hours
+    @apiGroup Booking
 
-    @apiHeader {String}   Content-Type Application/Json
-    @apiHeader {String}   Authorization Bearer [jwt token]
+    @apiHeader {string}     Content-Type Application/Json
+    @apiHeader {string}     Authorization Bearer [jwt token]
 
-    @apiParam  {Date}     body.fromDate    Shows hours available from a date. Default value is the actual date
+    @apiParam  {Date}       body.fromDate    Shows hours available from a date. Default value is the actual date
 
     @apiSuccess {Object[]}  body           Hours details
     @apiSuccess {Date}      body.start     start hour

@@ -1,5 +1,7 @@
 import * as Joi from "joi";
 
+import { page, pageSize, order } from "./query";
+
 const BookingSchema = () => {
   const start = Joi.date()
     .iso()
@@ -53,16 +55,58 @@ const BookingSchema = () => {
       }
     },
 
-    getBookings: {
+    getBooking: {
       param: {
         id
       }
     },
 
-    getAllBookings: {
+    getBookings: {
       query: {
-        fromDate: Joi.date().iso(),
-        toDate: Joi.date().iso()
+        page,
+        pageSize,
+        order,
+        start: Joi.alternatives()
+          .try(
+            Joi.object().keys({
+              lte: Joi.date()
+                .iso()
+                .optional()
+            }),
+            Joi.object().keys({
+              gte: Joi.date()
+                .iso()
+                .optional()
+            })
+          )
+          .optional(),
+
+        end: Joi.alternatives()
+          .try(
+            Joi.object().keys({
+              lte: Joi.date()
+                .iso()
+                .optional()
+            }),
+            Joi.object().keys({
+              gte: Joi.date()
+                .iso()
+                .optional()
+            })
+          )
+          .optional(),
+
+        roomId: Joi.object()
+          .keys({
+            eq: Joi.number().required()
+          })
+          .optional()
+      }
+    },
+
+    deleteBooking: {
+      params: {
+        id
       }
     }
   };

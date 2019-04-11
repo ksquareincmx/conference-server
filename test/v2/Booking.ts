@@ -1,3 +1,6 @@
+import { Attendee } from "./../../app/models/Attendee";
+import { BookingAttendee } from "./../../app/models/BookingAttendee";
+
 // Import DB setup and models
 
 import { Booking, chai, db, ICredential, IUserId, Room, User } from "../common";
@@ -296,7 +299,7 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
             done();
           });
       });
-      it.skip("Try to schedule a meeting with a past date.", done => {
+      it("Try to schedule a meeting with a past date.", done => {
         const booking = {
           description: "Call Varma",
           room_id: roomId,
@@ -316,9 +319,6 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
             }
 
             res.should.have.status(400);
-            res.body.should.equal(
-              "bad Request: Bookings in past dates aren't allowed."
-            );
             done();
           });
       });
@@ -720,7 +720,7 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
             done();
           });
       });
-      it.skip("Try to reschedule a meeting with a past date", done => {
+      it("Try to reschedule a meeting with a past date", done => {
         const booking = {
           description: "Call Varma",
           room_id: roomId,
@@ -740,9 +740,7 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
             }
 
             res.should.have.status(400);
-            res.body.should.equal(
-              "bad Request: Bookings in past dates aren't allowed."
-            );
+
             done();
           });
       });
@@ -969,8 +967,21 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
             }
 
             res.should.have.status(200);
-            res.body.should.be.an("array");
-            res.body.should.have.length(0);
+            res.body.should.be.an("object");
+            res.body.should.have.property("_pagination");
+            res.body.should.have
+              .property("_pagination")
+              .have.property("size", 10);
+            res.body.should.have
+              .property("_pagination")
+              .have.property("prev", null);
+            res.body.should.have
+              .property("_pagination")
+              .have.property("next", null);
+            res.body.should.have
+              .property("bookings")
+              .that.has.an("array")
+              .that.has.length(0);
             done();
           });
       });
@@ -1004,11 +1015,22 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
               end: "2019-03-11T10:30:00" // 2019-03-11T16:30:00
             }
           ];
+
+          const attendees: string = "mdelgado@fakemail.com";
+
           try {
             await db.sync();
+
+            const attendee = await Attendee.create(attendees);
+
+            // insert attendees,booking attendes and booking in the DB
             for (let booking of bookings) {
               const createdBooking: any = await Booking.create(booking);
-              bookingsId.push(createdBooking.id.toString());
+              await BookingAttendee.create({
+                emailId: attendee.id.toString(),
+                bookingId: createdBooking.id.toString()
+              });
+              bookingsId.push(Number(createdBooking.id.toString()));
             }
           } catch (err) {
             throw err;
@@ -1028,53 +1050,155 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
             throw err;
           }
         });
-
-        it("Should get all bookings", done => {
+        it("Try get bookings with invalid pageSize value", done => {
           chai
             .request(server)
-            .get(apiPath)
+            .get("/api/v2/booking?pageSize=-1")
             .set("Authorization", `Bearer ${token}`)
             .end((err, res) => {
               if (err) {
                 throw err;
               }
+
+              res.should.have.status(400);
+              res.body.should.be.deep.equal(
+                "Bad Request: pageSize must be a positive number"
+              );
+
+              done();
+            });
+        });
+        it("Try get bookings with invalid page value", done => {
+          chai
+            .request(server)
+            .get("/api/v2/booking?page=-1")
+            .set("Authorization", `Bearer ${token}`)
+            .end((err, res) => {
+              if (err) {
+                throw err;
+              }
+
+              res.should.have.status(400);
+              res.body.should.be.deep.equal(
+                "Bad Request: page must be a positive number"
+              );
+
+              done();
+            });
+        });
+        it("Should get bookings with pagination previous=null", done => {
+          chai
+            .request(server)
+            .get(`/api/v2/booking?pageSize=1&page=1`)
+            .set("Authorization", `Bearer ${token}`)
+            .end((err, res) => {
+              if (err) {
+                throw err;
+              }
+
               res.should.have.status(200);
-              res.body.should.be.an("array");
+              res.body.should.be.an("object");
+              res.body.should.have.property("_pagination");
+              res.body.should.have
+                .property("_pagination")
+                .have.property("size", 1);
+              res.body.should.have
+                .property("_pagination")
+                .have.property("prev", null);
+              res.body.should.have
+                .property("_pagination")
+                .have.property("next", 2);
+              res.body.should.have
+                .property("bookings")
+                .that.has.an("array")
+                .that.has.length(1);
+              done();
+            });
+        });
+        it("Should get bookings with pagination previous=1 and next=2", done => {
+          chai
+            .request(server)
+            .get(`/api/v2/booking?pageSize=1&page=2`)
+            .set("Authorization", `Bearer ${token}`)
+            .end((err, res) => {
+              if (err) {
+                throw err;
+              }
 
-              res.body.forEach((booking, index) => {
-                res.body[index].should.have.property("id");
-                res.body[index].should.have.property("description");
-                res.body[index].should.have.property("room_id");
-                res.body[index].should.have.property("start");
-                res.body[index].should.have.property("end");
-                res.body[index].should.have.property("user_id");
-                res.body[index].should.have.property("event_id");
-                res.body[index].should.have.property("updated_at");
-                res.body[index].should.have.property("created_at");
-              });
+              res.should.have.status(200);
+              res.body.should.be.an("object");
+              res.body.should.have.property("_pagination");
+              res.body.should.have
+                .property("_pagination")
+                .have.property("size", 1);
+              res.body.should.have
+                .property("_pagination")
+                .have.property("prev", 1);
+              res.body.should.have
+                .property("_pagination")
+                .have.property("next", 3);
+              res.body.should.have
+                .property("bookings")
+                .that.has.an("array")
+                .that.has.length(1);
+              done();
+            });
+        });
+        it("Should get bookings with pagination next=null", done => {
+          chai
+            .request(server)
+            .get("/api/v2/booking?pageSize=1&page=3")
+            .set("Authorization", `Bearer ${token}`)
+            .end((err, res) => {
+              if (err) {
+                throw err;
+              }
 
-              //Six hours more. Because timezone format when insert in the db
-              // check body from booking[0]
-              res.body[0].description.should.deep.equal("Call Varma");
-              res.body[0].room_id.should.deep.equal(roomId);
-              res.body[0].user_id.should.deep.equal(userId);
-              res.body[0].start.should.deep.equal("2019-02-11T16:15:00.000Z");
-              res.body[0].end.should.deep.equal("2019-02-11T16:30:00.000Z");
+              res.should.have.status(200);
+              res.body.should.be.an("object");
+              res.body.should.have.property("_pagination");
+              res.body.should.have
+                .property("_pagination")
+                .have.property("size", 1);
+              res.body.should.have
+                .property("_pagination")
+                .have.property("prev", 2);
+              res.body.should.have
+                .property("_pagination")
+                .have.property("next", null);
+              res.body.should.have
+                .property("bookings")
+                .that.has.an("array")
+                .that.has.length(1);
+              done();
+            });
+        });
+        it("Should get bookings with pagination previus=null and next=null", done => {
+          chai
+            .request(server)
+            .get(`/api/v2/booking?pageSize=3&page=1&order=start DESC`)
+            .set("Authorization", `Bearer ${token}`)
+            .end((err, res) => {
+              if (err) {
+                throw err;
+              }
 
-              // check body from booking[1]
-              res.body[1].description.should.deep.equal("Call Varma x2");
-              res.body[1].room_id.should.deep.equal(roomId);
-              res.body[1].user_id.should.deep.equal(userId);
-              res.body[1].start.should.deep.equal("2019-02-11T18:10:00.000Z");
-              res.body[1].end.should.deep.equal("2019-02-11T18:30:00.000Z");
-
-              // check body from booking[2]
-              res.body[2].description.should.deep.equal("Call Varma x3");
-              res.body[2].room_id.should.deep.equal(roomId);
-              res.body[2].user_id.should.deep.equal(userId);
-              res.body[2].start.should.deep.equal("2019-03-11T16:15:00.000Z");
-              res.body[2].end.should.deep.equal("2019-03-11T16:30:00.000Z");
-
+              res.should.have.status(200);
+              res.body.should.be.an("object");
+              res.body.should.have.property("_pagination");
+              res.body.should.have
+                .property("_pagination")
+                .have.property("size", 3);
+              res.body.should.have
+                .property("_pagination")
+                .have.property("prev", null);
+              res.body.should.have
+                .property("_pagination")
+                .have.property("next", null);
+              res.body.should.have
+                .property("bookings")
+                .that.has.an("array")
+                .that.has.length(3);
               done();
             });
         });
@@ -1087,6 +1211,7 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
               if (err) {
                 throw err;
               }
+
               res.body.should.have.property("id");
               res.body.should.have.property("description");
               res.body.should.have.property("room_id");
@@ -1096,7 +1221,6 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
               res.body.should.have.property("event_id");
               res.body.should.have.property("updated_at");
               res.body.should.have.property("created_at");
-
               res.body.description.should.deep.equal("Call Varma");
               res.body.room_id.should.deep.equal(roomId);
               res.body.user_id.should.deep.equal(userId);
@@ -1105,109 +1229,118 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
               done();
             });
         });
-        it("Should get bookings fromDate", done => {
+        it("Should get bookings", done => {
           chai
             .request(server)
-            .get(apiPath + "?fromDate=2019-03-11")
+            .get(`${apiPath}`)
+            .set("Authorization", `Bearer ${token}`)
+            .end((err, res) => {
+              if (err) {
+                throw err;
+              }
+
+              res.body.should.have.property("_pagination");
+              res.body.should.have
+                .property("_pagination")
+                .have.property("size", 10);
+              res.body.should.have
+                .property("_pagination")
+                .have.property("prev", null);
+              res.body.should.have
+                .property("_pagination")
+                .have.property("next", null);
+              res.body.should.have
+                .property("bookings")
+                .that.has.an("array")
+                .that.has.length(3);
+
+              res.body.bookings[0].should.have.property("id");
+              res.body.bookings[0].should.have.property("description");
+              res.body.bookings[0].should.have.property("room_id");
+              res.body.bookings[0].should.have.property("start");
+              res.body.bookings[0].should.have.property("end");
+              res.body.bookings[0].should.have.property("user_id");
+              res.body.bookings[0].should.have.property("event_id");
+              res.body.bookings[0].should.have.property("updated_at");
+              res.body.bookings[0].should.have.property("created_at");
+              res.body.bookings[0].description.should.deep.equal("Call Varma");
+              res.body.bookings[0].room_id.should.deep.equal(roomId);
+              res.body.bookings[0].user_id.should.deep.equal(userId);
+              res.body.bookings[0].start.should.deep.equal(
+                "2019-02-11T16:15:00.000Z"
+              );
+              res.body.bookings[0].end.should.deep.equal(
+                "2019-02-11T16:30:00.000Z"
+              );
+
+              res.body.bookings[0].should.have.property("room");
+              res.body.bookings[0].should.have.property("user");
+              res.body.bookings[0].room.id.should.deep.equal(roomId);
+              res.body.bookings[0].user.id.should.deep.equal(userId);
+
+              res.body.bookings[1].should.have.property("room");
+              res.body.bookings[1].should.have.property("user");
+              res.body.bookings[2].should.have.property("room");
+              res.body.bookings[2].should.have.property("user");
+              done();
+            });
+        });
+        it("Should get bookings ordered ascendingly", done => {
+          chai
+            .request(server)
+            .get(`${apiPath}?order=start ASC`)
+            .set("Authorization", `Bearer ${token}`)
+            .end((err, res) => {
+              if (err) {
+                throw err;
+              }
+
+              res.should.have.status(200);
+              res.body.bookings[0].id.should.deep.equal(bookingsId[0]);
+              res.body.bookings[1].id.should.deep.equal(bookingsId[1]);
+              res.body.bookings[2].id.should.deep.equal(bookingsId[2]);
+
+              done();
+            });
+        });
+        it("Should get bookings ordered downwards", done => {
+          chai
+            .request(server)
+            .get(`${apiPath}?order=start DESC`)
             .set("Authorization", `Bearer ${token}`)
             .end((err, res) => {
               if (err) {
                 throw err;
               }
               res.should.have.status(200);
-              res.body.should.be.an("array");
-              res.body.should.have.length(1);
-
-              res.body[0].should.be.an("object");
-              res.body[0].should.have.property("id");
-              res.body[0].should.have.property("description");
-              res.body[0].should.have.property("room_id");
-              res.body[0].should.have.property("start");
-              res.body[0].should.have.property("end");
-              res.body[0].should.have.property("user_id");
-              res.body[0].should.have.property("event_id");
-              res.body[0].should.have.property("updated_at");
-              res.body[0].should.have.property("created_at");
-
-              res.body[0].description.should.deep.equal("Call Varma x3");
-              res.body[0].room_id.should.deep.equal(roomId);
-              res.body[0].user_id.should.deep.equal(userId);
-              res.body[0].start.should.deep.equal("2019-03-11T16:15:00.000Z");
-              res.body[0].end.should.deep.equal("2019-03-11T16:30:00.000Z");
+              res.body.bookings[0].id.should.deep.equal(bookingsId[2]);
+              res.body.bookings[1].id.should.deep.equal(bookingsId[1]);
+              res.body.bookings[2].id.should.deep.equal(bookingsId[0]);
 
               done();
             });
         });
-        it("Should get bookings toDate", done => {
+        it("Should get dates filters by start date", done => {
           chai
             .request(server)
-            .get(apiPath + "?toDate=2019-02-11T17:00")
+            .get(`${apiPath}?start[gte]=2019-03-11T16:15:00.000Z`)
             .set("Authorization", `Bearer ${token}`)
             .end((err, res) => {
               if (err) {
                 throw err;
               }
+
               res.should.have.status(200);
-              res.body.should.be.an("array");
-              res.body.should.have.length(1);
-
-              res.body[0].should.be.an("object");
-              res.body[0].should.have.property("id");
-              res.body[0].should.have.property("description");
-              res.body[0].should.have.property("room_id");
-              res.body[0].should.have.property("start");
-              res.body[0].should.have.property("end");
-              res.body[0].should.have.property("user_id");
-              res.body[0].should.have.property("event_id");
-              res.body[0].should.have.property("updated_at");
-              res.body[0].should.have.property("created_at");
-
-              res.body[0].description.should.deep.equal("Call Varma");
-              res.body[0].room_id.should.deep.equal(roomId);
-              res.body[0].user_id.should.deep.equal(userId);
-              res.body[0].start.should.deep.equal("2019-02-11T16:15:00.000Z");
-              res.body[0].end.should.deep.equal("2019-02-11T16:30:00.000Z");
+              res.body.bookings.should.have.length(1);
+              res.body.bookings[0].id.should.deep.equal(bookingsId[2]);
 
               done();
             });
         });
-        it("Should get bookings fromDate to toDate", done => {
+        it("Should return bad request, invalid start date", done => {
           chai
             .request(server)
-            .get(apiPath + "?fromDate=2019-02-11T16:31:00&toDate=2019-03-10")
-            .set("Authorization", `Bearer ${token}`)
-            .end((err, res) => {
-              if (err) {
-                throw err;
-              }
-              res.should.have.status(200);
-              res.body.should.be.an("array");
-              res.body.should.have.length(1);
-
-              res.body[0].should.be.an("object");
-              res.body[0].should.have.property("id");
-              res.body[0].should.have.property("description");
-              res.body[0].should.have.property("room_id");
-              res.body[0].should.have.property("start");
-              res.body[0].should.have.property("end");
-              res.body[0].should.have.property("user_id");
-              res.body[0].should.have.property("event_id");
-              res.body[0].should.have.property("updated_at");
-              res.body[0].should.have.property("created_at");
-
-              res.body[0].description.should.deep.equal("Call Varma x2");
-              res.body[0].room_id.should.deep.equal(roomId);
-              res.body[0].user_id.should.deep.equal(userId);
-              res.body[0].start.should.deep.equal("2019-02-11T18:10:00.000Z");
-              res.body[0].end.should.deep.equal("2019-02-11T18:30:00.000Z");
-
-              done();
-            });
-        });
-        it("Try to get bookings with incorrect fromDate", done => {
-          chai
-            .request(server)
-            .get(apiPath + "?fromDate=assadsad")
+            .get(`${apiPath}?start[lte]="2019-03-11T16:15:00.000Z"`)
             .set("Authorization", `Bearer ${token}`)
             .end((err, res) => {
               if (err) {
@@ -1215,16 +1348,33 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
               }
 
               res.should.have.status(400);
-              res.body.should.equal(
-                "Bad Request: fromDate must be a date in format YYYY-MM-DDTHH:MM."
+              res.body.should.deep.equal(
+                "Bad Request: lte must be a valid ISO 8601 date"
               );
               done();
             });
         });
-        it("Try to get bookigns with incorrect toDate", done => {
+        it("Should get dates filters by end date", done => {
           chai
             .request(server)
-            .get(apiPath + "?toDate=assadsad")
+            .get(`${apiPath}?end[lte]=2019-02-11T16:30:00.000Z`)
+            .set("Authorization", `Bearer ${token}`)
+            .end((err, res) => {
+              if (err) {
+                throw err;
+              }
+
+              res.should.have.status(200);
+              res.body.bookings.should.have.length(1);
+              res.body.bookings[0].id.should.deep.equal(bookingsId[0]);
+
+              done();
+            });
+        });
+        it("Should return bad request, invalid end date", done => {
+          chai
+            .request(server)
+            .get(`${apiPath}?end[lte]="2019-03-11T16:15:00.000Z"`)
             .set("Authorization", `Bearer ${token}`)
             .end((err, res) => {
               if (err) {
@@ -1232,9 +1382,54 @@ export const bookingTest = (params: ICredential, user: IUserId) => {
               }
 
               res.should.have.status(400);
-              res.body.should.equal(
-                "Bad Request: toDate must be a date in format YYYY-MM-DDTHH:MM."
+              res.body.should.deep.equal(
+                "Bad Request: lte must be a valid ISO 8601 date"
               );
+              done();
+            });
+        });
+        it("Should get dates filters by roomId", done => {
+          chai
+            .request(server)
+            .get(`${apiPath}?roomId[eq]=${roomId}`)
+            .set("Authorization", `Bearer ${token}`)
+            .end((err, res) => {
+              if (err) {
+                throw err;
+              }
+
+              res.should.have.status(200);
+              res.body.bookings.should.have.length(3);
+              done();
+            });
+        });
+        it("Should get dates filters by roomId, room doesn't exist", done => {
+          chai
+            .request(server)
+            .get(`${apiPath}?roomId[eq]=${inexistRoom}`)
+            .set("Authorization", `Bearer ${token}`)
+            .end((err, res) => {
+              if (err) {
+                throw err;
+              }
+
+              res.should.have.status(200);
+              res.body.bookings.should.have.length(0);
+              done();
+            });
+        });
+        it("Should return bad request, invalid roomId", done => {
+          chai
+            .request(server)
+            .get(`${apiPath}?roomId[eq]="1"`)
+            .set("Authorization", `Bearer ${token}`)
+            .end((err, res) => {
+              if (err) {
+                throw err;
+              }
+
+              res.should.have.status(400);
+              res.body.should.deep.equal("Bad Request: eq must be a number");
               done();
             });
         });

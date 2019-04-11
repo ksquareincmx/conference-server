@@ -1,6 +1,6 @@
-# conference-booking
+# Conference Server
 
-conference-booking Server, based on Flugzeug.
+Server application to booking conferences room
 
 ## Table of contents
 
@@ -10,70 +10,143 @@ conference-booking Server, based on Flugzeug.
 4. Print database creation SQL
 5. [License](#license)
 
-## Production
+## Installing / Getting started
 
-Check the `.env.example` file to set up the appropriate environment variables and run `docker-compose up --build`.
+This app uses [Flugzeug /ˈfluːktsɔʏ̯k/ ✈️](https://github.com/ksquareincmx/flugzeug) framework
 
-Check a [basic deploy strategy](https://github.com/ksquarelabsmx/conference-server/wiki/Basic-deploy-strategy-using-Docker,-Git-hooks,-nginx-and-FCGI-Wrap) in the wiki to set up a basic CI environment.
+It's recommended to have basic knowledge of the technologies and structure using in the framework before working with this project.
 
-## Development
+## Developing
+
+### Prerequesites
+
+It's neccesary install global dependencies:
 
 1. Install MySQL (Linux)
-    ```bash
-    # Linux
-    sudo apt update
-    sudo apt install mysql-server mysql-client
+   ```bash
+   # Linux
+   sudo apt update
+   sudo apt install mysql-server mysql-client
+   ```
 
-    # macOS
-    brew update
-    brew install mysql
-    ```
+```bash
 
-2. Configure MySQL
-    ```bash
-    # Fix to ERROR 1298 (HY000): Unknown or incorrect time zone: 'UTC'
-    mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root -p mysql
+npm install -g nyc mocha source-map-support apidoc gulp
+```
 
-    # Connect to MySQL server
-    mysql -u root -p
-    ```
+### Setting up dev
 
-3. Create database
-    ```mysql
-    CREATE DATABASE `conference-booking`;
-    CREATE USER 'conference-booking'@'localhost' IDENTIFIED WITH mysql_native_password BY '___YOUR_PASSWORD_HERE___';
-    GRANT ALL PRIVILEGES ON `conference-booking`.* TO 'conference-booking'@'localhost';
-    FLUSH PRIVILEGES;
-    ```
+Download and install dependencies:
 
-4. Create a `.env` file and update it with you MySQL credentials
-    ```bash
-    cp .env.example .env
-    code .env
-    ```
+```bash
+git clone https://github.com/ksquareincmx/  conference-server.git
+cd conference-server
+npm install
+```
 
-5. Install dependencies
-    ```bash
-    npm install
-    ```
+Set enviroment variables:
 
-6. Seed the database
-    ```bash
-    gulp seed
-    ```
+```bash
+cp env.example .env
+```
+
+It's necessary to generate `google oauth` credentials and `jwt secret`, and set enviroment variables.
+
+Generate jwt secret:
+
+```bash
+printf "%s\n" $(openssl rand -base64 32 | tr -dc 0-9A-Za-z | head -c 40)
+```
+
+[Generate google oauth2 credentials](https://developers.google.com/adwords/api/docs/guides/authentication)
+
+### Building
+
+Execute project in localhost:
+
+```bash
+gulp watch
+```
+
+You must see the next output:
+
+```bash
+[09:11:07] Using gulpfile ~/GitHub/Ksquare/conference-server/gulpfile.js
+[09:11:07] Starting 'clean-serve'...
+[09:11:07] Starting 'clean'...
+[09:11:07] Finished 'clean' after 7.62 ms
+[09:11:07] Starting 'copy-views'...
+[09:11:07] Finished 'copy-views' after 21 ms
+[09:11:07] Starting 'copy-locales'...
+[09:11:07] Finished 'copy-locales' after 2.15 ms
+[09:11:07] Starting 'compile'...
+[09:11:11] Finished 'compile' after 4.06 s
+[09:11:11] Starting 'serve'...
+[09:11:11] Finished 'serve' after 7.76 ms
+[09:11:11] Finished 'clean-serve' after 4.1 s
+[09:11:11] Starting 'watch'...
+[09:11:11] Finished 'watch' after 16 ms
+2019-04-01T15:11:12.733Z - info: conference-booking started at port 8888
+
+```
+
+## Deploying / Publishing
+
+See [deploy strategy](https://github.com/ksquareincmx/conference-server/wiki/Basic-deploy-strategy-using-Docker,-Git-hooks,-nginx-and-FCGI-Wrap)
+
+## API Tests
+
+For run the test is necessary follow the next steps:
+
+```bash
+gulp seed
+gulp watch
+gulp test
+```
+
+## Style guide
+
+It's recommended to install [Prettier](https://prettier.io/) plugin and use the default configuration
 
 7. Start the development server
-    ```bash
-    gulp watch
+
+```bash
+gulp watch
+```
 
 ## Docs
 
-Read the documentation at `docs/Framework.md`
+## API Refence
 
-## Print database creation SQL (Useful when writing migrations)
+You can see the API documentation in dev mode following the next steps:
 
+```bash
+gulp apidoc
+gulp watch
 ```
-gulp sql
+
+See documentation: `localhost:8888/apidoc`, if you are running your project in production mode you can access change `localhost:port` by your `URL`
+
+## Database
+
+### Install MySQL (Linux)
+
+```bash
+sudo apt update
+sudo apt install mysql-servemysql-client
+```
+
+### Configure MySQL
+
+```bash
+# Fix to ERROR 1298 (HY000): Unknown or incorrect time zone: 'UTC'
+sudo mysql_tzinfo_to_sql /usr/share/zoneinfo | sudo mysql -u root -p mysql
+
+# Connect to MySQL server
+sudo mysql -u root -p
+
+# Create database
+mysql> create database `conference-booking`;
 ```
 
 ## License
