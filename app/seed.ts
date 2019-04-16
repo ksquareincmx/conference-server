@@ -2,6 +2,7 @@ require("dotenv").config();
 import { setupDB } from "./db";
 import { log } from "./libraries/Log";
 import { User } from "./models/User";
+import { Room } from "./models/Room";
 
 setupDB()
   .then(() => {
@@ -22,12 +23,40 @@ function seed(): PromiseLike<any> {
   // Creates first admin user
   return User.count().then((count: number) => {
     if (count === 0)
-      return User.create({
-        name: "Admin",
-        email: "admin@example.com",
-        password: "adminadmin",
-        role: "admin"
-      });
+      return Promise.all([
+        User.create({
+          name: "Admin",
+          email: "admin@example.com",
+          password: "adminadmin",
+          role: "admin"
+        }),
+
+        // Room seeding
+        Room.create({
+          name: "Dewitt",
+          color: "#e1f7d5"
+        }),
+        Room.create({
+          name: "Dumbledore",
+          color: "#ffbdbd"
+        }),
+        Room.create({
+          name: "Wayne",
+          color: "#c9c9ff"
+        }),
+        Room.create({
+          name: "Stark",
+          color: "#f1cbff"
+        }),
+        Room.create({
+          name: "Ganondorf",
+          color: "#305F72"
+        }),
+        Room.create({
+          name: "Skywalker",
+          color: "#f09c67"
+        })
+      ]);
     return null;
   });
 }
