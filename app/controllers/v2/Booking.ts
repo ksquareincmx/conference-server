@@ -288,17 +288,19 @@ export class BookingController extends Controller {
     const uniqueEmails = [...new Set(data.attendees)];
 
     try {
-      const roomId = await Room.findOne({
-        attributes: ["id"],
+      const room = await Room.findOne({
+        attributes: ["id", "name"],
         where: { id: data.roomId }
       });
 
-      if (isEmpty(roomId)) {
+      if (!room) {
         return Controller.badRequest(
           res,
           `Bad Request: room ${data.roomId} not exist.`
         );
       }
+
+      const { name: location } = room.toJSON();
 
       const booking: Booking = await bookingDataStorage.findCollisions(data);
 
@@ -313,7 +315,8 @@ export class BookingController extends Controller {
         data.start,
         data.end,
         data.description,
-        uniqueEmails
+        uniqueEmails,
+        location
       );
 
       // insert booking the DB
@@ -368,17 +371,19 @@ export class BookingController extends Controller {
     const uniqueEmails = [...new Set(data.body.attendees)];
 
     try {
-      const roomId = await Room.findOne({
-        attributes: ["id"],
+      const room = await Room.findOne({
+        attributes: ["id", "name"],
         where: { id: data.body.roomId }
       });
 
-      if (isEmpty(roomId)) {
+      if (!room) {
         return Controller.badRequest(
           res,
           `Bad Request: room ${data.body.roomId} not exist.`
         );
       }
+
+      const { name: location } = room.toJSON();
 
       const bookings = await bookingDataStorage.findCollisions(data.body);
       // if exist a booking that overlaps whit start and end
@@ -398,7 +403,8 @@ export class BookingController extends Controller {
         data.body.start,
         data.body.end,
         data.body.description,
-        uniqueEmails
+        uniqueEmails,
+        location
       );
 
       // update tables: attende and bookingAttende
