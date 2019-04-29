@@ -1,4 +1,11 @@
-import { Table, Column, DataType, BelongsTo, ForeignKey, HasMany } from "sequelize-typescript";
+import {
+  Table,
+  Column,
+  DataType,
+  BelongsTo,
+  ForeignKey,
+  HasMany
+} from "sequelize-typescript";
 import { BaseModel } from "../libraries/BaseModel";
 import { BookingAttendee } from "./BookingAttendee";
 import { User } from "./User";
