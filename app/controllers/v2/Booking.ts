@@ -384,8 +384,10 @@ export class BookingController extends Controller {
       }
 
       const { name: location } = room.toJSON();
-
-      const bookings = await bookingDataStorage.findCollisions(data.body);
+      const bookings: Booking = await bookingDataStorage.findUpdatedCollisions({
+        ...data.body,
+        ...data.params
+      });
       // if exist a booking that overlaps whit start and end
       if (bookings) {
         return Controller.noContent(res);

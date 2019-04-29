@@ -114,10 +114,39 @@ function BookingDataStorage(model = Booking) {
     } catch (error) {}
   };
 
+  const findUpdatedCollisions = async ({ start, end, roomId, id }) => {
+    try {
+      const booking: Booking = await Booking.find({
+        where: {
+          [Op.and]: {
+            [Op.not]: {
+              [Op.or]: {
+                end: {
+                  [Op.lte]: start
+                },
+                start: {
+                  [Op.gte]: end
+                }
+              }
+            },
+            roomId: {
+              [Op.eq]: roomId
+            },
+            id: {
+              [Op.ne]: id
+            }
+          }
+        }
+      });
+      return booking;
+    } catch (error) {}
+  };
+
   return {
     findAll,
     create,
-    findCollisions
+    findCollisions,
+    findUpdatedCollisions
   };
 }
 
