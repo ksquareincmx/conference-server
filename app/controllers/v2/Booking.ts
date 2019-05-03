@@ -1,4 +1,7 @@
 import * as fp from "lodash/fp";
+import "universal-isomorphic-fetch";
+import axios from "axios";
+const qs = require("querystring");
 
 import { config } from "./../../config/config";
 import * as moment from "moment-timezone";
@@ -8,7 +11,8 @@ import { Controller } from "./../../libraries/Controller";
 import {
   isEmpty,
   getActualDate,
-  isAvailableDate
+  isAvailableDate,
+  formatDateFromSlack
 } from "./../../libraries/util";
 import { Booking } from "./../../models/Booking";
 import { Room } from "./../../models/Room";
@@ -21,6 +25,7 @@ import {
   adminOrOwner
 } from "./../../policies/General";
 import calendarService from "./../../services/GoogleCalendarService";
+import { slackService } from "../../services/SlackService";
 import { insertAttendee } from "./../../libraries/AttendeeDB";
 import {
   insertBookingAttendee,
@@ -225,8 +230,151 @@ export class BookingController extends Controller {
       this.destroyBooking
     );
 
+    /**
+     * @api {post} /api/v2/booking/slack/dialog/open Manage dialog open in slack
+     * @apiVersion 2.0.0
+     * @apiPermission access (users)
+     * @apiName slackCommand
+     * @apiGroup Booking
+     *
+     */
+    this.router.post("/slack/dialog/open", this.manageDialogOpen);
+
+    /**
+     * @api {post} /api/v2/booking/slack/dialog/submit Manage dialog info submit
+     * @apiVersion 2.0.0
+     * @apiPermission access (users)
+     * @apiName slackActions
+     * @apiGroup Booking
+     */
+    this.router.post("/slack/dialog/submit", this.manageDialogSubmit);
+
     return this.router;
   }
+
+  manageDialogOpen = async (req: Request, res: Response) => {
+    // best practice to respond with 200 status
+    res.send("");
+    try {
+      const response = await slackService.openDialog(req.body);
+    } catch (error) {
+      const { message } = error;
+      res.status(500).json({ response_type: "ephemeral", text: message });
+    }
+  };
+
+  manageDialogSubmit = async (req: Request, res: Response) => {
+    // This closes the dialog in slack
+    res.send("");
+    const { user, submission, response_url: toURL } = JSON.parse(
+      req.body.payload
+    );
+
+    const { startDate, endDate } = formatDateFromSlack(submission);
+    if (!isAvailableDate(startDate, endDate)) {
+      return slackService.sendErrorMessage({
+        toURL,
+        message:
+          "The booking only can have office hours (Monday-Friday, 8AM-6PM)."
+      });
+    }
+
+    try {
+      const room = await Room.findOne({
+        attributes: ["id", "name"],
+        where: { id: parseInt(submission.roomId) }
+      });
+
+      if (!room) {
+        return slackService.sendErrorMessage({
+          toURL,
+          message: `Room ${submission.roomId} not exist.`
+        });
+      }
+
+      const { name: location, id: roomId } = room.toJSON();
+      const collisionsData = { start: startDate, end: endDate, roomId };
+      const booking: Booking = await bookingDataStorage.findCollisions(
+        collisionsData
+      );
+
+      // if exist a booking that overlaps whit start and end
+      if (booking) {
+        return slackService.sendErrorMessage({
+          toURL,
+          message: `There is booking overlaping`
+        });
+      }
+
+      const dummyUser = await User.findOne({
+        attributes: ["id", "email"],
+        where: { id: process.env.DUMMY_USER_ID }
+      });
+
+      if (!dummyUser) {
+        return slackService.sendErrorMessage({
+          toURL,
+          message: "Dummy user not exist."
+        });
+      }
+
+      const { id: userId, email: dummyEmail } = dummyUser.toJSON();
+      const attendees = [...submission.attendees.split(","), dummyEmail];
+      const uniqueEmails = [...new Set(attendees)];
+      const { description } = submission;
+      const eventCalendar = await calendarService.insertEvent(
+        startDate,
+        endDate,
+        description,
+        uniqueEmails,
+        location
+      );
+
+      // insert booking the DB
+      const data = {
+        userId,
+        roomId,
+        description,
+        uniqueEmails,
+        start: startDate,
+        end: endDate
+      };
+      const bookingDao = await this.model.create({
+        ...data,
+        eventId: eventCalendar.id
+      });
+
+      // get the created booking with room and user details
+      const createdBooking: Booking = await Booking.findById(bookingDao.id, {
+        include: [Room, User]
+      });
+      const parsedBooking = createdBooking.toJSON();
+
+      // insert attendee in the DB
+      uniqueEmails.forEach(async attendee => {
+        const attendeeId = await insertAttendee(attendee);
+        await insertBookingAttendee(parsedBooking.id, attendeeId);
+      });
+
+      const { name: slackUserName } = user;
+      const response = slackService.sendDialogSubmitResponse(toURL, {
+        slackUserName,
+        startDate,
+        endDate,
+        location,
+        description,
+        attendees: uniqueEmails
+      });
+    } catch (error) {
+      const { message } = error;
+      res.status(500).json({
+        response_type: "ephemeral",
+        text: message
+      });
+      // For use the below function need to change the implementation
+      // return Controller.serverError(res, err);
+    }
+  };
 
   bookingsPlusAttendees = async bookings => {
     // Add attendees to booking
@@ -274,7 +422,9 @@ export class BookingController extends Controller {
   };
 
   createBooking = async (req: Request, res: Response) => {
+    console.log(req.body);
     const data = createBookingMapper.toEntity(req.body);
+    console.log(data);
 
     if (!isAvailableDate(data.start, data.end)) {
       return Controller.badRequest(
@@ -288,17 +438,19 @@ export class BookingController extends Controller {
     const uniqueEmails = [...new Set(data.attendees)];
 
     try {
-      const roomId = await Room.findOne({
-        attributes: ["id"],
+      const room = await Room.findOne({
+        attributes: ["id", "name"],
         where: { id: data.roomId }
       });
 
-      if (isEmpty(roomId)) {
+      if (!room) {
         return Controller.badRequest(
           res,
           `Bad Request: room ${data.roomId} not exist.`
         );
       }
+
+      const { name: location } = room.toJSON();
 
       const booking: Booking = await bookingDataStorage.findCollisions(data);
 
@@ -313,7 +465,8 @@ export class BookingController extends Controller {
         data.start,
         data.end,
         data.description,
-        uniqueEmails
+        uniqueEmails,
+        location
       );
 
       // insert booking the DB
@@ -368,21 +521,44 @@ export class BookingController extends Controller {
     const uniqueEmails = [...new Set(data.body.attendees)];
 
     try {
-      const roomId = await Room.findOne({
-        attributes: ["id"],
+      const room = await Room.findOne({
+        attributes: ["id", "name"],
         where: { id: data.body.roomId }
       });
 
-      if (isEmpty(roomId)) {
+      if (!room) {
         return Controller.badRequest(
           res,
-          `Bad Request: room ${data.body.roomId} not exist.`
+          `Bad Request: room ${data.body.roomId} doesn't exist.`
         );
       }
 
+      const { name: location } = room.toJSON();
+
       const bookings = await bookingDataStorage.findCollisions(data.body);
+      // console.log(data.body);
+      // console.log(data.params);
+      /** Si no hay nada trae null,
+       * parece ser que solo trae el primero.
+       * En caso de que así sea, checar si el id
+       * es igual, y luego checar las fechas */
+
+      console.log(bookings);
+      // console.log(bookings.toJSON());
+      // const book = bookings.toJSON();
+      // console.log(fp.isEqual(data.body, bookings.toJSON()));
+
+      // const pastBookings = bookings.toJSON();
+      // if (pastBookings.length === 1) {
+      // }
+
       // if exist a booking that overlaps whit start and end
       if (bookings) {
+        const book = bookings.toJSON();
+        if (book.id === data.params.id) {
+          if (book.start === data.body.start && book.end === data.body.end) {
+          }
+        }
         return Controller.noContent(res);
       }
 
@@ -398,7 +574,8 @@ export class BookingController extends Controller {
         data.body.start,
         data.body.end,
         data.body.description,
-        uniqueEmails
+        uniqueEmails,
+        location
       );
 
       // update tables: attende and bookingAttende

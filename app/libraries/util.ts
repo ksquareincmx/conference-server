@@ -1,5 +1,6 @@
 import * as moment from "moment-timezone";
 import * as EmailValidator from "email-validator";
+import { IBookingDateInfo } from "../interfaces/v2/SlackInterfaces";
 
 export const months = [
   { name: "January", val: 1 },
@@ -94,3 +95,28 @@ export function isAvailableDate(
 export function areValidsEmails(emails: string[]) {
   return emails.every(email => EmailValidator.validate(email));
 }
+
+export const formatDateFromSlack = ({
+  date,
+  startHour,
+  startMinute,
+  endHour,
+  endMinute
+}: IBookingDateInfo) => {
+  const hourOffset =
+    moment()
+      .tz("America/Mexico_city")
+      .utcOffset() / 60;
+
+  const startDate = moment(`${date}T${startHour}:${startMinute}`)
+    .utcOffset(hourOffset, true)
+    .utc()
+    .format();
+
+  const endDate = moment(`${date}T${endHour}:${endMinute}`)
+    .utcOffset(hourOffset, true)
+    .utc()
+    .format();
+
+  return { startDate, endDate };
+};
