@@ -24,9 +24,10 @@ class GoogleCalendarService {
     start: string,
     end: string,
     description: string,
-    attendees: Array<string>
+    attendees: Array<string>,
+    location: string
   ) {
-    let event = this.defineEvent(start, end, description);
+    let event = this.defineEvent(start, end, description, location);
 
     attendees.forEach(attendee => {
       let email = {
@@ -49,9 +50,10 @@ class GoogleCalendarService {
     start: string,
     end: string,
     description: string,
-    attendees: Array<string>
+    attendees: Array<string>,
+    location: string
   ) {
-    let event = this.defineEvent(start, end, description);
+    let event = this.defineEvent(start, end, description, location);
 
     attendees.forEach(attendee => {
       let email = {
@@ -84,8 +86,14 @@ class GoogleCalendarService {
       });
   }
 
-  defineEvent(start: string, end: string, description: string) {
+  defineEvent(
+    start: string,
+    end: string,
+    description: string,
+    location: string
+  ) {
     let event = {
+      location,
       start: {
         dateTime: start,
         timeZone: this.timeZone

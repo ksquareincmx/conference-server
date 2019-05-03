@@ -535,22 +535,10 @@ export class BookingController extends Controller {
 
       const { name: location } = room.toJSON();
 
-      const bookings = await bookingDataStorage.findCollisions(data.body);
-      // console.log(data.body);
-      // console.log(data.params);
-      /** Si no hay nada trae null,
-       * parece ser que solo trae el primero.
-       * En caso de que así sea, checar si el id
-       * es igual, y luego checar las fechas */
-
-      console.log(bookings);
-      // console.log(bookings.toJSON());
-      // const book = bookings.toJSON();
-      // console.log(fp.isEqual(data.body, bookings.toJSON()));
-
-      // const pastBookings = bookings.toJSON();
-      // if (pastBookings.length === 1) {
-      // }
+      const bookings: Booking = await bookingDataStorage.findUpdatedCollisions({
+        ...data.body,
+        ...data.params
+      });
 
       // if exist a booking that overlaps whit start and end
       if (bookings) {

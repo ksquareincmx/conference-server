@@ -53,6 +53,7 @@ export interface IDeleteBookingParams {
 
 // Interface base for ICreateBooking & IUpdateBooking
 export interface IBookingRequest {
+  id?: string;
   description: string;
   roomId: number;
   start: string;
