@@ -1,3 +1,4 @@
+import { IRoom } from "./RoomInterfaces";
 import { IGetBookingParams } from "./BookingInterfaces";
 
 export interface IBookingResponse {
@@ -11,14 +12,7 @@ export interface IBookingResponse {
   event_id: string;
   updated_at: Date;
   created_at: Date;
-  room: {
-    id: number;
-    name: string;
-    color: string;
-    presence: boolean;
-    created_at: string;
-    updated_at: string;
-  };
+  room: IRoom;
   user: {
     id: number;
     auth_provider_id: number;
