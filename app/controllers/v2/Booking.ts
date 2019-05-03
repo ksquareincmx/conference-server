@@ -1,7 +1,5 @@
 import * as fp from "lodash/fp";
 import "universal-isomorphic-fetch";
-import axios from "axios";
-const qs = require("querystring");
 
 import { config } from "./../../config/config";
 import * as moment from "moment-timezone";
@@ -256,7 +254,7 @@ export class BookingController extends Controller {
     // best practice to respond with 200 status
     res.send("");
     try {
-      const response = await slackService.openDialog(req.body);
+      await slackService.openDialog(req.body);
     } catch (error) {
       const { message } = error;
       res.status(500).json({ response_type: "ephemeral", text: message });
@@ -357,7 +355,7 @@ export class BookingController extends Controller {
       });
 
       const { name: slackUserName } = user;
-      const response = slackService.sendDialogSubmitResponse(toURL, {
+      await slackService.sendDialogSubmitResponse(toURL, {
         slackUserName,
         startDate,
         endDate,
@@ -422,9 +420,7 @@ export class BookingController extends Controller {
   };
 
   createBooking = async (req: Request, res: Response) => {
-    console.log(req.body);
     const data = createBookingMapper.toEntity(req.body);
-    console.log(data);
 
     if (!isAvailableDate(data.start, data.end)) {
       return Controller.badRequest(
@@ -542,11 +538,6 @@ export class BookingController extends Controller {
 
       // if exist a booking that overlaps whit start and end
       if (bookings) {
-        const book = bookings.toJSON();
-        if (book.id === data.params.id) {
-          if (book.start === data.body.start && book.end === data.body.end) {
-          }
-        }
         return Controller.noContent(res);
       }
 
