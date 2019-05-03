@@ -1,7 +1,8 @@
 export interface IRoom {
   id: number;
   name: string;
-  color: string;
+  bg_color: string;
+  txt_color: string;
   presence: boolean;
   createad_at: Date;
   updated_at: Date;
@@ -16,7 +17,8 @@ export interface IUpdateRoom {
 export interface IRoomResponse {
   id: number;
   name: string;
-  color: string;
+  bg_color: string;
+  txt_color: string;
   presence: boolean;
   created_at: Date;
   updated_at: Date;
