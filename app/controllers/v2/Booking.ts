@@ -358,7 +358,7 @@ export class BookingController extends Controller {
       params: req.params,
       body: req.body
     });
-    console.log();
+
     if (!isAvailableDate(data.body.start, data.body.end)) {
       return Controller.badRequest(
         res,
