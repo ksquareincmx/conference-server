@@ -19,7 +19,14 @@ export class Room extends BaseModel<Room> {
     allowNull: true,
     defaultValue: null
   })
-  color: string;
+  bgColor: string;
+
+  @Column({
+    type: DataType.STRING,
+    allowNull: true,
+    defaultValue: null
+  })
+  txtColor: string;
 
   // If there is someone in the room
   // (For future sensor integration)
