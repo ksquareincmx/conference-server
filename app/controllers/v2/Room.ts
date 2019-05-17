@@ -348,17 +348,28 @@ export class RoomController extends Controller {
       const bookings = await Booking.findAll({
         where: {
           roomId: data.params.id,
-          start: { [Op.gte]: `${fromDate}T08:00:00` },
-          end: { [Op.lte]: `${fromDate}T18:00:00` }
+          start: {
+            [Op.gte]: `${fromDate}T08:00:00`,
+            [Op.lte]: `${fromDate}T23:00:00`
+          }
         }
       });
 
       // Get hours when the conference room is reserved
       const getBookingHours = (booking: Booking) => {
         const parsedBooking = booking.toJSON();
+
+        // Convert from UTC to local time
+        const localStartDate = moment(parsedBooking.start)
+          .tz("America/Mexico_city")
+          .format();
+        const localEndDate = moment(parsedBooking.end)
+          .tz("America/Mexico_city")
+          .format();
+
         return {
-          start: parsedBooking.start.toJSON().slice(11, 16),
-          end: parsedBooking.end.toJSON().slice(11, 16)
+          start: localStartDate.slice(11, 16),
+          end: localEndDate.slice(11, 16)
         };
       };
 
