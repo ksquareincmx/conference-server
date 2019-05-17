@@ -120,3 +120,11 @@ export const formatDateFromSlack = ({
 
   return { startDate, endDate };
 };
+
+export const isWeekenedDay = (date: string) => {
+  const formattedDate: moment = moment(`${date}T05:00`).tz(
+    "America/Mexico_city"
+  );
+  const day = formattedDate.isoWeekday();
+  return day === 6 || day === 7;
+};

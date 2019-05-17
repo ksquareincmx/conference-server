@@ -7,6 +7,15 @@ export interface IRoom {
   updated_at: Date;
 }
 
+export interface IRoomNew {
+  id: number;
+  name: string;
+  color: string;
+  presence: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export interface IUpdateRoom {
   id: number;
   name: string;
@@ -52,4 +61,9 @@ export interface IUpdateRoomRequest {
     id: number;
   };
   body: IRoomRequest;
+}
+
+export interface IRoomSlackFormat {
+  label: string;
+  value: string;
 }

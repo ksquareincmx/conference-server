@@ -10,7 +10,8 @@ import {
   isEmpty,
   getActualDate,
   isAvailableDate,
-  formatDateFromSlack
+  formatDateFromSlack,
+  isWeekenedDay
 } from "./../../libraries/util";
 import { Booking } from "./../../models/Booking";
 import { Room } from "./../../models/Room";
@@ -41,8 +42,10 @@ import {
   IDeleteBookingParams,
   IBookingResponse
 } from "../../interfaces/v2/BookingInterfaces";
+import { IHour } from "../../interfaces/v2/HourInterfaces";
 import { validate } from "./../../policies/Validate";
 import { bookingSchema } from "./../../policies/DataSchemas/Booking";
+import { roomDataStorage } from "./../../dataStorage/SQLDatastorage/Room";
 import { bookingDataStorage } from "./../../dataStorage/SQLDatastorage/Booking";
 import { User } from "../../models/User";
 
@@ -229,68 +232,270 @@ export class BookingController extends Controller {
     );
 
     /**
-     * @api {post} /api/v2/booking/slack/dialog/open Manage dialog open in slack
+     * @api {post} /api/v2/booking/slack_url/dialog/open Manage dialog open in slack
      * @apiVersion 2.0.0
      * @apiPermission access (users)
      * @apiName slackCommand
      * @apiGroup Booking
      *
      */
-    this.router.post("/slack/dialog/open", this.manageDialogOpen);
+    this.router.post(
+      `/${process.env.SLACK_CALLBACK_URL}/command`,
+      this.manageCommand
+    );
 
     /**
-     * @api {post} /api/v2/booking/slack/dialog/submit Manage dialog info submit
+     * @api {post} /api/v2/booking/slack_url/component/interaction Manage component interaction
      * @apiVersion 2.0.0
      * @apiPermission access (users)
      * @apiName slackActions
      * @apiGroup Booking
      */
-    this.router.post("/slack/dialog/submit", this.manageDialogSubmit);
+    this.router.post(
+      `/${process.env.SLACK_CALLBACK_URL}/interaction`,
+      this.manageInteraction
+    );
 
     return this.router;
   }
 
-  manageDialogOpen = async (req: Request, res: Response) => {
+  manageCommand = async (req: Request, res: Response) => {
     // best practice to respond with 200 status
     res.send("");
+    const { trigger_id, text, response_url } = req.body;
+    const [bookingService, id] = text.split(" ");
     try {
-      await slackService.openDialog(req.body);
+      if (bookingService === "delete") {
+        const booking = await this.model.findById(parseInt(id));
+
+        if (!booking) {
+          return await slackService.sendMessage({
+            type: "error",
+            toURL: response_url,
+            text: "Booking not found"
+          });
+        }
+
+        const parsedBooking = booking.toJSON();
+        if (parsedBooking.end < getActualDate()) {
+          return await slackService.sendMessage({
+            type: "error",
+            toURL: response_url,
+            text: "Can't cancel a past appointment"
+          });
+        }
+
+        await Promise.all([
+          calendarService.deleteEvent(booking.eventId),
+          booking.destroy()
+        ]);
+
+        return await slackService.sendMessage({
+          type: "success",
+          toURL: response_url,
+          text: `Booking with id: ${id} deleted`
+        });
+      }
+
+      return await slackService.openDialog({
+        trigger_id,
+        dialogParams: {
+          type: "select-room-and-date"
+        }
+      });
     } catch (error) {
       const { message } = error;
       res.status(500).json({ response_type: "ephemeral", text: message });
     }
   };
 
-  manageDialogSubmit = async (req: Request, res: Response) => {
-    // This closes the dialog in slack
-    res.send("");
-    const { user, submission, response_url: toURL } = JSON.parse(
-      req.body.payload
-    );
-
-    const { startDate, endDate } = formatDateFromSlack(submission);
-    if (!isAvailableDate(startDate, endDate)) {
-      return slackService.sendErrorMessage({
-        toURL,
-        message:
-          "The booking only can have office hours (Monday-Friday, 8AM-6PM)."
-      });
-    }
+  manageInteraction = async (req: Request, res: Response) => {
+    const payload = JSON.parse(req.body.payload);
+    const { type, response_url } = payload;
 
     try {
+      switch (type) {
+        case "dialog_submission":
+          const { callback_id, submission } = payload;
+          if (callback_id === "select-date-and-room") {
+            const { date, roomId } = submission;
+
+            if (isWeekenedDay(date)) {
+              return res.status(200).json({
+                errors: [
+                  {
+                    name: "date",
+                    error: "Can't do an appointment on weekends!"
+                  }
+                ]
+              });
+            }
+
+            // This closes the dialog in slack
+            res.send("");
+
+            const availableHours = await this.getAvailableHoursForBooking({
+              date,
+              roomId
+            });
+
+            const roomFounded = await Room.findOne({
+              attributes: ["id", "name"],
+              where: { id: parseInt(roomId) }
+            });
+
+            const responseContent = {
+              date,
+              availableHours,
+              room: roomFounded.toJSON()
+            };
+
+            return await slackService.sendDialogSubmitResponse({
+              toURL: response_url,
+              responseContent
+            });
+          }
+
+          const { isValid, errors } = this.validateBooking(submission);
+          if (!isValid) {
+            return res.json({ errors });
+          }
+
+          res.send("");
+
+          const { user } = payload;
+          const createdBooking = await this.createBookingFromSlack({
+            bookingInfo: submission
+          });
+
+          const { name: slackUserName } = user;
+          const responseContent = {
+            slackUserName,
+            ...createdBooking
+          };
+          return await slackService.sendDialogSubmitResponse({
+            toURL: response_url,
+            responseContent
+          });
+
+        case "block_actions":
+          res.send("");
+          const { actions, trigger_id } = payload;
+          const [action] = actions;
+          const { value } = action;
+          const [date, id, name] = value.split("_");
+          const defaultValues = {
+            date,
+            room: {
+              id,
+              name
+            }
+          };
+
+          if (value === "retry") {
+            return await slackService.openDialog({
+              trigger_id,
+              dialogParams: {
+                type: "select-room-and-date"
+              }
+            });
+          }
+          return await slackService.openDialog({
+            trigger_id,
+            dialogParams: {
+              defaultValues,
+              type: "new-appointment"
+            }
+          });
+      }
+    } catch (error) {
+      const { message } = error;
+      return slackService.sendMessage({
+        toURL: response_url,
+        type: "error",
+        text: message
+      });
+    }
+  };
+
+  validateBooking = bookingInfo => {
+    const { startDate, endDate } = formatDateFromSlack(bookingInfo);
+
+    if (startDate === endDate) {
+      return {
+        isValid: false,
+        errors: [
+          {
+            name: "startHour",
+            error: "The appointment hours are the same!"
+          },
+          {
+            name: "startMinute",
+            error: "The appointment hours are the same!"
+          },
+          {
+            name: "endHour",
+            error: "The appointment hours are the same!"
+          },
+          {
+            name: "endMinute",
+            error: "The appointment hours are the same!"
+          }
+        ]
+      };
+    }
+
+    if (!isAvailableDate(startDate, endDate)) {
+      return {
+        isValid: false,
+        errors: [
+          {
+            name: "endHour",
+            error:
+              "The booking only can have office hours (Monday-Friday, 8AM-6PM)."
+          },
+          {
+            name: "endMinute",
+            error:
+              "The booking only can have office hours (Monday-Friday, 8AM-6PM)."
+          }
+        ]
+      };
+    }
+
+    const { description } = bookingInfo;
+    if (!description) {
+      return {
+        isValid: false,
+        errors: [
+          {
+            name: "description",
+            error: "Please write some appointment description"
+          }
+        ]
+      };
+    }
+
+    return { isValid: true, errors: [] };
+  };
+
+  createBookingFromSlack = async ({ bookingInfo }) => {
+    const { startDate, endDate } = formatDateFromSlack(bookingInfo);
+
+    try {
+      const { roomId } = bookingInfo;
       const room = await Room.findOne({
         attributes: ["id", "name"],
-        where: { id: parseInt(submission.roomId) }
+        where: { id: parseInt(roomId) }
       });
 
       if (!room) {
-        return slackService.sendErrorMessage({
-          toURL,
-          message: `Room ${submission.roomId} not exist.`
-        });
+        return Promise.reject(
+          new Error(`Room ${bookingInfo.roomId} doesn't exist.`)
+        );
       }
 
-      const { name: location, id: roomId } = room.toJSON();
+      const { name: location } = room.toJSON();
       const collisionsData = { start: startDate, end: endDate, roomId };
       const booking: Booking = await bookingDataStorage.findCollisions(
         collisionsData
@@ -298,28 +503,27 @@ export class BookingController extends Controller {
 
       // if exist a booking that overlaps whit start and end
       if (booking) {
-        return slackService.sendErrorMessage({
-          toURL,
-          message: `There is booking overlaping`
-        });
+        return Promise.reject(
+          new Error(`There is a appointment overlaping in ${location}`)
+        );
       }
 
       const dummyUser = await User.findOne({
         attributes: ["id", "email"],
-        where: { id: process.env.DUMMY_USER_ID }
+        where: { id: process.env.SLACK_DUMMY_USER_ID }
       });
 
       if (!dummyUser) {
-        return slackService.sendErrorMessage({
-          toURL,
-          message: "Dummy user not exist."
-        });
+        return Promise.reject(new Error("Dummy user not exist."));
       }
 
       const { id: userId, email: dummyEmail } = dummyUser.toJSON();
-      const attendees = [...submission.attendees.split(","), dummyEmail];
+      const attendees = bookingInfo.attendees
+        ? [...bookingInfo.attendees.split(","), dummyEmail]
+        : [dummyEmail];
+
       const uniqueEmails = [...new Set(attendees)];
-      const { description } = submission;
+      const { description } = bookingInfo;
       const eventCalendar = await calendarService.insertEvent(
         startDate,
         endDate,
@@ -354,23 +558,85 @@ export class BookingController extends Controller {
         await insertBookingAttendee(parsedBooking.id, attendeeId);
       });
 
-      const { name: slackUserName } = user;
-      await slackService.sendDialogSubmitResponse(toURL, {
-        slackUserName,
+      return {
         startDate,
         endDate,
         location,
         description,
         attendees: uniqueEmails
-      });
+      };
     } catch (error) {
       const { message } = error;
-      res.status(500).json({
-        response_type: "ephemeral",
-        text: message
+      return Promise.reject(new Error(message));
+    }
+  };
+
+  getAvailableHoursForBooking = async ({ date, roomId }) => {
+    const isValidDate = date => date.toString() !== "Invalid date";
+    try {
+      if (!isEmpty(date) && !isValidDate(date)) {
+        return Promise.reject(
+          new Error("Date must be a date in format YYYY-MM-DD")
+        );
+      }
+      const room = await roomDataStorage.findById(roomId);
+      if (!room) {
+        return Promise.reject(new Error(`Room ${roomId} doesn't exist.`));
+      }
+
+      const bookings = await Booking.findAll({
+        where: {
+          roomId,
+          start: {
+            [Op.gte]: `${date}T08:00:00`,
+            [Op.lte]: `${date}T23:00:00`
+          }
+        }
       });
-      // For use the below function need to change the implementation
-      // return Controller.serverError(res, err);
+
+      // Get hours when the conference room is reserved
+      const getBookingHours = (booking: Booking) => {
+        const parsedBooking = booking.toJSON();
+
+        // Convert from UTC to local time
+        const localStartDate = moment(parsedBooking.start)
+          .tz("America/Mexico_city")
+          .format();
+        const localEndDate = moment(parsedBooking.end)
+          .tz("America/Mexico_city")
+          .format();
+
+        return {
+          start: localStartDate.slice(11, 16),
+          end: localEndDate.slice(11, 16)
+        };
+      };
+
+      const occupiedHours: IHour[] = _.chain(bookings)
+        .map(getBookingHours)
+        .sortBy("start")
+        .value();
+
+      // Add to occupiedHours edge Hours
+      occupiedHours.unshift({ start: "00:00", end: "08:00" });
+      occupiedHours.push({ start: "18:00", end: "23:59" });
+
+      // Get hours when the conference room is free
+      const freeHours: IHour[] = _.chain(occupiedHours)
+        .map((hour, i, arr) => {
+          if (i < arr.length - 1) {
+            return hour.end !== arr[i + 1].start
+              ? { start: hour.end, end: arr[i + 1].start }
+              : null;
+          }
+        })
+        .filter()
+        .value();
+
+      return freeHours;
+    } catch (error) {
+      const { message } = error;
+      return Promise.reject(new Error(message));
     }
   };
 

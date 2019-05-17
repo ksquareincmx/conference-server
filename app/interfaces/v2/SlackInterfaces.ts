@@ -1,24 +1,49 @@
-export interface ISlashCommandInfo {
-  token: string;
-  team_id: string;
-  team_domain: string;
-  channel_id: string;
-  channel_name: string;
-  user_id: string;
-  user_name: string;
-  command: string;
-  text: string;
-  response_url: string;
-  trigger_id: string;
+import { IRoomSlackFormat } from "./RoomInterfaces";
+import { IHour } from "./HourInterfaces";
+
+interface IRoomInfo {
+  id: number | string;
+  name: string;
 }
 
-export interface IBookingInfoForResponse {
+interface IOpenDialogDefaultValues {
+  date: string;
+  room: IRoomInfo;
+}
+
+export interface IDialogParams {
+  type: string;
+  defaultValues?: IOpenDialogDefaultValues;
+}
+
+export interface IOpenDialogConfig {
+  trigger_id: string;
+  dialogParams: IDialogParams;
+}
+
+export interface IDialogForAppointmentParams {
+  roomsFormated: IRoomSlackFormat[];
+  defaultValues: IOpenDialogDefaultValues;
+}
+
+export interface IDialogSubmitResponseParams {
+  toURL: string;
+  responseContent: IDateRoomConfirmationInfo | IAppointmentInfo;
+}
+
+export interface IAppointmentInfo {
   slackUserName: string;
-  startDate: Date;
-  endDate: Date;
+  startDate: string;
+  endDate: string;
   location: string;
   description: string;
   attendees: Array<string> | null;
+}
+
+export interface IDateRoomConfirmationInfo {
+  date: string;
+  room: IRoomInfo;
+  availableHours: IHour[];
 }
 
 export interface IBookingDateInfo {
@@ -28,10 +53,3 @@ export interface IBookingDateInfo {
   endHour: string;
   endMinute: string;
 }
-
-export interface IErrorMessageParams {
-  toURL: string;
-  message: string;
-}
-
-interface ICommandAction {}
