@@ -262,7 +262,16 @@ export class BookingController extends Controller {
   manageCommand = async (req: Request, res: Response) => {
     // best practice to respond with 200 status
     res.send("");
-    const { trigger_id, text, response_url } = req.body;
+    const { response_url } = req.body;
+    if (!slackService.validateSignature(req)) {
+      return slackService.sendMessage({
+        toURL: response_url,
+        type: "error",
+        text: "Request is not signed correctly"
+      });
+    }
+
+    const { text } = req.body;
     const [bookingService, id] = text.split(" ");
     try {
       if (bookingService === "delete") {
@@ -297,6 +306,7 @@ export class BookingController extends Controller {
         });
       }
 
+      const { trigger_id } = req.body;
       return await slackService.openDialog({
         trigger_id,
         dialogParams: {
@@ -305,14 +315,26 @@ export class BookingController extends Controller {
       });
     } catch (error) {
       const { message } = error;
-      res.status(500).json({ response_type: "ephemeral", text: message });
+      return slackService.sendMessage({
+        toURL: response_url,
+        type: "error",
+        text: message
+      });
     }
   };
 
   manageInteraction = async (req: Request, res: Response) => {
     const payload = JSON.parse(req.body.payload);
-    const { type, response_url } = payload;
+    const { response_url } = payload;
+    if (!slackService.validateSignature(req)) {
+      return slackService.sendMessage({
+        toURL: response_url,
+        type: "error",
+        text: "Request is not signed correctly"
+      });
+    }
 
+    const { type } = payload;
     try {
       switch (type) {
         case "dialog_submission":
