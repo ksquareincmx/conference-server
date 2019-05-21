@@ -46,6 +46,12 @@ export interface IDateRoomConfirmationInfo {
   availableHours: IHour[];
 }
 
+export interface IMessageParams {
+  toURL: string;
+  text: string;
+  type: string;
+}
+
 export interface IBookingDateInfo {
   date: string;
   startHour: string;
