@@ -20,8 +20,14 @@ app.use(helmet());
 app.use(methodOverride());
 app.use(favicon(path.join(__dirname, "../public/favicon.ico")));
 // Body parser middleware
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+const rawBodyBuffer = (req, res, buf, encoding) => {
+  if (buf && buf.length) {
+    req.rawBody = buf.toString(encoding || "utf8");
+  }
+};
+
+app.use(bodyParser.urlencoded({ verify: rawBodyBuffer, extended: true }));
+app.use(bodyParser.json({ verify: rawBodyBuffer }));
 // Response compression
 app.use(compression());
 // use morgan to log requests to the console
