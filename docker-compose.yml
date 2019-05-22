@@ -42,6 +42,11 @@ services:
       - URLS_PORT
       - URLS_PROTOCOL
       - URLS_URL
+      - SLACK_ACCESS_TOKEN
+      - SLACK_SIGNING_SECRET
+      - SLACK_API_URI
+      - SLACK_DUMMY_USER_ID
+      - SLACK_CALLBACK_URL
     ports:
       - "8888:${SERVER_PORT}"
 

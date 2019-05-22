@@ -232,7 +232,7 @@ export class BookingController extends Controller {
     );
 
     /**
-     * @api {post} /api/v2/booking/slack_url/dialog/open Manage dialog open in slack
+     * @api {post} /api/v2/booking/slack_url/command Manage dialog open in slack
      * @apiVersion 2.0.0
      * @apiPermission access (users)
      * @apiName slackCommand
@@ -245,7 +245,7 @@ export class BookingController extends Controller {
     );
 
     /**
-     * @api {post} /api/v2/booking/slack_url/component/interaction Manage component interaction
+     * @api {post} /api/v2/booking/slack_url/interaction Manage component interaction
      * @apiVersion 2.0.0
      * @apiPermission access (users)
      * @apiName slackActions
