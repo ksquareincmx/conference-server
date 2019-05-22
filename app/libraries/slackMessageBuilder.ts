@@ -192,7 +192,7 @@ class Builder {
           text: {
             type: "plain_text",
             emoji: true,
-            text: "This are the availbale hours: "
+            text: "This are the available hours: "
           }
         },
         {
