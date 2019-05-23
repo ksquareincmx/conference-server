@@ -213,7 +213,7 @@ class Builder {
               text: {
                 type: "plain_text",
                 emoji: true,
-                text: "Confirm :+1:"
+                text: "Confirm room :+1:"
               },
               style: "primary",
               value: `${date}_${roomId}_${roomName}`
@@ -223,7 +223,7 @@ class Builder {
               text: {
                 type: "plain_text",
                 emoji: true,
-                text: "Cancel :-1:"
+                text: "Change room :-1:"
               },
               style: "danger",
               value: "retry"
