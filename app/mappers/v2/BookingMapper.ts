@@ -28,7 +28,8 @@ export const bookingMapper = {
       room: {
         id: bookingEntity.room.id,
         name: bookingEntity.room.name,
-        color: bookingEntity.room.color,
+        txt_color: bookingEntity.room.txtColor,
+        bg_color: bookingEntity.room.bgColor,
         presence: bookingEntity.room.presence,
         created_at: bookingEntity.room.createdAt,
         updated_at: bookingEntity.room.updatedAt

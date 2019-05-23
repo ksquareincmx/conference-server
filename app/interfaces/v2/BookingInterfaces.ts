@@ -14,7 +14,8 @@ export interface IBookingResponse {
   room: {
     id: number;
     name: string;
-    color: string;
+    bg_color: string;
+    txt_color: string;
     presence: boolean;
     created_at: string;
     updated_at: string;
@@ -53,6 +54,7 @@ export interface IDeleteBookingParams {
 
 // Interface base for ICreateBooking & IUpdateBooking
 export interface IBookingRequest {
+  id?: string;
   description: string;
   roomId: number;
   start: string;
