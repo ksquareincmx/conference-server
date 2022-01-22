@@ -1174,6 +1174,11 @@ data-uri-to-buffer@2:
   dependencies:
     "@types/node" "^8.0.7"
 
+data-uri-to-buffer@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/data-uri-to-buffer/-/data-uri-to-buffer-4.0.0.tgz#b5db46aea50f6176428ac05b73be39a57701a64b"
+  integrity sha512-Vr3mLBA8qWmcuschSLAOogKgQ/Jwxulv3RNE4FXnYWRGujzrRWQI4m12fQqRkwX06C0KanhLr4hK+GydchZsaA==
+
 dateformat@^2.0.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/dateformat/-/dateformat-2.2.0.tgz#4065e2013cf9fb916ddfd82efb506ad4c6769062"
@@ -1776,6 +1781,14 @@ fecha@^2.3.3:
   version "2.3.3"
   resolved "https://registry.yarnpkg.com/fecha/-/fecha-2.3.3.tgz#948e74157df1a32fd1b12c3a3c3cdcb6ec9d96cd"
 
+fetch-blob@^3.1.2, fetch-blob@^3.1.3:
+  version "3.1.4"
+  resolved "https://registry.yarnpkg.com/fetch-blob/-/fetch-blob-3.1.4.tgz#e8c6567f80ad7fc22fd302e7dcb72bafde9c1717"
+  integrity sha512-Eq5Xv5+VlSrYWEqKrusxY1C3Hm/hjeAsCGVG3ft7pZahlUAChpGZT/Ms1WmSLnEAisEXszjzu/s+ce6HZB2VHA==
+  dependencies:
+    node-domexception "^1.0.0"
+    web-streams-polyfill "^3.0.3"
+
 file-uri-to-path@1, file-uri-to-path@1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/file-uri-to-path/-/file-uri-to-path-1.0.0.tgz#553a7b8446ff6f684359c445f1e37a05dacc33dd"
@@ -1901,6 +1914,13 @@ form-data@^2.3.1, form-data@~2.3.0, form-data@~2.3.2:
     asynckit "^0.4.0"
     combined-stream "^1.0.6"
     mime-types "^2.1.12"
+
+formdata-polyfill@^4.0.10:
+  version "4.0.10"
+  resolved "https://registry.yarnpkg.com/formdata-polyfill/-/formdata-polyfill-4.0.10.tgz#24807c31c9d402e002ab3d8c720144ceb8848423"
+  integrity sha512-buewHzMvYL29jdeQTVILecSaZKnt/RJWjoZCF5OW60Z67/GmSLBkOFM7qh1PI3zFNtJbaZL5eQu1vLfazOwj4g==
+  dependencies:
+    fetch-blob "^3.1.2"
 
 formidable@^1.2.0:
   version "1.2.1"
@@ -3598,9 +3618,16 @@ module-parent@0.0.2:
   version "0.0.2"
   resolved "https://registry.yarnpkg.com/module-parent/-/module-parent-0.0.2.tgz#be1cbb3cb6a55060fc86467d2f2d2cd0a600e199"
 
-moment-timezone@^0.5.14, moment-timezone@^0.5.23:
+moment-timezone@^0.5.14:
   version "0.5.23"
   resolved "https://registry.yarnpkg.com/moment-timezone/-/moment-timezone-0.5.23.tgz#7cbb00db2c14c71b19303cb47b0fb0a6d8651463"
+  dependencies:
+    moment ">= 2.9.0"
+
+moment-timezone@^0.5.25:
+  version "0.5.34"
+  resolved "https://registry.yarnpkg.com/moment-timezone/-/moment-timezone-0.5.34.tgz#a75938f7476b88f155d3504a9343f7519d9a405c"
+  integrity sha512-3zAEHh2hKUs3EXLESx/wsgw6IQdusOT8Bxm3D9UrHPQR7zlMmzwybC8zHEM1tQ4LJwP7fcxrWr8tuBg05fFCbg==
   dependencies:
     moment ">= 2.9.0"
 
@@ -3729,9 +3756,23 @@ node-cron@1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/node-cron/-/node-cron-1.2.1.tgz#8c90bc5dc723a56289b0786655ab4a1c4cb60368"
 
+node-domexception@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/node-domexception/-/node-domexception-1.0.0.tgz#6888db46a1f71c0b76b3f7555016b63fe64766e5"
+  integrity sha512-/jKZoMpw0F8GRwl4/eLROPA3cfcXtLApP0QzLmUT/HuPCZWyB7IY9ZrMeKw2O/nFIqPQB3PVM9aYm0F312AXDQ==
+
 node-fetch@^2.3.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.3.0.tgz#1a1d940bbfb916a1d3e0219f037e89e71f8c5fa5"
+
+node-fetch@^3.1.1:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-3.1.1.tgz#d0d9607e455b3087e3092b821b5b1f1ebf4c2147"
+  integrity sha512-SMk+vKgU77PYotRdWzqZGTZeuFKlsJ0hu4KPviQKkfY+N3vn2MIzr0rvpnYpR8MtB3IEuhlEcuOLbGvLRlA+yg==
+  dependencies:
+    data-uri-to-buffer "^4.0.0"
+    fetch-blob "^3.1.3"
+    formdata-polyfill "^4.0.10"
 
 node-forge@^0.8.0:
   version "0.8.2"
@@ -4339,6 +4380,11 @@ qs@6.5.2, qs@~6.5.2:
 qs@^6.5.1:
   version "6.7.0"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.7.0.tgz#41dc1a015e3d581f1621776be31afb2876a9b1bc"
+
+querystring@^0.2.0:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/querystring/-/querystring-0.2.1.tgz#40d77615bb09d16902a85c3e38aa8b5ed761c2dd"
+  integrity sha512-wkvS7mL/JMugcup3/rMitHmd9ecIGd2lhFhK9N3UUQ450h66d1r3Y9nvXzQAW1Lq+wyx61k/1pfKS5KuKiyEbg==
 
 range-parser@~1.2.0:
   version "1.2.0"
@@ -5497,6 +5543,11 @@ unique-stream@^2.0.2:
     json-stable-stringify-without-jsonify "^1.0.1"
     through2-filter "^3.0.0"
 
+universal-isomorphic-fetch@0.0.1:
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/universal-isomorphic-fetch/-/universal-isomorphic-fetch-0.0.1.tgz#2409fcdda3a8d7c4d6f29782042c59c48f3cf4e7"
+  integrity sha1-JAn83aOo18TW8peCBCxZxI889Oc=
+
 universalify@^0.1.0:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/universalify/-/universalify-0.1.2.tgz#b646f69be3942dabcecc9d6639c80dc105efaa66"
@@ -5670,6 +5721,16 @@ watchr@~2.4.13:
     scandirectory "^2.5.0"
     taskgroup "^4.2.0"
     typechecker "^2.0.8"
+
+web-streams-polyfill@^3.0.3:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/web-streams-polyfill/-/web-streams-polyfill-3.2.0.tgz#a6b74026b38e4885869fb5c589e90b95ccfc7965"
+  integrity sha512-EqPmREeOzttaLRm5HS7io98goBgZ7IVz79aDvqjD0kYXLtFZTc0T/U6wHTPKyIjb+MdN7DFIIX6hgdBEpWmfPA==
+
+whatwg-fetch@^3.0.0:
+  version "3.6.2"
+  resolved "https://registry.yarnpkg.com/whatwg-fetch/-/whatwg-fetch-3.6.2.tgz#dced24f37f2624ed0281725d51d0e2e3fe677f8c"
+  integrity sha512-bJlen0FcuU/0EMLrdbJ7zOnW6ITZLrZMIarMUVmdKtsGvZna8vxKYaexICWPfZ8qwf9fzNq+UEIZrnSaApt6RA==
 
 which-module@^2.0.0:
   version "2.0.0"
