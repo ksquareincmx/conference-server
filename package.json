@@ -103,7 +103,7 @@
     "morgan": "^1.9.1",
     "mysql2": "1.6.1",
     "node-cron": "1.2.1",
-    "node-fetch": "^2.4.0",
+    "node-fetch": "^2.6.7",
     "node-google-calendar": "^1.1.1",
     "nodemailer": "4.6.7",
     "nodemailer-mailgun-transport": "1.4.0",
