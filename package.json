@@ -106,7 +106,7 @@
     "node-fetch": "^2.4.0",
     "node-google-calendar": "^1.1.1",
     "nodemailer": "4.6.7",
-    "nodemailer-mailgun-transport": "1.4.0",
+    "nodemailer-mailgun-transport": "2.1.5",
     "querystring": "^0.2.0",
     "reflect-metadata": "0.1.12",
     "require-dir-all": "0.4.15",
